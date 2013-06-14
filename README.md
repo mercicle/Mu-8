@@ -14,9 +14,13 @@ Team
 ========
 
 Johnathan Mercer (mercer at fas.harvard.edu) 
+
 Balaji Pandian (balajipandian at college.harvard.edu) 
 
 Academic Advisors: 
+
 Alexander Lex (alex at seas.harvard.edu) 
+
 Nicolas Bonneel (nbonneel at seas.harvard.edu)
+
 Hanspeter Pfister (pfister at seas.harvard.edu)
