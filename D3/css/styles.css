@@ -1,0 +1,373 @@
+
+html,body { height:100%; }
+
+/* uservisinfobox from http://theory.info/harvardstat221#?s=d3 workshop&v=function-and-its-derivative*/
+.uservisinfobox {
+  position : absolute;
+  background : rgba(0, 0, 0, 0.4);
+  color : white;
+  padding : 10px;
+  border-radius : 5px;
+}
+
+.uservisinfobox p {
+  text-align : left;
+  font-family : "Garamond";
+  font-size : 19px;
+  margin : 0px;
+}
+
+
+#theTitle{
+font-size: 20px;
+font-style: bold;
+margin-bottom: 5px;
+}
+
+#histogramWrapper, #mainChartWrapper, #zoomChartWrapper, #controls
+{
+	overflow: hidden;
+}
+ 
+#methodHeader{
+    margin-left: 50px;
+}
+
+p.methodology {
+    margin-left: 50px;
+    margin-right: 100px;
+    width: 100em;
+    font-size: 20px;
+}
+
+.description{
+    width: 1000px;
+    word-wrap: break-word;
+}
+
+.explanation{
+    width: 400px;
+    word-wrap: break-word;
+}
+
+#explanationBody{
+    margin-left: 50px;
+    font-size: 20px; 
+    width: 1000px;
+    word-wrap: break-word;
+}
+
+ul.desc{
+   margin-left: 75px;
+   font-size: 20px; 
+}
+ 
+body {
+  font: 12px arial;
+}
+
+/* This style is for the histogram rectangles */
+.bar rect {
+  fill: steelblue; 
+  shape-rendering: crispEdges;
+  font-size: 5;
+}
+
+/* This style is for the text (frequeny count) on the histogram rectangles */
+.bar text {
+  fill: #fff;
+  font-size: 5;
+}
+
+.distHistBar{
+  fill: #fff;
+}
+
+/* This style is for the axes */
+.axis path, .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.chordColorAxis path, .chordColorAxis line  {
+             fill: none;
+           stroke: #000;
+  shape-rendering: crispEdges;
+        font-size: 8;
+}
+
+/* This style is for the seuence x-axis */
+.seqXAxis {
+  fill: none;
+  stroke: black;
+  /*stroke-width:1.1;*/
+  shape-rendering: crispEdges;
+}
+
+/* This style is for the Zoom x-axis */
+.zoomXAxis{
+    fill: none;
+    stroke: black;
+    /*stroke-width:1.1;*/
+    shape-rendering: crispEdges;
+}
+
+.distHistXAxis{
+    fill: none;
+    stroke: black;
+    /*stroke-width:1.2;*/
+    /*shape-rendering: crispEdges;*/
+    font-size: 12px;
+}
+
+ /* This style is for the text on the Zoom x-axis */
+.zoomXAxis text {
+    font-family: arial;
+    font-size: 10px;
+}
+
+/* This is the style for the brush and extent classes */
+.brush .extent {
+  stroke: #ccc; 
+  fill-opacity: .2; 
+  shape-rendering: crispEdges;
+  fill: steelblue; 
+}
+
+/** add this to get the grey handle bars -otherwise they are black **/
+.resize path {
+  fill: #eee;
+  stroke: #666;
+}
+
+.chart rect {
+  fill: steelblue;
+  /** for borders **/
+  stroke:black; 
+  stroke-width:0.5;
+}
+ 
+.seqContextSeqRects {
+  fill: steelblue;  /** fill: lightgrey; **/
+  /** for borders **/
+  stroke:black; 
+  stroke-width:0.5;
+}
+
+.seqContextSeqText {
+  fill: white;   
+  font-size: 2px;
+  font-family:arial;
+}
+
+
+.chordColorRects{
+  stroke:black; 
+  stroke-width:0.5;
+}
+/**
+ .seqZoomSeqRects{
+  fill: steelblue;  
+  stroke:black; 
+  stroke-width:0.5;
+ }
+**/
+.seqZoomSeqText {
+  fill: black;   
+}
+
+.seqContextScoreRects {
+  /** for borders **/
+  stroke:black; 
+  stroke-width:0.5;
+}
+
+.seqZoomScoreRects {
+  /** for borders **/
+  stroke:black; 
+  stroke-width:0.5;
+}
+
+.horizDiv {
+  float: left;
+}
+
+#zoomChartWrapper{
+	overflow: hidden;
+	width: 1300px;
+	height: 310px;
+	margin: 0px;
+	padding: 0px;
+}
+
+#zoomedChartYAxis{
+	width: 20px;
+	height: 275px;
+	float: left;
+}
+
+#zoomedChart{
+	overflow: hidden;
+	float: left;
+	width:940px;
+}
+
+#distanceHistogram{
+	overflow: hidden;
+	float: left;
+	height: 300px;
+	width: 300px;
+	padding-top: 26px;
+	padding-left: 30px;
+}
+
+/* Code from here to the bottom is just for pretty-ing up the buttons and select elements */
+/* Code taken from Twitter Bootstrap */
+.prettyButton {
+  display: inline-block;
+  *display: inline;
+  padding: 4px 12px;
+  margin-bottom: 0;
+  *margin-left: .3em;
+  font-size: 12px;
+  line-height: 12px;
+  color: #333333;
+  text-align: center;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+  vertical-align: middle;
+  cursor: pointer;
+  background-color: #f5f5f5;
+  *background-color: #e6e6e6;
+  background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#e6e6e6));
+  background-image: -webkit-linear-gradient(top, #ffffff, #e6e6e6);
+  background-image: -o-linear-gradient(top, #ffffff, #e6e6e6);
+  background-image: linear-gradient(to bottom, #ffffff, #e6e6e6);
+  background-repeat: repeat-x;
+  border: 1px solid #cccccc;
+  *border: 0;
+  border-color: #e6e6e6 #e6e6e6 #bfbfbf;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  border-bottom-color: #b3b3b3;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffe6e6e6', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+  *zoom: 1;
+  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+     -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.prettyButton:hover,
+.prettyButton:focus,
+.prettyButton:active,
+.prettyButton.active,
+.prettyButton.disabled,
+.prettyButton[disabled] {
+  color: #333333;
+  background-color: #e6e6e6;
+  *background-color: #d9d9d9;
+}
+
+.prettyButton:active,
+.prettyButton.active {
+  background-color: #cccccc \9;
+}
+
+.prettyButton:first-child {
+  *margin-left: 0;
+}
+
+.prettyButton:hover,
+.prettyButton:focus {
+  color: #333333;
+  text-decoration: none;
+  background-position: 0 -15px;
+  -webkit-transition: background-position 0.1s linear;
+     -moz-transition: background-position 0.1s linear;
+       -o-transition: background-position 0.1s linear;
+          transition: background-position 0.1s linear;
+}
+
+.prettyButton:focus {
+  outline: thin dotted #333;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+
+.prettyButton.active,
+.prettyButton:active {
+  background-image: none;
+  outline: 0;
+  -webkit-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+     -moz-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+          box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.prettyButton-small {
+  padding: 2px 10px;
+  font-size: 11.9px;
+  -webkit-border-radius: 3px;
+     -moz-border-radius: 3px;
+          border-radius: 3px;
+}
+
+.selectWrapper {
+    width: 120px !important;
+    margin-right: 15px;
+    float: left;
+}
+
+select {
+	-webkit-appearance: menulist-button;
+	-webkit-border-image: none;
+	-webkit-box-align: center;
+	-webkit-rtl-ordering: logical;
+	-webkit-writing-mode: horizontal-tb;
+	background-color: rgb(255, 255, 255);
+	border-bottom-color: rgb(204, 204, 204);
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
+	border-left-color: rgb(204, 204, 204);
+	border-left-style: solid;
+	border-left-width: 1px;
+	border-right-color: rgb(204, 204, 204);
+	border-right-style: solid;
+	border-right-width: 1px;
+	border-top-color: rgb(204, 204, 204);
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	border-top-style: solid;
+	border-top-width: 1px;
+	box-sizing: border-box;
+	color: rgb(85, 85, 85);
+	cursor: pointer;
+	display: inline-block;
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	font-size: 14px;
+	font-weight: normal;
+	height: 20px;
+	letter-spacing: normal;
+	line-height: normal;
+	margin-bottom: 10px;
+	margin-left: 0px;
+	margin-right: 0px;
+	margin-top: 0px;
+	padding-bottom: 0px;
+	padding-left: 0px;
+	padding-right: 0px;
+	padding-top: 0px;
+	text-align: start;
+	text-indent: 0px;
+	text-shadow: none;
+	text-transform: none;
+	vertical-align: middle;
+	white-space: pre;
+	word-spacing: 0px;
+	writing-mode: lr-tb;
+}
