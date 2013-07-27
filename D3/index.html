@@ -1412,6 +1412,7 @@ function colorHeatForThisContextRegion(extent){
                                                           return "black";
                                                       }})
     }
+
 }
 
 function brushSeqContext(p){
@@ -1437,6 +1438,7 @@ function brushSeqContext(p){
       seqContextBrush.extent([eNow[0], eNow[1]]);
       seqContextBrush(d3.select(this));
       zoomLength = maxBrushValue; //also reset zoom length
+      colorHeatForThisContextRegion(eNow);
     }
 
     // If the Distance Histogram isn't brushed, only draw the Distance Histogram without drawing arcs 
