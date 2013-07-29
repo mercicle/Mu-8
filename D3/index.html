@@ -1123,7 +1123,11 @@
 	/////////////////////////////////////
 	//    SVG for the Zoomed SVG      ///
 	/////////////////////////////////////
-	var seqZoomSVG = d3.select("#zoomedChart").append("svg").attr("class", "seqZoomSVG").attr("width", zoom_seq_svg_width).attr("height", zoom_seq_svg_height);
+	var seqZoomSVG = d3.select("#zoomedChart")
+						.append("svg")
+						.attr("class", "seqZoomSVG")
+						.attr("width", zoom_seq_svg_width)
+						.attr("height", zoom_seq_svg_height);
 	
 	var initdTIMSlice = dTIM.slice(0, zoomLength);
 	var initscTIMSlice = scTIM.slice(0, zoomLength);
