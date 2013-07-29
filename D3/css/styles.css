@@ -1,5 +1,5 @@
 
-html,body { height:100%; }
+html,body { height:100%; position: absolute;}
 
 /* uservisinfobox from http://theory.info/harvardstat221#?s=d3 workshop&v=function-and-its-derivative*/
 .uservisinfobox {
@@ -28,7 +28,7 @@ margin-bottom: 5px;
 {
 	overflow: hidden;
 }
- 
+
 #methodHeader{
     margin-left: 50px;
 }
@@ -84,7 +84,7 @@ body {
 }
 
 /* This style is for the axes */
-.axis path, .axis line {
+.axis path, .axis line, .y_axis_positive_zoom, .y_axis_negative_zoom {
   fill: none;
   stroke: #000;
   shape-rendering: crispEdges;
@@ -193,6 +193,12 @@ body {
   float: left;
 }
 
+#threedview {
+  float: left;
+  padding-top: 26px;
+}
+
+
 #zoomChartWrapper{
 	overflow: hidden;
 	width: 1300px;
@@ -210,7 +216,7 @@ body {
 #zoomedChart{
 	overflow: hidden;
 	float: left;
-	width:940px;
+	width:650px;
 }
 
 #distanceHistogram{
@@ -317,6 +323,12 @@ body {
 
 .selectWrapper {
     width: 120px !important;
+    margin-right: 15px;
+    float: left;
+}
+
+.checkWrapper{
+    width: 250px !important;
     margin-right: 15px;
     float: left;
 }

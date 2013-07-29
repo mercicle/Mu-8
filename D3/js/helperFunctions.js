@@ -1,4 +1,59 @@
+function mouseoverBar(e, aaNumber)
+{
+	
+	var readableScoreText = "";
+	
+	for (var i = 0; i < 6; i++)
+	{
+		// compare the id of the selected element and compare it to the standard names
+		if (e.id.substring(0, e.id.length-5) == namesOfDivIds[i].substring(1))
+		{
+			// result rounded to 3 decimal places
+			readableScoreText = namesOfIndices[i] + ": " + Math.round(allIndices[i][aaNumber].myvar * 1000) / 1000 ;
+		}
+	}
+	
+	var container = d3.select("#zoomChartWrapper");
+	var pos = $(container[0][0]).position(); //position of the zoomChartWrapper on the screen
+    var mouse = d3.mouse(container[0][0]); //position relative to the zoomChartWrapper
 
+    var infoBox = container.selectAll("div.uservisinfobox")
+         .data([mouse]);
+
+    var cushion = [10, 10]; 
+    
+    this._xoff = pos.left + e.x.animVal.value + zoom_seq_rect_width + 100;
+    this._yoff = pos.top + e.y.animVal.value + 35;
+
+    // adjust to make infobox closer to mouse on aligned layout
+    if (zoomLayout == "Aligned")
+    {
+    	this._xoff += (zoom_seq_rect_width * 1);
+    }
+    	
+
+    infoBox.enter()
+        .append("div")
+        .attr("class", "uservisinfobox")
+        .attr("style", "top : " + this._yoff + "px; " + "left : " + this._xoff + "px; opacity : 0;")
+        .html("<p>" + readableScoreText + "</p>");
+
+    infoBox
+        .html("<p>" + readableScoreText + "</p>")
+        .transition().duration(500)
+        .attr("style", "top : " + this._yoff + "px; " + "left : " + this._xoff + "px; opacity : 1;");
+}
+
+function mouseoutBar(e, aaNumber)
+{
+	var theInfoBox = d3.selectAll(".uservisinfobox").data([]);
+    
+    theInfoBox
+         .exit()
+         .transition().duration(300)
+         .remove();
+
+}
 
 function mouseover (d, i,scTIM, textOrRect)
 {
