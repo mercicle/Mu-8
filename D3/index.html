@@ -548,22 +548,9 @@
 	//add the sequence (context) svg
 	var seqContextSVG = d3.select("#mainChart").append("svg").attr("class", "seqContextSVG").attr("width", seq_svg_width).attr("height", seq_svg_height);
 	
-	document.write("<br>");
-	//add an x-axis (separate svg right below it)
-	var svgForSequenceXAxis = d3.select("#mainChart").append("svg").attr("class", "x_axis_for_seq").attr("width", seq_svg_width).attr("height", 20);
-	
-	//add a break inbetween the x-axis for the sequence and the zoom
-	var xAxisPadding = 2.5;
-	
-	// axis for the sequence
-	var xToAppendAxis = d3.scale.linear().domain([1, 248]) //changed from 0 to 1
-	.range([xAxisPadding, seq_svg_width - xAxisPadding]);
-	
-	// Create x axis for the seq svg
-	var xAxisForSequence = d3.svg.axis().scale(xToAppendAxis).orient("bottom").ticks(25);
-	
-	//append x-axis to the sequence  
-	svgForSequenceXAxis.append("g").attr("class", "seqXAxis").attr("transform", "translate(0," + 0 + ")").call(xAxisForSequence);
+	//////////////////////////////////////////////////////////
+	///// thsi is where the x-axis context went originally
+	///////////////////////////////////////////////////////////
 	
 	//this puts the rectangles on the svg
 	seqContextSVG.selectAll("rect").data(dTIM).enter().append("rect")
@@ -617,7 +604,7 @@
                        .append("svg") 
                           .attr("class", "stdHeatMap")
                           .attr("width",seq_svg_width)
-                          .attr("height",seq_svg_height);
+                          .attr("height",allIndices.length*seq_rect_width);
 
     var stdMaps=[], stdExtents=[];
     
@@ -664,6 +651,26 @@
 	}
 	
 	
+	//document.write("<br>");
+	//add an x-axis (separate svg right below it)
+	var svgForSequenceXAxis = d3.select("#mainChart").append("svg").attr("class", "x_axis_for_seq").attr("width", seq_svg_width).attr("height", 20);
+	
+	//add a break inbetween the x-axis for the sequence and the zoom
+	var xAxisPadding = 2.5;
+	
+	// axis for the sequence
+	var xToAppendAxis = d3.scale.linear().domain([1, 248]) //changed from 0 to 1
+	.range([xAxisPadding, seq_svg_width - xAxisPadding]);
+	
+	// Create x axis for the seq svg
+	var xAxisForSequence = d3.svg.axis().scale(xToAppendAxis).orient("bottom").ticks(25);
+	
+	//append x-axis to the sequence  
+	svgForSequenceXAxis.append("g").attr("class", "seqXAxis").attr("transform", "translate(0," + 0 + ")").call(xAxisForSequence);
+
+	//one br between the context x-axis and the next set of components
+	document.write("<br>");
+
 	/////////////////////////////////////
 	//// Add the Distance Histogram ////
 	////////////////////////////////////
@@ -1540,200 +1547,5 @@
 	    document.getElementById('selectLayout').value = "Stacked";
 
 	</script>
-</body> 
-</html>gth; p++) {
-
-              var transitionTime = 0;
-              if (isScrolling){
-                  transitionTime = 0;
-              }else{
-                  transitionTime = globalTransitionTime*2;
-              }
-
-              var setThisId = namesOfDivIds[p].substring(1) + "score";
-
-              var selection =  seqZoomSVG.selectAll("rect" + namesOfDivIds[p] + "score")
-                                            .data(globalPatternsZoom[p].slice(eNow[0],eNow[1]));
-
-              if (zoomLayout == "Stacked"){
-                selection
-                  .transition()
-                  .duration(3000) // 3 seconds
-                   .attr("class","seqZoomScoreRects")
-                   .attr("id", setThisId)
-                   .attr("x",function(d,i){return i* zoom_seq_rect_width;})
-                   .attr("y",function(d){return d.pushed_y;})
-                   .attr("width",zoom_seq_rect_width)
-                   .attr("height", function(d){return d.pushed_height;})
-                   .attr("opacity", 1)
-                   .style("fill", function(d){return d.pushed_color;});
-              }
-              if (zoomLayout == "Aligned"){
-
-                  selection
-                    .transition()
-                    .duration(3000) // 3 seconds
-                     .attr("class","seqZoomScoreRects")
-                     .attr("id", setThisId)
-                     .attr("x",function(d,i){return i*(zoom_seq_rect_width) 
-                                                    + p*(zoom_seq_rect_width/namesOfDivIds.length)
-                                            ;})
-                     .attr("y",function(d){return resetY(d.pushed_y, d.pushed_height);})
-                     .attr("width",(zoom_seq_rect_width/namesOfDivIds.length)-alignBuffer)
-                     .attr("height", function(d){return d.pushed_height;})
-                     .attr("opacity", 1)
-                     .style("fill", function(d){return d.pushed_color;});
-
-              }
-          }
-
-    }else{
-        if (zoomLayout == "Aligned"){
-
-              /////////////////////////////////////////////////
-              // Clear Each Set of Scores then re-render     //
-              /////////////////////////////////////////////////
-
-              //for each characteristic, update the 
-              for (var p = 0; p < allIndices.length; p++) {
-
-                  var transitionTime = 0;
-                  if (isScrolling){
-                      transitionTime = 0;
-                  }else{
-                      transitionTime = globalTransitionTime*2;
-                  }
-
-                  var setThisId = namesOfDivIds[p].substring(1) + "score";
-
-                  var selection =  seqZoomSVG.selectAll("rect" + namesOfDivIds[p] + "score")
-                                               .data([]);
-
-                  selection
-                      .exit()
-                      .remove();
-
-                  var selection =  seqZoomSVG.selectAll("rect" + namesOfDivIds[p] + "score")
-                                               .data(globalPatternsZoom[p].slice(eNow[0],eNow[1]));
-                  
-                  selection
-                       .enter()
-                       .append("rect");
-
-                  selection
-                     .attr("class","seqZoomScoreRects")
-                     .attr("id", setThisId)
-                     .attr("x",function(d,i){return i*(zoom_seq_rect_width) 
-                                                    + p*(zoom_seq_rect_width/namesOfDivIds.length)
-                                            ;})
-                     .attr("y",function(d){return resetY(d.pushed_y, d.pushed_height);})
-                     .attr("width",(zoom_seq_rect_width/namesOfDivIds.length)-alignBuffer)
-                     .attr("height", function(d){return d.pushed_height;})
-                     .attr("opacity", 1)
-                     .style("fill", function(d){return d.pushed_color;});
-                  
-              };
-
-
-        }else{
-
-                /////////////////////////////////////////////////
-                // Clear Each Set of Scores then re-render     //
-                /////////////////////////////////////////////////
-
-                //for each characteristic, update the 
-                for (var p = 0; p < allIndices.length; p++) {
-
-                    var transitionTime = 0;
-                    if (isScrolling){
-                        transitionTime = 0;
-                    }else{
-                        transitionTime = globalTransitionTime*2;
-                    }
-
-                    var setThisId = namesOfDivIds[p].substring(1) + "score";
-
-                    var selection =  seqZoomSVG.selectAll("rect" + namesOfDivIds[p] + "score")
-                                                 .data([]);
-                    
-                    selection  
-                       .attr("class","seqZoomScoreRects")
-                       .attr("id", setThisId)
-                       .attr("x",function(d,i){return i* zoom_seq_rect_width;})
-                       .attr("y",function(d){return d.pushed_y;})
-                       .attr("width",zoom_seq_rect_width)
-                       .attr("height", function(d){return d.pushed_height;})
-                       .attr("opacity", 1)
-                       .style("fill", function(d){return d.pushed_color;});
-
-                    selection.exit()
-                      .remove();
-
-                    var selection =  seqZoomSVG.selectAll("rect" + namesOfDivIds[p] + "score")
-                                                 .data(globalPatternsZoom[p].slice(eNow[0],eNow[1]));
-                    
-                    selection.enter().append("rect");
-
-                    selection
-                       .attr("class","seqZoomScoreRects")
-                       .attr("id", setThisId)
-                       .attr("x",function(d,i){return i* zoom_seq_rect_width;})
-                       .attr("y",function(d){return d.pushed_y;})
-                       .attr("width",zoom_seq_rect_width)
-                       .attr("height", function(d){return d.pushed_height;})
-                       .attr("opacity", 1)
-                       .style("fill", function(d){return d.pushed_color;});
-                    
-                };
-
-      }
- }
-
-  //update the x-axis (svgForZoomXAxis) for seqZoomSVG
-  var svgForZoomXAxis  = d3.select("svg.x_axis_for_zoom");
-
-  var xZoomToAppendAxis = d3.scale.linear()
-                                    .domain([eNow[0]+1,eNow[1]+1]) //changed from [eNow[0],eNow[1]]
-                                    .range([xZoomAxisPadding, zoom_seq_svg_width-xZoomAxisPadding]);
-
-  var xAxisForZoom = d3.svg.axis()
-                            .scale(xZoomToAppendAxis)
-                            .orient("bottom")
-                            .ticks(zoomLength);
-
-  //change the x-axis
-  svgForZoomXAxis.select(".zoomXAxis").call(xAxisForZoom);
-}
-
-// First init the brushDistHist
-// initialize the distance histogram to (2,8) Angstrom
-var defaultDistHist = d3.select("#distanceHistogram");
-brushDistHist.extent([3.3,9]);
-defaultDistHist.select(".brush").call(brushDistHist);
-histDistBrushMove();
-
-// Then initialize all the histograms
-//since they all have extents = (-3,3) can just call brushmove on them
-for (var i = 0; i < allIndices.length; i++){
-     brushmove(i);
-}
-
-function layoutZoom(){ 
-  
-  prevZoomLayout = zoomLayout;
-  zoomLayout = document.getElementById('selectLayout').value;
-
-  seqContextBrush.extent([seqContextBrush.extent()[0],seqContextBrush.extent()[0] + zoomLength]);
-  seqContextSVG.select("#seqContextBrush").call(seqContextBrush); 
-  brushSeqContext(0);
-
-}
-
-</script>
-
-<script>
-document.getElementById('selectLayout').value = "Stacked";
-
-</script>
 </body> 
 </html>
