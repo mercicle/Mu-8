@@ -605,7 +605,7 @@
                           .attr("style", "border:0.5px solid black;")
                           .attr("class", "stdHeatMap")
                           .attr("width",seq_svg_width)
-                          .attr("height",allIndices.length*seq_rect_width+seq_rect_width)
+                          .attr("height",allIndices.length*seq_rect_width*2+seq_rect_width)
                           //.on("mousemove",function(d,i){  mouseoutHeat();} )
 
     var stdMaps=[], stdExtents=[];
@@ -624,7 +624,7 @@
 
     var stdHeightMaps = [];
     for (var index = 0; index < allIndices.length; index++){
-        stdHeightMaps.push(d3.scale.linear().domain(allStdDeviations[index]).range([1,5]).clamp(true));
+        stdHeightMaps.push(d3.scale.linear().domain(allStdDeviations[index]).range([1,10]).clamp(true));
     }
 
     for (var index = 0; index < allIndices.length; index++){
@@ -642,7 +642,7 @@
                      .style("stroke", "white")
                      .style("stroke-width", 0.5)
                      .attr("x",function(d,i){return i*seq_rect_width;})
-                     .attr("y",function(d,i){return index*seq_rect_width-stdHeightMaps[index](d)+seq_rect_width})
+                     .attr("y",function(d,i){return index*seq_rect_width*2-stdHeightMaps[index](d)+seq_rect_width*2})
                      .attr("width",seq_rect_width)
                      .attr("height",function(d,i){return stdHeightMaps[index](d);})
     }
