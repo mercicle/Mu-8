@@ -54,7 +54,7 @@ function getShader(gl, id) {
 var shaderProgram;
 var shaderVariables = {
     'mMinValue': 0,
-    'mMaxValue': 1
+    'mMaxValue': 1	
 };
 
 function initShaders() {
@@ -80,14 +80,15 @@ function initShaders() {
 
     shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
     shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
-
+	shaderProgram.pixelOffset = gl.getUniformLocation(shaderProgram, "pixelOffset");
+	
     shaderVariables.mMinValue = gl.getUniformLocation(shaderProgram, "valMin");
     shaderVariables.mMaxValue = gl.getUniformLocation(shaderProgram, "valMax");
+	
 }
 
 
 var mvMatrix = mat4.create();
-var oldMat = mat4.create();
 var pMatrix = mat4.create();
 var rotValue = 0.0;
 
@@ -95,8 +96,6 @@ function setMatrixUniforms() {
     gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
     gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
 }
-
-
 
 function drawScene() {
     gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
@@ -109,26 +108,16 @@ function drawScene() {
 gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexColorBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, triangleVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
     setMatrixUniforms();
+	gl.uniform4f(shaderProgram.pixelOffset, 0., 0., 0., 0.);
+	
     gl.drawArrays(gl.LINES, 0, triangleVertexPositionBuffer.numItems);
 
-
-mat4.set(mvMatrix, oldMat);
 // thicker lines
-mat4.translate(mvMatrix, [-0.07, -0, -0]);
-    gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, triangleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexColorBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, triangleVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
-    setMatrixUniforms();
+    gl.uniform4f(shaderProgram.pixelOffset, 1./250., 0., 0., 0.); // one pixel offset = 1./width=1./250.
     gl.drawArrays(gl.LINES, 0, triangleVertexPositionBuffer.numItems);
-mat4.translate(mvMatrix, [-0., -0.07, -0]);
-    gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, triangleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexColorBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, triangleVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
-    setMatrixUniforms();
+    gl.uniform4f(shaderProgram.pixelOffset, 0., 1./250., 0., 0.);	
     gl.drawArrays(gl.LINES, 0, triangleVertexPositionBuffer.numItems);
-mat4.set(oldMat, mvMatrix);
+
 }
 
 var lastTime = 0;

@@ -42,11 +42,14 @@
 
 	    uniform mat4 uMVMatrix;
 	    uniform mat4 uPMatrix;
+		uniform vec4 pixelOffset;
   
 	    varying vec4 vColor;
 
 	    void main(void) {
-	    	gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+	    	vec4 p = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+			p/=abs(p.w);
+			gl_Position = p+pixelOffset;
 	    	vColor = aVertexColor;
 	    }
     </script> 
