@@ -16,7 +16,7 @@
     <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
     <script src="js/helperFunctions.js" type="text/javascript"></script>
     <script src="js/data.js" type="text/javascript"></script>
-    <!-- WebGL 3D Code --->
+    <!-- WebGL 3D Code -->
     <script type="text/javascript" src="js/glMatrix-0.9.5.min.js"></script>
     <script type="text/javascript" src="js/webgl-utils.js"></script>
     <script type="text/javascript" src="js/lines.js"></script>
@@ -142,471 +142,575 @@
     </div>
     
     <script>
-	// Gather Data and store into array variables.
-	var alphaValues = [];
-	var betaValues = [];
-	var compValues = [];
-	var hydroValues = [];
-	var physicoValues = [];
-	var otherValues = [];
-	
-	var seqLength = 248;
-	var globalTransitionTime = 300;
-	// standardized distances between dTIM and fmaily mean
-	// at the same time, calculate the cumulative max x extent and the cumulative negative max x extent
-	var cumMinNegX = [];
-	var cumMaxPosX = [];
-	
-	var allStdDeviations = [];
-	var stdAlpha=[], stdBeta=[], stdComp=[],stdHydro=[],stdPhy=[],stdOth=[];
-	
-	for (var i = 0; i < seqLength; i++) {
-	
-		stdAlpha.push(1/(alpha_dTIM_m_mean_std.points[i][2]/alpha_dTIM_m_mean.points[i][2]));
-		stdBeta.push(1/(beta_dTIM_m_mean_std.points[i][2]/beta_dTIM_m_mean.points[i][2]));
-		stdComp.push(1/(comp_dTIM_m_mean_std.points[i][2]/comp_dTIM_m_mean.points[i][2]));
-		stdHydro.push(1/(hydro_dTIM_m_mean_std.points[i][2]/hydro_dTIM_m_mean.points[i][2]));
-		stdPhy.push(1/(physico_dTIM_m_mean_std.points[i][2]/physico_dTIM_m_mean.points[i][2]));
-		stdOth.push(1/(other_dTIM_m_mean_std.points[i][2]/other_dTIM_m_mean.points[i][2]));
-		
-	    var a, b, c, h, p, o;
-	    if (alpha_dTIM_m_mean_std.points[i][2] > 3 || alpha_dTIM_m_mean_std.points[i][2] < -3) {
-	        if (alpha_dTIM_m_mean_std.points[i][2] > 3) {
-	            a = 3;
-	        } else {
-	            a = -3;
-	        }
-	    } else {
-	        a = alpha_dTIM_m_mean_std.points[i][2];
-	    }
-	
-	    if (beta_dTIM_m_mean_std.points[i][2] > 3 || beta_dTIM_m_mean_std.points[i][2] < -3) {
-	        if (beta_dTIM_m_mean_std.points[i][2] > 3) {
-	            b = 3;
-	        } else {
-	            b = -3;
-	        }
-	    } else {
-	        b = beta_dTIM_m_mean_std.points[i][2];
-	    }
-	
-	    if (comp_dTIM_m_mean_std.points[i][2] > 3 || comp_dTIM_m_mean_std.points[i][2] < -3) {
-	        if (comp_dTIM_m_mean_std.points[i][2] > 3) {
-	            c = 3;
-	        } else {
-	            c = -3;
-	        }
-	    } else {
-	        c = comp_dTIM_m_mean_std.points[i][2];
-	    }
-	    if (hydro_dTIM_m_mean_std.points[i][2] > 3 || hydro_dTIM_m_mean_std.points[i][2] < -3) {
-	        if (hydro_dTIM_m_mean_std.points[i][2] > 3) {
-	            h = 3;
-	        } else {
-	            h = -3;
-	        }
-	    } else {
-	        h = hydro_dTIM_m_mean_std.points[i][2];
-	    }
-	    if (physico_dTIM_m_mean_std.points[i][2] > 3 || physico_dTIM_m_mean_std.points[i][2] < -3) {
-	        if (physico_dTIM_m_mean_std.points[i][2] > 3) {
-	            p = 3;
-	        } else {
-	            p = -3;
-	        }
-	    } else {
-	        p = physico_dTIM_m_mean_std.points[i][2];
-	    }
-	    if (other_dTIM_m_mean_std.points[i][2] > 3 || other_dTIM_m_mean_std.points[i][2] < -3) {
-	        if (other_dTIM_m_mean_std.points[i][2] > 3) {
-	            o = 3;
-	        } else {
-	            o = -3;
-	        }
-	    } else {
-	        o = other_dTIM_m_mean_std.points[i][2];
-	    }
-	
-	    cumMinNegX.push(a * (a < 0) + b * (b < 0) + c * (c < 0) + h * (h < 0) + p * (p < 0) + o * (o < 0));
-	    cumMaxPosX.push(a * (a > 0) + b * (b > 0) + c * (c > 0) + h * (h > 0) + p * (p > 0) + o * (o > 0));
-	
-	    alphaValues.push({
-	        myvar: a
-	    });
-	    betaValues.push({
-	        myvar: b
-	    });
-	    compValues.push({
-	        myvar: c
-	    });
-	    hydroValues.push({
-	        myvar: h
-	    });
-	    physicoValues.push({
-	        myvar: p
-	    });
-	    otherValues.push({
-	        myvar: o
-	    });
-	}
-	
-	allStdDeviations = [stdAlpha,stdBeta,stdComp,stdHydro,stdPhy,stdOth];
-	
-	
-	var globalCumMinNegX = d3.min(cumMinNegX);
-	var globalCumMaxPosX = d3.max(cumMaxPosX);
-	
-	
-	// Variables for iteration (Each one is an array corresponding to a specific index)
-	var allIndices = [alphaValues, betaValues, compValues, hydroValues, physicoValues, otherValues];
-	
-	//replace this with a allIndexData[index]
-	var alphaData = alphaValues.map(function(d) {
-	    return d.myvar;
-	});
-	var betaData = betaValues.map(function(d) {
-	    return d.myvar;
-	});
-	var compData = compValues.map(function(d) {
-	    return d.myvar;
-	});
-	var hydroData = hydroValues.map(function(d) {
-	    return d.myvar;
-	});
-	var physicoData = physicoValues.map(function(d) {
-	    return d.myvar;
-	});
-	var otherData = otherValues.map(function(d) {
-	    return d.myvar;
-	});
-	
-	var allIndexData = [alphaData, betaData, compData, hydroData, physicoData, otherData];
-	
-	var posNegIndices = [];
-	var globalIsBrushedArray = [];
-	//create array of arrays that hold the pos/neg indices at each residue
-	for (var i = 0; i < seqLength; i++) {
-	    var posArray = [];
-	    var negArray = [];
-	    for (var d = 0; d < allIndexData.length; d++) {
-	        if (allIndexData[d][i] > 0) {
-	            posArray.push(d);
-	        } else {
-	            negArray.push(d);
-	        }
-	    }
-	
-	    //create empty 'is brushed' arrays for each set of pos/neg scores
-	    var gipb = [];
-	    for (var p = 0; p < posArray.length; p++) {
-	        gipb.push(0);
-	    }
-	    var ginb = [];
-	    for (var p = 0; p < negArray.length; p++) {
-	        ginb.push(0);
-	    }
-	
-	    globalIsBrushedArray.push([gipb, ginb]);
-	    posNegIndices.push([posArray, negArray]);
-	
-	}
-	
-	//////////////////////////////////////////
-	/////// Load the Distance Data////////////
-	/////////////////////////////////////////
-	var seqLength4DM = 248;
-	var matrixRows = [];
-	
-	for (var p = 0; p < seqLength4DM; p++) {
-	
-	    var thisRow = [];
-	    for (var i = 0; i < distMatrixArray.length; i++) {
-	        if (distMatrixArray[i].OriginAminoAcid == p) {
-	            thisRow.push([distMatrixArray[i].Distance, p]);
-	        }
-	    }
-	    matrixRows.push(thisRow);
-	}
-	
-	var histValueObjects = [];
-	for (var row = 0; row < matrixRows.length; row++) {
-	    for (var col = 0; col < matrixRows.length; col++) {
-	        if (row < col) { //upper diagonal
-	            histValueObjects.push({
-	                dist: matrixRows[row][col][0],
-	                thisRow: matrixRows[row][col][1]
-	            });
-	        }
-	    }
-	}
-	
-	//for the distance histogram
-	var rawHistValues = histValueObjects.map(function(d) {
-	    return d.dist;
-	});
-	
-	var namesOfDivIds = ["#alpha", "#beta", "#comp", "#hydro", "#physico", "#other"];
-	var namesOfIndices = ["Alpha Helix & Turn Propensity", "Beta Sheet Propensity", "Composition", "Hydrophobicity", "Physico-Chemical Properties", "Other Characteristics"];
-	
-	var histDataArray = []; //will hold the array of data values for histogram buckets needed for brush coloring of histograms
-	//color brewer 7 group qualitative minus the yellow
-	var colorOrder = ["#1F78B4", "#F781BF", "#4DAF4A", "#984EA3", "#FF7F00", "#A65628"]; //replaced #E41A1C" for #1F78B4
-	// Brush function array holds the brush functions function brushX () {brushmove(X);} for X=0,..,5
-	var brushFunctionArray = [brush0, brush1, brush2, brush3, brush4, brush5];
-	// Brush Array Contains each of the brushes in order 
-	var brushArray = [];
-	
-	// define the width and height of each histogram
-	var margin = {
-	    top: 20,
-	    right: 30,
-	    bottom: 20,
-	    left: 30
-	},
-	    width = 210 - margin.left - margin.right,
-	    height = 120 - margin.top - margin.bottom;
-	
-	/////////////////////////////////////////////////////////////////
-	// Global Y max and global min/max x extents for histograms   ///
-	/////////////////////////////////////////////////////////////////
-	// x_extent array outside loop for brushing code.
-	var x_extent_array = [];
-	
-	// set global y by iterating through the datasets
-	var globalYMax = 0,
-	    min_x_extent = 0,
-	    max_x_extent = 0;
-	for (var i = 0; i < allIndices.length; i++) {
-	
-	    var x_extent = d3.extent(allIndices[i].map(function(d) {
-	        return d.myvar;
-	    }));
-	    // i use the ceiling and floor functions to get integer min/max for the x pixel space
-	    x_extent[0] = Math.floor(x_extent[0]);
-	    x_extent[1] = Math.ceil(x_extent[1]);
-	
-	    x_extent_array.push(x_extent);
-	
-	    if (x_extent_array[i][1] > max_x_extent) {
-	        max_x_extent = x_extent_array[i][1];
-	    }
-	    if (x_extent_array[i][0] < min_x_extent) {
-	        min_x_extent = x_extent_array[i][0];
-	    }
-	
-	    // # of bins for histogram (sqrt(n))
-	    var num_bins = Math.round(Math.sqrt(seqLength));
-	
-	    // this is the transformation function for input space to pixel space
-	    var x = d3.scale.linear().domain(x_extent).range([0, width]);
-	
-	    var data = d3.layout.histogram().frequency(false).bins(x.ticks(num_bins))(allIndices[i].map(function(d) {
-	        return d.myvar;
-	    }));
-	
-	    histDataArray.push(data);
-	
-	    var localYMax = d3.max(data, function(d) {
-	        return d.y;
-	    });
-	
-	    //update the globalYMax
-	    if (localYMax > globalYMax) {
-	        globalYMax = localYMax;
-	    }
-	}
-	
-	function selectAllHistograms() {
-	    // Loop over each histogram, set max extent, and call brush move
-	    for (var i = 0; i < allIndices.length; i++) {
-	        var hist = d3.select(namesOfDivIds[i]);
-	        brushArray[i].extent([min_x_extent, max_x_extent]);
-	        hist.select(".brush").call(brushArray[i]);
-	        brushmove(i);
-	    }
-	}
-	
-	function clearAllHistograms() {
-	    // Loop over each histogram, clear extent, and call brush move
-	    for (var i = 0; i < allIndices.length; i++) {
-	        var hist = d3.select(namesOfDivIds[i]);
-	        brushArray[i].extent([0, 0]);
-	        hist.select(".brush").call(brushArray[i]);
-	        brushmove(i);
-	    }
-	}
-	///////////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////       Insert the Histograms   //////////////////////////////// 
-	//////////////////////////////////////////////////////////////////////////////////////////////
-	// Loop over each of the indices to create the visualization (allIndices[i] = data to construct histogram i)
-	for (var i = 0; i < allIndices.length; i++) {
-	
-	    // # of bins for histogram
-	    var num_bins = Math.round(Math.sqrt(seqLength));
-	
-	    // this is the transformation function for input space to pixel space
-	    var x = d3.scale.linear().domain([min_x_extent, max_x_extent]).range([0, width]);
-	
-	    // Create x axis.
-	    var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(5);
-	
-	    var data = d3.layout.histogram().frequency(false).bins(x.ticks(num_bins))(allIndices[i].map(function(d) {
-	        return d.myvar;
-	    }));
-	
-	    var y = d3.scale.linear().domain([0, globalYMax]).range([height, 0]);
-	
-	    //display y-axis as %
-	    var formatPercent = d3.format(".0%");
-	
-	    var yAxis = d3.svg.axis().scale(y).orient("left").tickFormat(formatPercent).ticks(5);
-	
-	    // specify the brush function 
-	    var brush = d3.svg.brush().x(x).on("brush", brushFunctionArray[i]).on("brushend", brushend);
-	
-	    //Initialize the brush 
-	    brush.extent([min_x_extent, max_x_extent]);
-	
-	    // add brush to brush array
-	    brushArray.push(brush);
-	
-	    //append the svg 
-	    var svg = d3.select(namesOfDivIds[i]).append("svg").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-	
-	    //histogram title
-	    d3.select(namesOfDivIds[i] + " svg").append("text").text(namesOfIndices[i]).attr("x", margin.left).attr("y", margin.top / 2).attr("stroke", colorOrder[i]).attr("stroke-width", "0.5px").attr("font-size", "14px").attr("font-family", "Times New Roman");
-	
-	    //create groups to hold the bars
-	    var bar = svg.selectAll(".bar").data(data).enter().append("g").attr("class", ".bar").attr("transform", function(d) {
-	        return "translate(" + x(d.x) + "," + y(d.y) + ")";
-	    }).call(brush);
-	
-	    //for each bar, append a rectangle
-	    bar.append("rect").attr("x", 0).attr("width", x(data[0].x + data[0].dx) - x(data[0].x) - 1).attr("id", "histrect") //added this for the brushing (blue/grey)
-	    .attr("fill", "#ccc").attr("height", function(d) {
-	        return height - y(d.y);
-	    });
-	
-	    svg.select(".brush").call(brush);
-	
-	    //context for the brush
-	    var context = svg.append("g");
-	
-	    //append the group with brush
-	    context.append("g").attr("class", "x brush").call(brush).selectAll("rect").attr("height", height);
-	
-	    //for the brush handle bars
-	    context.selectAll("rect").attr("height", height);
-	    context.selectAll(".resize").append("path").attr("d", resize_path);
-	
-	    //append x-axis 
-	    svg.append("g").attr("class", "x axis").attr("transform", "translate(0," + height + ")").call(xAxis);
-	
-	    //append the y-axis 
-	    svg.append("g").attr("class", "y axis").style("font-size", 10).call(yAxis);
-	}
-	
-	
-	////////////////////////////////////////////////
-	//       Parameters for the seqContextSVG     //
-	////////////////////////////////////////////////
-	var positive_y_axis = 50,
-	    negative_y_axis = 50;
-	var seq_rect_width = 5;
-	var seq_rect_height = 10;
-	var seq_svg_height = positive_y_axis + negative_y_axis + seq_rect_height;
-	var seq_svg_width = dTIM.length * seq_rect_width;
-	
-	////////////////////////////////////////////////
-	//      Parameters for the seqZoomSVG         //
-	////////////////////////////////////////////////
-	var zoomLength = 15;
-	var zoomLayout = "Stacked";
-	var prevZoomLayout = "Stacked";
-	
-	var zoomScaleFactor = 2.5; //this is the scale the size of the height of the zoom svg
-	var zoom_positive_y_axis = positive_y_axis * zoomScaleFactor,
-	    zoom_negative_y_axis = negative_y_axis * zoomScaleFactor;
-	
-	var zoom_seq_svg_width = seq_svg_width - 590;
-	var zoom_seq_rect_width = Math.round(zoom_seq_svg_width / zoomLength);
-	var zoom_seq_rect_height = seq_rect_height * zoomScaleFactor;
-	var zoom_seq_svg_height = zoom_positive_y_axis + zoom_negative_y_axis + zoom_seq_rect_height;
-	
-	
-	function setZoomParms(inZoomLength) {
-	
-	    zoom_seq_rect_width = zoom_seq_svg_width / inZoomLength;
-	
-	}
-	
-	var arcContextHeight = 100;
-	
-	var seqArcContextSVG = d3.select("#mainArcChart").append("svg").attr("class", "seqArcContextSVG").attr("style", "border:1px solid black;").attr("width", seq_svg_width).attr("height", arcContextHeight);
-	
-	
-	//add the sequence (context) svg
-	var seqContextSVG = d3.select("#mainChart").append("svg").attr("class", "seqContextSVG").attr("width", seq_svg_width).attr("height", seq_svg_height);
-	
-	//////////////////////////////////////////////////////////
-	///// thsi is where the x-axis context went originally
-	///////////////////////////////////////////////////////////
-	
-	//this puts the rectangles on the svg
-	seqContextSVG.selectAll("rect").data(dTIM).enter().append("rect")
-	//.attr("class","seqContextSeqRects")
-	.attr("fill", function(d, i) {
-	    if (d == scTIM[i]) {
-	        return "#F7F7F7";
-	    } else {
-	        return "red";
-	    }
-	}).attr("stroke", "black").attr("stroke-width", 0.5).attr("x", function(d, i) {
-	    return i * seq_rect_width;
-	}).attr("y", function(d, i) {
-	    return positive_y_axis;
-	}).attr("width", seq_rect_width).attr("height", seq_rect_height);
-	
-	//this puts the actual text on the bars
-	seqContextSVG.selectAll("text").data(dTIM).enter().append("text").attr("x", function(d, i) {
-	    return (i * seq_rect_width) + seq_rect_width / 2 - 1;
-	}).attr("y", function() {
-	    return positive_y_axis + seq_rect_height / 2;
-	}).attr("dx", ".35em").attr("dy", ".35em")
-	//.attr("class", "seqContextSeqText")
-	.attr("fill", function(d, i) {
-	    if (d == scTIM[i]) {
-	        return "black";
-	    } else {
-	        return "white";
-	    }
-	}).attr("font-size", "2px").attr("font-family", "arial").text(String);
-	
-	//////////////////////////////////////////////////
-	// Initialize the Brush for the Context Sequence//
-	//////////////////////////////////////////////////
-	// Create the x scale function for the sequence brush
-	var x = d3.scale.linear().domain([0, 248]).range([0, seq_svg_width]);
-	
-	var seqContextBrush = d3.svg.brush().x(x).on("brush", brushSeqContext);
-	
-	//Initialize the brush to cover the first 15 residues 
-	seqContextBrush.extent([0, zoomLength]);
-	seqContextSVG.select(".brush").call(seqContextBrush);
-	
-	//append a group to hold the brush
-	var context = seqContextSVG.append("g");
-	
-	//append the brush
-	context.append("g").attr("class", "x brush").attr("id", "seqContextBrush").call(seqContextBrush).selectAll("rect").attr("height", seq_svg_height);
-	
-	var seqStdHeatSVG  = d3.select("#mainChart")
-                       .append("svg") 
-                          .attr("style", "border:0.5px solid black;")
-                          .attr("class", "stdHeatMap")
-                          .attr("width",seq_svg_width)
-                          .attr("height",allIndices.length*seq_rect_width+seq_rect_width)
-                          //.on("mousemove",function(d,i){  mouseoutHeat();} )
+    // Gather Data and store into array variables.
+    var alphaValues = [];
+    var betaValues = [];
+    var compValues = [];
+    var hydroValues = [];
+    var physicoValues = [];
+    var otherValues = [];
+    
+    var seqLength = 248;
+    var globalTransitionTime = 300;
+    // standardized distances between dTIM and fmaily mean
+    // at the same time, calculate the cumulative max x extent and the cumulative negative max x extent
+    var cumMinNegX = [];
+    var cumMaxPosX = [];
+    
+    var allStdDeviations = [];
+    var stdAlpha=[], stdBeta=[], stdComp=[],stdHydro=[],stdPhy=[],stdOth=[];
+    
+    for (var i = 0; i < seqLength; i++) {
+        
+        stdAlpha.push(1/(alpha_dTIM_m_mean_std.points[i][2]/alpha_dTIM_m_mean.points[i][2]));
+        stdBeta.push(1/(beta_dTIM_m_mean_std.points[i][2]/beta_dTIM_m_mean.points[i][2]));
+        stdComp.push(1/(comp_dTIM_m_mean_std.points[i][2]/comp_dTIM_m_mean.points[i][2]));
+        stdHydro.push(1/(hydro_dTIM_m_mean_std.points[i][2]/hydro_dTIM_m_mean.points[i][2]));
+        stdPhy.push(1/(physico_dTIM_m_mean_std.points[i][2]/physico_dTIM_m_mean.points[i][2]));
+        stdOth.push(1/(other_dTIM_m_mean_std.points[i][2]/other_dTIM_m_mean.points[i][2]));
+        
+        var a, b, c, h, p, o;
+        if (alpha_dTIM_m_mean_std.points[i][2] > 3 || alpha_dTIM_m_mean_std.points[i][2] < -3) {
+            if (alpha_dTIM_m_mean_std.points[i][2] > 3) {
+                a = 3;
+            } else {
+                a = -3;
+            }
+        } else {
+            a = alpha_dTIM_m_mean_std.points[i][2];
+        }
+        
+        if (beta_dTIM_m_mean_std.points[i][2] > 3 || beta_dTIM_m_mean_std.points[i][2] < -3) {
+            if (beta_dTIM_m_mean_std.points[i][2] > 3) {
+                b = 3;
+            } else {
+                b = -3;
+            }
+        } else {
+            b = beta_dTIM_m_mean_std.points[i][2];
+        }
+        
+        if (comp_dTIM_m_mean_std.points[i][2] > 3 || comp_dTIM_m_mean_std.points[i][2] < -3) {
+            if (comp_dTIM_m_mean_std.points[i][2] > 3) {
+                c = 3;
+            } else {
+                c = -3;
+            }
+        } else {
+            c = comp_dTIM_m_mean_std.points[i][2];
+        }
+        if (hydro_dTIM_m_mean_std.points[i][2] > 3 || hydro_dTIM_m_mean_std.points[i][2] < -3) {
+            if (hydro_dTIM_m_mean_std.points[i][2] > 3) {
+                h = 3;
+            } else {
+                h = -3;
+            }
+        } else {
+            h = hydro_dTIM_m_mean_std.points[i][2];
+        }
+        if (physico_dTIM_m_mean_std.points[i][2] > 3 || physico_dTIM_m_mean_std.points[i][2] < -3) {
+            if (physico_dTIM_m_mean_std.points[i][2] > 3) {
+                p = 3;
+            } else {
+                p = -3;
+            }
+        } else {
+            p = physico_dTIM_m_mean_std.points[i][2];
+        }
+        if (other_dTIM_m_mean_std.points[i][2] > 3 || other_dTIM_m_mean_std.points[i][2] < -3) {
+            if (other_dTIM_m_mean_std.points[i][2] > 3) {
+                o = 3;
+            } else {
+                o = -3;
+            }
+        } else {
+            o = other_dTIM_m_mean_std.points[i][2];
+        }
+        
+        cumMinNegX.push(a * (a < 0) + b * (b < 0) + c * (c < 0) + h * (h < 0) + p * (p < 0) + o * (o < 0));
+        cumMaxPosX.push(a * (a > 0) + b * (b > 0) + c * (c > 0) + h * (h > 0) + p * (p > 0) + o * (o > 0));
+        
+        alphaValues.push({
+            myvar: a
+        });
+        betaValues.push({
+            myvar: b
+        });
+        compValues.push({
+            myvar: c
+        });
+        hydroValues.push({
+            myvar: h
+        });
+        physicoValues.push({
+            myvar: p
+        });
+        otherValues.push({
+            myvar: o
+        });
+    }
+    
+    allStdDeviations = [stdAlpha,stdBeta,stdComp,stdHydro,stdPhy,stdOth];
+    
+    
+    var globalCumMinNegX = d3.min(cumMinNegX);
+    var globalCumMaxPosX = d3.max(cumMaxPosX);
+    
+    
+    // Variables for iteration (Each one is an array corresponding to a specific index)
+    var allIndices = [alphaValues, betaValues, compValues, hydroValues, physicoValues, otherValues];
+    
+    //replace this with a allIndexData[index]
+    var alphaData = alphaValues.map(function(d) {
+        return d.myvar;
+    });
+    var betaData = betaValues.map(function(d) {
+        return d.myvar;
+    });
+    var compData = compValues.map(function(d) {
+        return d.myvar;
+    });
+    var hydroData = hydroValues.map(function(d) {
+        return d.myvar;
+    });
+    var physicoData = physicoValues.map(function(d) {
+        return d.myvar;
+    });
+    var otherData = otherValues.map(function(d) {
+        return d.myvar;
+    });
+    
+    var allIndexData = [alphaData, betaData, compData, hydroData, physicoData, otherData];
+    
+    var posNegIndices = [];
+    var globalIsBrushedArray = [];
+    //create array of arrays that hold the pos/neg indices at each residue
+    for (var i = 0; i < seqLength; i++) {
+        var posArray = [];
+        var negArray = [];
+        for (var d = 0; d < allIndexData.length; d++) {
+            if (allIndexData[d][i] > 0) {
+                posArray.push(d);
+            } else {
+               negArray.push(d);
+            }
+        }
+    
+        //create empty 'is brushed' arrays for each set of pos/neg scores
+        var gipb = [];
+        for (var p = 0; p < posArray.length; p++) {
+            gipb.push(0);
+        }
+        var ginb = [];
+        for (var p = 0; p < negArray.length; p++) {
+            ginb.push(0);
+        }
+    
+        globalIsBrushedArray.push([gipb, ginb]);
+        posNegIndices.push([posArray, negArray]);
+    
+    }
+    
+    //////////////////////////////////////////
+    /////// Load the Distance Data////////////
+    /////////////////////////////////////////
+    var seqLength4DM = 248;
+    var matrixRows = [];
+    
+    for (var p = 0; p < seqLength4DM; p++) {
+    
+        var thisRow = [];
+        for (var i = 0; i < distMatrixArray.length; i++) {
+            if (distMatrixArray[i].OriginAminoAcid == p) {
+                thisRow.push([distMatrixArray[i].Distance, p]);
+            }
+        }
+        matrixRows.push(thisRow);
+    }
+    
+    var histValueObjects = [];
+    for (var row = 0; row < matrixRows.length; row++) {
+        for (var col = 0; col < matrixRows.length; col++) {
+            if (row < col) { //upper diagonal
+                histValueObjects.push({
+                    dist: matrixRows[row][col][0],
+                    thisRow: matrixRows[row][col][1]
+                });
+            }
+        }
+    }
+    
+    //for the distance histogram
+    var rawHistValues = histValueObjects.map(function(d) {
+        return d.dist;
+    });
+    
+    var namesOfDivIds = ["#alpha", "#beta", "#comp", "#hydro", "#physico", "#other"];
+    var namesOfIndices = ["Alpha Helix & Turn Propensity", "Beta Sheet Propensity", "Composition", "Hydrophobicity", "Physico-Chemical Properties", "Other Characteristics"];
+    
+    var histDataArray = []; //will hold the array of data values for histogram buckets needed for brush coloring of histograms
+    //color brewer 7 group qualitative minus the yellow
+    var colorOrder = ["#1F78B4", "#F781BF", "#4DAF4A", "#984EA3", "#FF7F00", "#A65628"]; //replaced #E41A1C" for #1F78B4
+    var hueOrder =  [328, 118, 292, 30, 22];
+    var saturationOrder = [0.88, 0.41, 0.35, 1.00, 0.61];
+    // Brush function array holds the brush functions function brushX () {brushmove(X);} for X=0,..,5
+    var brushFunctionArray = [brush0, brush1, brush2, brush3, brush4, brush5];
+    // Brush Array Contains each of the brushes in order 
+    var brushArray = [];
+    
+    // define the width and height of each histogram
+    var margin = {
+        top: 20,
+        right: 30,
+        bottom: 20,
+        left: 30
+    },
+        width = 210 - margin.left - margin.right,
+        height = 120 - margin.top - margin.bottom;
+    
+    /////////////////////////////////////////////////////////////////
+    // Global Y max and global min/max x extents for histograms   ///
+    /////////////////////////////////////////////////////////////////
+    // x_extent array outside loop for brushing code.
+    var x_extent_array = [];
+    
+    // set global y by iterating through the datasets
+    var globalYMax = 0,
+        min_x_extent = 0,
+        max_x_extent = 0;
+    for (var i = 0; i < allIndices.length; i++) {
+    
+        var x_extent = d3.extent(allIndices[i].map(function(d) {
+            return d.myvar;
+        }));
+        // i use the ceiling and floor functions to get integer min/max for the x pixel space
+        x_extent[0] = Math.floor(x_extent[0]);
+        x_extent[1] = Math.ceil(x_extent[1]);
+    
+        x_extent_array.push(x_extent);
+    
+        if (x_extent_array[i][1] > max_x_extent) {
+            max_x_extent = x_extent_array[i][1];
+        }
+        if (x_extent_array[i][0] < min_x_extent) {
+            min_x_extent = x_extent_array[i][0];
+        }
+    
+        // # of bins for histogram (sqrt(n))
+        var num_bins = Math.round(Math.sqrt(seqLength));
+    
+        // this is the transformation function for input space to pixel space
+        var x = d3.scale
+                  .linear()
+                  .domain(x_extent)
+                  .range([0, width]);
+    
+        var data = d3.layout
+                     .histogram()
+                     .frequency(false)
+                     .bins(x.ticks(num_bins))(allIndices[i].map(function(d) {
+                         return d.myvar;
+                     }));
+    
+        histDataArray.push(data);
+    
+        var localYMax = d3.max(data, function(d) {
+            return d.y;
+        });
+    
+        //update the globalYMax
+        if (localYMax > globalYMax) {
+            globalYMax = localYMax;
+        }
+    }
+    
+    function selectAllHistograms() {
+        // Loop over each histogram, set max extent, and call brush move
+        for (var i = 0; i < allIndices.length; i++) {
+            var hist = d3.select(namesOfDivIds[i]);
+            brushArray[i].extent([min_x_extent, max_x_extent]);
+            hist.select(".brush")
+                .call(brushArray[i]);
+            brushmove(i);
+        }
+    }
+    
+    function clearAllHistograms() {
+        // Loop over each histogram, clear extent, and call brush move
+        for (var i = 0; i < allIndices.length; i++) {
+            var hist = d3.select(namesOfDivIds[i]);
+            brushArray[i].extent([0, 0]);
+            hist.select(".brush")
+                .call(brushArray[i]);
+            brushmove(i);
+        }
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////       Insert the Histograms   //////////////////////////////// 
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    // Loop over each of the indices to create the visualization (allIndices[i] = data to construct histogram i)
+    for (var i = 0; i < allIndices.length; i++) {
+    
+        // # of bins for histogram
+        var num_bins = Math.round(Math.sqrt(seqLength));
+    
+        // this is the transformation function for input space to pixel space
+        var x = d3.scale
+                  .linear()
+                  .domain([min_x_extent, max_x_extent])
+                  .range([0, width]);
+    
+        // Create x axis.
+        var xAxis = d3.svg
+                      .axis()
+                      .scale(x)
+                      .orient("bottom")
+                      .ticks(5);
+    
+        var data = d3.layout
+                     .histogram()
+                     .frequency(false)
+                     .bins(x.ticks(num_bins))(allIndices[i].map(function(d) {
+                         return d.myvar;
+                     }));
+    
+        var y = d3.scale
+                  .linear()
+                  .domain([0, globalYMax])
+                  .range([height, 0]);
+    
+        //display y-axis as %
+        var formatPercent = d3.format(".0%");
+    
+        var yAxis = d3.svg
+                      .axis()
+                      .scale(y)
+                      .orient("left")
+                      .tickFormat(formatPercent)
+                      .ticks(5);
+    
+        // specify the brush function 
+        var brush = d3.svg
+                      .brush()
+                      .x(x)
+                      .on("brush", brushFunctionArray[i])
+                      .on("brushend", brushend);
+    
+        //Initialize the brush 
+        brush.extent([min_x_extent, max_x_extent]);
+    
+        // add brush to brush array
+        brushArray.push(brush);
+    
+        //append the svg 
+        var svg = d3.select(namesOfDivIds[i])
+                    .append("svg")
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                    .append("g")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    
+        //histogram title
+        d3.select(namesOfDivIds[i] + " svg")
+          .append("text").text(namesOfIndices[i])
+          .attr("x", margin.left).attr("y", margin.top / 2)
+          .attr("stroke", colorOrder[i])
+          .attr("stroke-width", "0.5px")
+          .attr("font-size", "14px")
+          .attr("font-family", "Times New Roman");
+    
+        //create groups to hold the bars
+        var bar = svg.selectAll(".bar")
+                     .data(data)
+                     .enter()
+                     .append("g")
+                     .attr("class", ".bar")
+                     .attr("transform", function(d) {
+                         return "translate(" + x(d.x) + "," + y(d.y) + ")";
+                     })
+                     .call(brush);
+    
+        //for each bar, append a rectangle
+        bar.append("rect")
+           .attr("x", 0)
+           .attr("width", x(data[0].x + data[0].dx) - x(data[0].x) - 1)
+           .attr("id", "histrect") //added this for the brushing (blue/grey)
+           .attr("fill", "#ccc")
+           .attr("height", function(d) {
+               return height - y(d.y);
+           });
+    
+        svg.select(".brush")
+           .call(brush);
+    
+        //context for the brush
+        var context = svg.append("g");
+    
+        //append the group with brush
+        context.append("g")
+               .attr("class", "x brush")
+               .call(brush)
+               .selectAll("rect")
+               .attr("height", height);
+    
+        //for the brush handle bars
+        context.selectAll("rect")
+               .attr("height", height);
+
+        context.selectAll(".resize")
+               .append("path")
+               .attr("d", resize_path);
+    
+        //append x-axis 
+        svg.append("g")
+           .attr("class", "x axis")
+           .attr("transform", "translate(0," + height + ")")
+           .call(xAxis);
+    
+        //append the y-axis 
+        svg.append("g")
+           .attr("class", "y axis")
+           .style("font-size", 10)
+           .call(yAxis);
+    }
+    
+    
+    ////////////////////////////////////////////////
+    //       Parameters for the seqContextSVG     //
+    ////////////////////////////////////////////////
+    var positive_y_axis = 50,
+        negative_y_axis = 50;
+    var seq_rect_width = 5;
+    var seq_rect_height = 10;
+    var seq_svg_height = positive_y_axis + negative_y_axis + seq_rect_height;
+    var seq_svg_width = dTIM.length * seq_rect_width;
+    
+    ////////////////////////////////////////////////
+    //      Parameters for the seqZoomSVG         //
+    ////////////////////////////////////////////////
+    var zoomLength = 15;
+    var zoomLayout = "Stacked";
+    var prevZoomLayout = "Stacked";
+    
+    var zoomScaleFactor = 2.5; //this is the scale the size of the height of the zoom svg
+    var zoom_positive_y_axis = positive_y_axis * zoomScaleFactor,
+        zoom_negative_y_axis = negative_y_axis * zoomScaleFactor;
+    
+    var zoom_seq_svg_width = seq_svg_width - 590;
+    var zoom_seq_rect_width = Math.round(zoom_seq_svg_width / zoomLength);
+    var zoom_seq_rect_height = seq_rect_height * zoomScaleFactor;
+    var zoom_seq_svg_height = zoom_positive_y_axis + zoom_negative_y_axis + zoom_seq_rect_height;
+    
+    
+    function setZoomParms(inZoomLength) {
+    
+        zoom_seq_rect_width = zoom_seq_svg_width / inZoomLength;
+    
+    }
+    
+    var arcContextHeight = 100;
+    
+    var seqArcContextSVG = d3.select("#mainArcChart")
+                             .append("svg")
+                             .attr("class", "seqArcContextSVG")
+                             .attr("style", "border:1px solid black;")
+                             .attr("width", seq_svg_width)
+                             .attr("height", arcContextHeight);
+    
+    
+    //add the sequence (context) svg
+    var seqContextSVG = d3.select("#mainChart")
+                          .append("svg")
+                          .attr("class", "seqContextSVG")
+                          .attr("width", seq_svg_width)
+                          .attr("height", seq_svg_height);
+    
+    //////////////////////////////////////////////////////////
+    ///// thsi is where the x-axis context went originally
+    ///////////////////////////////////////////////////////////
+    
+    //this puts the rectangles on the svg
+    seqContextSVG.selectAll("rect")
+                 .data(dTIM)
+                 .enter()
+                 .append("rect")
+                 .attr("fill", function(d, i) {
+                     if (d == scTIM[i]) {
+                         return "#F7F7F7";
+                     } else {
+                         return "red";
+                     }
+                 })
+                 .attr("stroke", "black")
+                 .attr("stroke-width", 0.5)
+                 .attr("x", function(d, i) {
+                     return i * seq_rect_width;
+                 })
+                 .attr("y", function(d, i) {
+                     return positive_y_axis;
+                 })
+                 .attr("width", seq_rect_width)
+                 .attr("height", seq_rect_height);
+    
+    //this puts the actual text on the bars
+    seqContextSVG.selectAll("text")
+                 .data(dTIM)
+                 .enter()
+                 .append("text")
+                 .attr("x", function(d, i) {
+                     return (i * seq_rect_width) + seq_rect_width / 2 - 1;
+                 })
+                 .attr("y", function() {
+                     return positive_y_axis + seq_rect_height / 2;
+                 })
+                 .attr("dx", ".35em")
+                 .attr("dy", ".35em")
+                 .attr("fill", function(d, i) {
+                     if (d == scTIM[i]) {
+                         return "black";
+                     } else {
+                         return "white";
+                     }
+                 })
+                 .attr("font-size", "2px")
+                 .attr("font-family", "arial")
+                 .text(String);
+    
+    //////////////////////////////////////////////////
+    // Initialize the Brush for the Context Sequence//
+    //////////////////////////////////////////////////
+    // Create the x scale function for the sequence brush
+    var x = d3.scale
+              .linear()
+              .domain([0, 248])
+              .range([0, seq_svg_width]);
+    
+    var seqContextBrush = d3.svg
+                            .brush()
+                            .x(x)
+                            .on("brush", brushSeqContext);
+    
+    //Initialize the brush to cover the first 15 residues 
+    seqContextBrush.extent([0, zoomLength]);
+    seqContextSVG.select(".brush")
+                 .call(seqContextBrush);
+    
+    //append a group to hold the brush
+    var context = seqContextSVG.append("g");
+    
+    //append the brush
+    context.append("g")
+           .attr("class", "x brush")
+           .attr("id", "seqContextBrush")
+           .call(seqContextBrush)
+           .selectAll("rect")
+           .attr("height", seq_svg_height);
+    
+    var seqStdHeatSVG  = d3.select("#mainChart")
+                           .append("svg") 
+                           .attr("class", "stdHeatMap")
+                           .attr("width",seq_svg_width)
+                           .attr("height",allIndices.length*(seq_rect_width+3));
 
     var stdMaps=[], stdExtents=[];
     
@@ -614,1034 +718,1240 @@
         stdExtents.push(d3.extent(allStdDeviations[index]));
         //stdExtents[index][1] is the max  and stdExtents[index][0] is the min
         //[stdExtents[index][1],stdExtents[index][0]]
-        stdMaps.push(d3.scale.linear().domain(stdExtents[index]).range([0.1,2.5]).clamp(true));
+        stdMaps.push(d3.scale
+                       .linear()
+                       .domain(stdExtents[index])
+                       .range([0,1])
+                       .clamp(true)
+                    );
     }
 
-    var qtlMaps=[];
-    for (var index = 0; index < allIndices.length; index++){
-        qtlMaps.push(d3.scale.quantile().domain(allStdDeviations[index]).range([0,1,2,3]) );
-    }
-
-    var stdHeightMaps = [];
-    for (var index = 0; index < allIndices.length; index++){
-        stdHeightMaps.push(d3.scale.linear().domain(allStdDeviations[index]).range([1,5]).clamp(true));
-    }
 
     for (var index = 0; index < allIndices.length; index++){
 
         //specify the name of the div based on the namesOfDivIds[index]
         var nameOfDiv = namesOfDivIds[index].substring(1) + "heat";
         //append the non-visible placeholders on the svg
+                     
+                     
         seqStdHeatSVG.selectAll("rect#" + nameOfDiv)
                      .data(allStdDeviations[index].map(function(d) { return d; }))
                      .enter()
                      .append("rect")
                      .attr("class","stdHeatRects")
-                     .attr("id", nameOfDiv )
-                     .attr("fill", function(d,i){return colorOrder[index];})
-                     .style("stroke", "white")
-                     .style("stroke-width", 0.5)
-                     /**
+                     .attr("id", nameOfDiv)
+                     .attr("fill", function(d,i){return d3.hsl(0, 0, 1 - stdMaps[index](d)).toString();}) 
                      .attr("x",function(d,i){return i*seq_rect_width;})
-                     .attr("y",function(d,i){return index*seq_rect_width*2-stdHeightMaps[index](d)+seq_rect_width*2})
+                     .attr("y",function(d,i){return index*seq_rect_width + (index*2)})
                      .attr("width",seq_rect_width)
-                     .attr("height",function(d,i){return stdHeightMaps[index](d);})
-                     **/
-                     .attr("x",function(d,i){return i*seq_rect_width+(seq_rect_width/2)-(stdHeightMaps[index](d)/2);})
-                     .attr("y",function(d,i){return index*seq_rect_width;})
-                     .attr("height",seq_rect_width)
-                     .attr("width",function(d,i){return stdHeightMaps[index](d);})
+                     .attr("height",seq_rect_width);
+
     }
 
-    /**
-    for (var index = 0; index < allIndices.length; index++){
-
+    //now put hidden rectangles on the svg (for the scores), for each of the 6 indices, so I can transition them later
+    for (var index = 0; index < allIndices.length; index++) {
+    
         //specify the name of the div based on the namesOfDivIds[index]
-        var nameOfDiv = namesOfDivIds[index].substring(1) + "heat";
+        var nameOfDiv = namesOfDivIds[index].substring(1) + "scoreNonZoom";
         //append the non-visible placeholders on the svg
-        seqStdHeatSVG.selectAll("rect#" + nameOfDiv)
-                     .data(allStdDeviations[index].map(function(d) { return d; }))
+        seqContextSVG.selectAll("rect#" + nameOfDiv)
+                     .data(dTIM)
                      .enter()
                      .append("rect")
-                     .attr("class","stdHeatRects")
-                     .attr("id", nameOfDiv )
-                     //.attr("fill", function(d,i){return colorOrder[index];})
-                     .attr("opacity", function(d,i){return stdMaps[index](d);}) 
-                     .attr("x",function(d,i){return i*seq_rect_width;})
-                     .attr("y",function(d,i){return index*seq_rect_width})
-                     .attr("width",seq_rect_width)
-                     .attr("height",seq_rect_width)
-
+                     .attr("class", "seqContextScoreRects")
+                     .attr("id", nameOfDiv)
+                     .attr("opacity", 0) // note these are not visible at first
+                     .attr("x", function(d, i) {
+                         return i * seq_rect_width;
+                     })
+                     .attr("y", function(d, i) {
+                         return positive_y_axis;
+                     })
+                     .attr("width", seq_rect_width)
+                     .attr("height", 0);
     }
-    **/
+    
+   
+    //add an x-axis (separate svg right below it)
+    var svgForSequenceXAxis = d3.select("#mainChart")
+                                .append("svg")
+                                .attr("class", "x_axis_for_seq")
+                                .attr("width", seq_svg_width)
+                                .attr("height", 20);
+    
+    //add a break inbetween the x-axis for the sequence and the zoom
+    var xAxisPadding = 2.5;
+    
+    // axis for the sequence
+    var xToAppendAxis = d3.scale
+                          .linear()
+                          .domain([1, 248]) //changed from 0 to 1
+                          .range([xAxisPadding, seq_svg_width - xAxisPadding]);
+    
+    // Create x axis for the seq svg
+    var xAxisForSequence = d3.svg
+                             .axis()
+                             .scale(xToAppendAxis)
+                             .orient("bottom")
+                             .ticks(25);
+    
+    //append x-axis to the sequence  
+    svgForSequenceXAxis.append("g")
+                       .attr("class", "seqXAxis")
+                       .attr("transform", "translate(0," + 0 + ")")
+                       .call(xAxisForSequence);
 
+    //one br between the context x-axis and the next set of components
+    document.write("<br>");
 
-    function mouseoverHeat(row){
-
-	    for (var index = 0; index < allIndices.length; index++){
-
-	        var nameOfDiv = namesOfDivIds[index].substring(1) + "heat";
-	        seqStdHeatSVG.selectAll("#" + nameOfDiv)
-	        				 .transition()
-	        				 .duration(500)
-				             .attr("opacity", function(d,i){ if(row==d[1]){return 1;}else{return 0.1;}}) 
-		}
-
+    /////////////////////////////////////
+    //// Add the Distance Histogram ////
+    ////////////////////////////////////
+    var marginDistHist = {
+        top: 50,
+        right: 30,
+        bottom: 50,
+        left: 30
+    },
+        widthDistHist = 300 - marginDistHist.left - marginDistHist.right,
+        heightDistHist = 300 - marginDistHist.top - marginDistHist.bottom;
+    
+    var xExtentDistHist = d3.extent(rawHistValues.map(function(d) {
+        return d;
+    }));
+    
+    xExtentDistHist[0] = Math.floor(xExtentDistHist[0]);
+    xExtentDistHist[1] = Math.ceil(xExtentDistHist[1]);
+    
+    var numBinsDistHist = 20;
+    
+    var xDistHist = d3.scale
+                      .linear()
+                      .domain(xExtentDistHist)
+                      .range([0, widthDistHist]);
+    
+    var xAxisDistHist = d3.svg
+                          .axis()
+                          .scale(xDistHist)
+                          .orient("bottom")
+                          .ticks(10);
+    
+    var distHistData = d3.layout
+                         .histogram()
+                         .frequency(false)
+                         .bins(xDistHist.ticks(numBinsDistHist))(rawHistValues.map(function(d) {
+                             return d;
+                         }));
+    
+    var yDistHist = d3.scale
+                      .linear()
+                      .domain([0, d3.max(distHistData, function(d) {
+                          return d.y;
+                      })])
+                      .range([heightDistHist, 0]);
+    
+    //display y-axis as %
+    var formatPercent = d3.format(".0%");
+    var yAxisDistHist = d3.svg
+                          .axis()
+                          .scale(yDistHist)
+                          .orient("left")
+                          .tickFormat(formatPercent)
+                          .ticks(5);
+    
+    //will initialize this later
+    var brushDistHistExtent = [0, 0];
+    
+    // specify the brush function
+    var brushDistHist = d3.svg
+                         .brush()
+                         .x(xDistHist)
+                         .on("brush", histDistBrushMove);
+    
+    //append the svg and set its width and height
+    var distHistSVG = d3.select("#distanceHistogram")
+                        .append("svg").attr("class", "distHistClass")
+                        .attr("width", widthDistHist + marginDistHist.left + marginDistHist.right)
+                        .attr("height", heightDistHist + marginDistHist.top + marginDistHist.bottom)
+                        .append("g")
+                        .attr("transform", "translate(" + marginDistHist.left + "," + marginDistHist.top + ")")
+                        .attr("goffsetID", "thegOffset");
+    
+    //create by groups (g's) to hold the bars
+    var barDistHist = distHistSVG.selectAll("distHistBar")
+                                 .data(distHistData)
+                                 .enter()
+                                 .append("g")
+                                 .attr("class", "distHistBar")
+                                 .attr("transform", function(d) {
+                                     return "translate(" + xDistHist(d.x) + "," + yDistHist(d.y) + ")";
+                                 })
+                                 .call(brushDistHist);
+    
+    //for each bar, append a rectangle
+    barDistHist.append("rect")
+               .attr("x", 0)
+               .attr("width", xDistHist(distHistData[0].x + distHistData[0].dx) - xDistHist(distHistData[0].x) - 1)
+               .attr("id", "histrect")
+               .attr("fill", "#ccc")
+               .attr("height", function(d) {
+                   return heightDistHist - yDistHist(d.y);
+                });
+    
+    distHistSVG.select(".brush").call(brush);
+    
+    var contextDistHist = distHistSVG.append("g")
+                                     .attr("class", "brushContainer");
+    
+    contextDistHist.append("g")
+                   .attr("class", "x brush")
+                   .call(brushDistHist)
+                   .selectAll("rect")
+                   .attr("height", heightDistHist);
+    
+    contextDistHist.selectAll("rect")
+                   .attr("height", heightDistHist);
+    
+    contextDistHist.selectAll(".resize")
+                   .append("path")
+                   .attr("d", resizePathDistHist);
+    
+    distHistSVG.append("g")
+               .attr("class", "x axis")
+               .attr("transform", "translate(0," + heightDistHist + ")")
+               .call(xAxisDistHist);
+    
+    distHistSVG.select(".axis")
+               .append("text")
+               .text("Distance (Unit: Angstrom)")
+               .attr("x", (widthDistHist / 2) - marginDistHist.left - marginDistHist.right).attr("y", marginDistHist.bottom / 1.5)
+               .style("font-size", 12);
+    
+    distHistSVG.append("g")
+               .attr("class", "y axis")
+               .style("font-size", 12)
+               .call(yAxisDistHist);
+    
+   
+    ///chordColor
+    var initHistDistBrush = [3.3, 9];
+    var angBucketLength = 2;
+    var numTicksForChordColorScale = Math.round((initHistDistBrush[1] - initHistDistBrush[0]) / angBucketLength);
+    
+    var widthOfScale = 100;
+    var widthOfChordColorRect = widthOfScale / numTicksForChordColorScale;
+    var chordColorScale = d3.scale
+                            .linear()
+                            .domain([3.3, 9])
+                            .range([marginDistHist.left, widthOfScale + marginDistHist.left]);
+    
+    var chordColorAxis = d3.svg
+                           .axis()
+                           .scale(chordColorScale)
+                           .ticks(numTicksForChordColorScale);
+    
+    //chordColorAxis.tickSize(2,0);
+    var theHistSVG = d3.select("svg.distHistClass");
+    theHistSVG.append("g")
+              .attr("class", "chordColorAxis")
+    //.attr("transform", "translate(" + marginDistHist.left + ", " + (marginDistHist.top/2) + ")")
+    .attr("transform", "translate(0, " + (marginDistHist.top / 2) + ")").call(chordColorAxis);
+    
+    var vector4Rects = [];
+    for (var i = 0; i < numTicksForChordColorScale; i++) {
+        vector4Rects.push(i);
     }
+    
+    theHistSVG.selectAll("rect.chordColorRects")
+              .data(vector4Rects)
+              .enter()
+              .append("rect")
+              .attr("fill", "#ccc")
+              .attr("class", "chordColorRects")
+              .attr("x", function(d, i) {
+                  return marginDistHist.left + i * widthOfChordColorRect;
+              })
+              .attr("y", function(d, i) {
+                  return marginDistHist.top / 2 - 15;
+              })
+              .attr("width", widthOfChordColorRect)
+              .attr("height", 10);
+    
+    
+    //this is called when the brush of the distance histogram is moved
+    
+    
+    function histDistBrushMove() {
+    
+        reColorHistDistBrush();
+        //update the chords
+        var histAndArcData = getHistAndArcData(eNow[0], eNow[1]);
+    
+        genChords(histAndArcData[1]); //[1] because only need the chords
+        //update the brushed bars (I moved this to after the getHistAndArcData because I need the min/max for the color legend )
+        //reColorHistDistBrush();
+    }
+    
+    var pushDarkGrey = d3.rgb('darkgrey').darker(1);
+    
+    function reColorHistDistBrush() {
+        var e = brushDistHist.extent();
+    
+        brushDistHistExtent = e;
+    
+        //get the color vector for all bars
+        var bar_colors = [];
+        for (var bar_index = 0; bar_index < distHistData.length; bar_index++) {
+            if (distHistData[bar_index].x >= e[0] && (distHistData[bar_index].x + distHistData[bar_index].dx) <= e[1]) {
+                bar_colors.push(pushDarkGrey);
+    
+            } else {
+                bar_colors.push("#ccc");
+            }
+        }
+    
+        //change the color of extent rectangles to blue
+        var hist = d3.select("svg.distHistClass");
+    
+        hist.selectAll("#histrect")
+            .data(bar_colors)
+            .attr("fill", function(d, i) {
+                return d;
+            });
+    
+        //////////////////////////////////
+        /////// Update the Legend ////////
+        //////////////////////////////////
+        chordColorScale = d3.scale
+                            .linear()
+                            .domain([e[0], e[1]])
+                            .range([marginDistHist.left, 100 + marginDistHist.left]);
+    
+        numTicksForChordColorScale = Math.round((e[1] - e[0]) / angBucketLength);
+    
+        widthOfChordColorRect = widthOfScale / numTicksForChordColorScale;
+    
+        chordColorAxis = d3.svg.axis().scale(chordColorScale)
+        //.ticks(numTicksForChordColorScale);
+        .ticks(3);
+    
+        //chordColorAxis.tickSize(2,0);
+        //change the x-axis
+        hist.select(".chordColorAxis").call(chordColorAxis);
+    
+        hist.selectAll(".chordColorRects").remove();
+    
+        vector4Rects = [];
+        for (var i = 0; i < numTicksForChordColorScale; i++) {
+            vector4Rects.push(i);
+        }
+    
+        var range = maxChordDist - minChordDist;
+    
+        var colorStep = (maxChordDist - minChordDist) / numTicksForChordColorScale;
+    
+        theHistSVG.selectAll("rect.chordColorRects")
+                  .data(vector4Rects)
+                  .enter()
+                  .append("rect")
+                  .attr("fill", function(d, i) {
+                      return chordColor(1 - (((minChordDist + (i * colorStep)) - minChordDist) / range));
+                  })
+                  .attr("class", "chordColorRects")
+                  .attr("x", function(d, i) {
+                      return marginDistHist.left + i * widthOfChordColorRect;
+                  })
+                  .attr("y", function(d, i) {
+                      return marginDistHist.top / 2 - 15;
+                  })
+                  .attr("width", widthOfChordColorRect)
+                  .attr("height", 10);
+    }
+    
+    //////////////////////////////////
+    //// scales for seqContextSVG ////
+    //////////////////////////////////
+    var seqPositiveYScale = d3.scale
+                              .linear()
+                              .domain([0, globalCumMaxPosX])
+                              .range([0, positive_y_axis]);
+    
+    var seqNegativeYScale = d3.scale
+                              .linear()
+                              .domain([globalCumMinNegX, 0])
+                              .range([negative_y_axis, 0]);
+    
+    ///////////////////////////////
+    //// scales for seqZoomSVG ////
+    ///////////////////////////////
+    var zoomPositiveYScale = d3.scale
+                               .linear()
+                               .domain([0, globalCumMaxPosX]) //use the global max 
+                               .range([0, zoom_positive_y_axis]);
+    
+    var zoomNegativeYScale = d3.scale
+                               .linear()
+                               .domain([globalCumMinNegX, 0]) //use the global min 
+                               .range([zoom_negative_y_axis, 0]);
+    
+    
+    // Seperate functions required for proper for-loop closures in previous index
+    
+    
+    function brush0() {
+        brushmove(0);
+    }
+    
+    function brush1() {
+        brushmove(1);
+    }
+    
+    function brush2() {
+        brushmove(2);
+    }
+    
+    function brush3() {
+        brushmove(3);
+    }
+    
+    function brush4() {
+        brushmove(4);
+    }
+    
+    function brush5() {
+        brushmove(5);
+    }
+    
+    var globalAlphaPatterns = [];
+    var globalBetaPatterns = [];
+    var globalCompPatterns = [];
+    var globalHydroPatterns = [];
+    var globalPhysicoPatterns = [];
+    var globalOtherPatterns = [];
+    var globalPatterns = [globalAlphaPatterns, globalBetaPatterns, globalCompPatterns, globalHydroPatterns, globalPhysicoPatterns, globalOtherPatterns];
+    
+    var globalZoomAlphaPatterns = [];
+    var globalZoomBetaPatterns = [];
+    var globalZoomCompPatterns = [];
+    var globalZoomHydroPatterns = [];
+    var globalZoomPhysicoPatterns = [];
+    var globalZoomOtherPatterns = [];
+    
+    var globalPatternsZoom = [globalZoomAlphaPatterns, globalZoomBetaPatterns, globalZoomCompPatterns, globalZoomHydroPatterns, globalZoomPhysicoPatterns, globalZoomOtherPatterns];
+    
+    //init all pattern arrays
+    for (var p = 0; p < allIndices.length; p++) {
+        for (var i = 0; i < seqLength; i++) {
+            globalPatterns[p].push({
+                pushed_height: 0,
+                pushed_y: positive_y_axis,
+                pushed_color: colorOrder[p]
+            });
+            globalPatternsZoom[p].push({
+                pushed_height: 0,
+                pushed_y: zoom_positive_y_axis,
+                pushed_color: colorOrder[p]
+            });
+        }
+    }
+    
+    function brushmove(index) {
+    
+        var e = brushArray[index].extent();
+    
+        //get the color vector i need to update the bars blue/grey
+        var bar_colors = [];
+        for (var bar_index = 0; bar_index < histDataArray[index].length; bar_index++) {
+            if (histDataArray[index][bar_index].x >= e[0] && (histDataArray[index][bar_index].x + histDataArray[index][bar_index].dx) <= e[1]) {
+                bar_colors.push(colorOrder[index]);
+    
+            } else {
+                bar_colors.push("#ccc"); //background grey
+            }
+        }
+    
+        //select the correct histogram and update the rect colors
+        var hist = d3.select(namesOfDivIds[index]);
+    
+        hist.selectAll("#histrect").data(bar_colors).attr("fill", function(d, i) {
+            return d;
+        }).call(brush);
+    
+        //for each residue 
+        for (var i = 0; i < allIndexData[index].length; i++) {
+    
+            //if the score is between the brush
+            if (allIndexData[index][i] >= e[0] && allIndexData[index][i] <= e[1]) {
+    
+                //specify the correct height, y-value, and color based on the value of the score positive or negative)
+                var push_this_color = colorOrder[index];
+                var push_this_height, push_this_y;
+    
+                if (allIndexData[index][i] > 0) {
+    
+                    //set the global is brushed array to 1 to indicate this index has been brushed
+                    globalIsBrushedArray[i][0][posNegIndices[i][0].indexOf(index)] = 1;
+    
+                    //iterate through all values and update their height and Y value
+                    var cumulativeY = positive_y_axis;
+                    var cumulativeYZoom = zoom_positive_y_axis;
+    
+                    for (var posIdx = 0; posIdx < posNegIndices[i][0].length; posIdx++) {
+    
+                        var thisIndex = posNegIndices[i][0][posIdx]; //e.g. posNegIndices[0][0] = [1,4,5]
+                        var thisHeight = seqPositiveYScale(allIndexData[thisIndex][i]);
+                        thisHeight *= globalIsBrushedArray[i][0][posIdx]; //multiply by 0 is not brushed
+                        var thisHeightZoom = zoomPositiveYScale(allIndexData[thisIndex][i]);
+                        thisHeightZoom *= globalIsBrushedArray[i][0][posIdx]; //multiply by 0 is not brushed
+                        globalPatterns[thisIndex][i].pushed_height = Math.round(thisHeight);
+                        globalPatternsZoom[thisIndex][i].pushed_height = Math.round(thisHeightZoom);
+    
+                        cumulativeY = cumulativeY - Math.round(thisHeight);
+                        cumulativeYZoom = cumulativeYZoom - Math.round(thisHeightZoom);
+    
+                        globalPatterns[thisIndex][i].pushed_y = Math.round(cumulativeY);
+                        globalPatternsZoom[thisIndex][i].pushed_y = Math.round(cumulativeYZoom);
+                    }
+    
+                    //else if allIndexData[index][i] is negative
+                } else {
+                    //set the global is brushed array to 1 to indicate this index has been brushed
+                    globalIsBrushedArray[i][1][posNegIndices[i][1].indexOf(index)] = 1;
+    
+                    //iterate through all values and update their height and Y value
+                    var cumulativeY = positive_y_axis + seq_rect_height;
+                    var cumulativeYZoom = zoom_positive_y_axis + zoom_seq_rect_height;
+                    for (var posIdx = 0; posIdx < posNegIndices[i][1].length; posIdx++) {
+    
+                        var thisIndex = posNegIndices[i][1][posIdx]; // e.g. posNegIndices[0][1] = [0,2,3]
+                        var thisHeight = seqNegativeYScale(allIndexData[thisIndex][i]);
+                        thisHeight *= globalIsBrushedArray[i][1][posIdx]; //multiply by 0 if not brushed
+                        var thisHeightZoom = zoomNegativeYScale(allIndexData[thisIndex][i]);
+                        thisHeightZoom *= globalIsBrushedArray[i][1][posIdx]; //multiply by 0 if not brushed
+                        globalPatterns[thisIndex][i].pushed_height = Math.round(thisHeight);
+                        globalPatternsZoom[thisIndex][i].pushed_height = Math.round(thisHeightZoom);
+    
+                        globalPatterns[thisIndex][i].pushed_y = Math.round(cumulativeY);
+                        globalPatternsZoom[thisIndex][i].pushed_y = Math.round(cumulativeYZoom);
+                        //for the negatives you need the update after the pushed_y 
+                        cumulativeY = cumulativeY + Math.round(thisHeight);
+                        cumulativeYZoom = cumulativeYZoom + Math.round(thisHeightZoom);
+                    }
+                }
+                //if the score is not between the brush
+            } else {
+    
+                //update all values based on allIndexData[index][i] not brushed
+                if (allIndexData[index][i] > 0) {
+                    //set is brushed indicator to 0
+                    globalIsBrushedArray[i][0][posNegIndices[i][0].indexOf(index)] = 0;
+    
+                    //iterate through all values and update their height and Y value
+                    var cumulativeY = positive_y_axis;
+                    var cumulativeYZoom = zoom_positive_y_axis;
+                    for (var posIdx = 0; posIdx < posNegIndices[i][0].length; posIdx++) {
+    
+                        var thisIndex = posNegIndices[i][0][posIdx];
+    
+                        var thisHeight = seqPositiveYScale(allIndexData[thisIndex][i]);
+                        thisHeight *= globalIsBrushedArray[i][0][posIdx]; //multiply by 0 is not brushed
+                        var thisHeightZoom = zoomPositiveYScale(allIndexData[thisIndex][i]);
+                        thisHeightZoom *= globalIsBrushedArray[i][0][posIdx]; //multiply by 0 is not brushed
+                        globalPatterns[thisIndex][i].pushed_height = Math.round(thisHeight);
+                        globalPatternsZoom[thisIndex][i].pushed_height = Math.round(thisHeightZoom);
+    
+                        cumulativeY = cumulativeY - Math.round(thisHeight);
+                        cumulativeYZoom = cumulativeYZoom - Math.round(thisHeightZoom);
+    
+                        globalPatterns[thisIndex][i].pushed_y = Math.round(cumulativeY);
+                        globalPatternsZoom[thisIndex][i].pushed_y = Math.round(cumulativeYZoom);
+    
+                    }
+                } else {
+                    //set is brushed indicator to 0
+                    globalIsBrushedArray[i][1][posNegIndices[i][1].indexOf(index)] = 0;
+    
+                    var cumulativeY = positive_y_axis + seq_rect_height;
+                    var cumulativeYZoom = zoom_positive_y_axis + zoom_seq_rect_height;
+    
+                    for (var posIdx = 0; posIdx < posNegIndices[i][1].length; posIdx++) {
+    
+                        var thisIndex = posNegIndices[i][1][posIdx];
+    
+                        var thisHeight = seqNegativeYScale(allIndexData[thisIndex][i]);
+                        thisHeight *= globalIsBrushedArray[i][1][posIdx]; //multiply by 0 is not brushed
+                        var thisHeightZoom = zoomNegativeYScale(allIndexData[thisIndex][i]);
+                        thisHeightZoom *= globalIsBrushedArray[i][1][posIdx]; //multiply by 0 is not brushed
+                        globalPatterns[thisIndex][i].pushed_height = Math.round(thisHeight);
+                        globalPatternsZoom[thisIndex][i].pushed_height = Math.round(thisHeightZoom);
+    
+                        globalPatterns[thisIndex][i].pushed_y = Math.round(cumulativeY);
+                        globalPatternsZoom[thisIndex][i].pushed_y = Math.round(cumulativeYZoom);
+    
+                        //for the negatives you need the update after the pushed_y 
+                        cumulativeY = cumulativeY + Math.round(thisHeight);
+                        cumulativeYZoom = cumulativeYZoom + Math.round(thisHeightZoom);
+                    }
+                }
+            }
+        }
+    
+        //for each characteristic, transition each rect
+        for (var p = 0; p < allIndices.length; p++) {
+            seqContextSVG.selectAll("rect" + namesOfDivIds[p] + "scoreNonZoom")
+                         .data(globalPatterns[p])
+                         .transition()
+                         .duration(globalTransitionTime)
+                         .attr("x", function(d, i) {
+                             return i * seq_rect_width;
+                         })
+                         .attr("y", function(d) {
+                             return d.pushed_y;
+                         })
+                         .attr("width", seq_rect_width)
+                         .attr("height", function(d) {
+                             return d.pushed_height;
+                         })
+                         .attr("class", "seqContextScoreRects")
+                         .attr("opacity", 1)
+                         .style("fill", function(d) {
+                             return d.pushed_color;
+                         });
+        }
+    
+        // update the chart brush
+        seqContextSVG.select("#seqContextBrush")
+                     .call(brushSeqContext);
+    }
+    
+    // end of brush function
+    
+    
+    function brushend(p) {
+        // we do not utilize brushend
+    }
+    
+    document.write("<br><br>");
+    
+    ////////////////////////////////////////////////
+    //    SVG for the Zoomed Sequence Y-Axis     ///
+    ////////////////////////////////////////////////
+    var svgForZoomYAxis = d3.select("#zoomedChartYAxis")
+                            .append("svg")
+                            .attr("class", "y_axis_for_zoom")
+                            .attr("width", 20)
+                            .attr("height", zoom_seq_svg_height);
+    
+    /////////////////////////////////////////
+    ////scales for Extra svgForZoomYAxis ////
+    /////////////////////////////////////////
+    var zoomAxisPositiveYScale = d3.scale
+                                   .linear()
+                                   .domain([globalCumMaxPosX, 0]) //use the global max 
+                                   .range([0, zoom_positive_y_axis]);
+    
+    var zoomAxisNegativeYScale = d3.scale
+                                   .linear()
+                                   .domain([0, globalCumMinNegX]) //use the global min 
+                                   .range([zoom_negative_y_axis + zoom_seq_rect_height, zoom_seq_svg_height]);
+    
+    //////////////////////////////////////
+    ////Axes for the extra Y-axis SVG ////
+    //////////////////////////////////////
+    var yPositiveAxisZoom = d3.svg
+                              .axis()
+                              .scale(zoomAxisPositiveYScale)
+                              .orient("left")
+                              .ticks(4);
 
-	function mouseoutHeat(row){
+    var yNegativeAxisZoom = d3.svg
+                              .axis()
+                              .scale(zoomAxisNegativeYScale)
+                              .orient("left")
+                              .ticks(4);
+    
+    //append the positive y-axis to the zoom
+    svgForZoomYAxis.append("g")
+                   .attr("class", "y_axis_positive_zoom")
+                   .style("font-size", 10)
+                   .attr("transform", "translate(" + 20 + ",0)")
+                   .call(yPositiveAxisZoom);
+    
+    //append the positive y-axis to the zoom
+    svgForZoomYAxis.append("g")
+                   .attr("class", "y_axis_negative_zoom")
+                   .style("font-size", 10)
+                   .attr("transform", "translate(" + 20 + ",0)")
+                   .call(yNegativeAxisZoom);
+    
+    /////////////////////////////////////
+    //    SVG for the Zoomed SVG      ///
+    /////////////////////////////////////
+    var seqZoomSVG = d3.select("#zoomedChart")
+    					.append("svg")
+    					.attr("class", "seqZoomSVG")
+    					.attr("width", zoom_seq_svg_width)
+    					.attr("height", zoom_seq_svg_height);
+    
+    var initdTIMSlice = dTIM.slice(0, zoomLength);
+    var initscTIMSlice = scTIM.slice(0, zoomLength);
+    //this puts the rectangles on the svg
+    seqZoomSVG.selectAll("rect")
+              .data(initdTIMSlice)
+              .enter()
+              .append("rect")
+              .attr("class", "seqZoomSeqRects")
+              .attr("fill", function(d, i) {
+                  if (d == initscTIMSlice[i]) {
+                      return "#F7F7F7";
+                  } else {
+                      return "red";
+                  }
+              })
+              .attr("x", function(d, i) {
+                  return i * zoom_seq_rect_width;
+              })
+              .attr("y", function(d, i) {
+                  return zoom_positive_y_axis;
+              })
+              .attr("width", zoom_seq_rect_width)
+              .attr("height", zoom_seq_rect_height);
+    
+    //this puts the actual text on the bars
+    seqZoomSVG.selectAll("text")
+              .data(initdTIMSlice)
+              .enter()
+              .append("text") // 10 is for the offset for the length of the letter
+              .attr("x", function(d, i) {
+                  return (i * zoom_seq_rect_width) + zoom_seq_rect_width / 2 - 10;
+              })
+              .attr("y", function() {
+                  return zoom_positive_y_axis + zoom_seq_rect_height / 2;
+              })
+              .attr("dx", ".35em")
+              .attr("dy", ".35em")
+              .attr("font-size", "16px")
+              .attr("font-family", "arial")
+              .attr("fill", function(d, i) {
+                  if (d == initscTIMSlice[i]) {
+                      return "black";
+                  } else {
+                      return "white";
+                  }
+              })
+              .attr("stroke", "black")
+              .attr("stroke-width", 0.5)
+              .text(String);
+    
+    //iterate through each set of data and setup 6 sets of hidden rects for the future values to be binded to
+    for (var index = 0; index < allIndices.length; index++) {
+    
+        var nameOfDiv = namesOfDivIds[index].substring(1) + "score";
+    
+        seqZoomSVG.selectAll("rect#" + nameOfDiv)
+                  .data(dTIM.slice(0, zoomLength)) //only need fixedZoomBrushLength
+                  .enter()
+                  .append("rect")
+                  .attr("class", "seqZoomScoreRects")
+                  .attr("id", nameOfDiv)
+                  .attr("opacity", 0) //hidden
+                  .attr("x", function(d, i) {
+                      return i * zoom_seq_rect_width;
+                  })
+                  .attr("y", function(d, i) {
+                      return zoom_positive_y_axis;
+                  })
+                  .attr("width", zoom_seq_rect_width)
+                  .attr("height", 0);
+    
+    
+    } 
+    ///////////////////////////////////////////////////
+    //    SVG for the X-Axis of the Zoomed SVG      ///
+    ///////////////////////////////////////////////////
+     document.write("<br><br>");
+    
+    //this is just a padding to push the x-axis over slightly to be aligned with the zoom sequence
+    var svgPaddingForZoomXAxis = d3.select("body")
+                                   .append("svg")
+                                   .attr("width", 20)
+                                   .attr("height", 20);
+    //add an x-axis (separate svg right below it)
+    var svgForZoomXAxis = d3.select("#zoomedChart")
+                            .append("svg")
+                            .attr("class", "x_axis_for_zoom")
+                            .attr("width", zoom_seq_svg_width)
+                            .attr("height", 20);
+    
+    var xZoomAxisPadding = 10; //this is used so the values are not cutoff by the side of the svg
+    var xZoomToAppendAxis = d3.scale
+                              .linear()
+                              .domain([1, 16]) //changed form [0,15]
+                              .range([xZoomAxisPadding, zoom_seq_svg_width - xZoomAxisPadding]);
+    
+    // Create x axis for the zoom svg
+    var xAxisForZoom = d3.svg.axis().scale(xZoomToAppendAxis).orient("bottom").ticks(15);
+    
+    //append x-axis to the svgForZoomXAxis svg  
+    svgForZoomXAxis.append("g")
+                   .attr("class", "x zoomXAxis")
+                   .attr("transform", "translate(0," + 0 + ")")
+                   .call(xAxisForZoom);
+    
+    
+    function resetY(inY, inH) {
+        var outY;
+    
+        if (inY <= zoom_positive_y_axis) {
+            outY = zoom_positive_y_axis - inH;
+        } else {
+            outY = zoom_positive_y_axis + zoom_seq_rect_height;
+        }
+        return outY;
+    }
+    
+    var eBefore = [1, 1];
+    var eNow = [0, 0];
+    var maxBrushValue = 15;
+    
+    function colorHeatForThisContextRegion(extent){
 
-	    for (var index = 0; index < allIndices.length; index++){
+     	for (var index = 0; index < allIndices.length; index++){
 
-	        var nameOfDiv = namesOfDivIds[index].substring(1) + "heat";
-	        seqStdHeatSVG.selectAll("#" + nameOfDiv)
-	        				 .transition()
-	        				 .duration(1000)
-				             .attr("opacity", 1) 
-		}
+            //specify the name of the div based on the namesOfDivIds[index]
+            var nameOfDiv = namesOfDivIds[index].substring(1) + "heat";
+            //append the non-visible placeholders on the svg
 
-	}
+            seqStdHeatSVG.selectAll("rect#" + nameOfDiv)
+                          .data(allStdDeviations[index].map(function(d) { return d; }))
+                          .attr("fill", function(d,i){
+                              if (extent[0]<=i && extent[1]>=i)
+                              {
+                                  return d3.hsl(hueOrder[index], saturationOrder[index], 1 - stdMaps[index](d)).toString();
+                              }
+                              else
+                              {
+                              	return d3.hsl(0, 0, 1 - stdMaps[index](d)).toString();
+                              }
+                          });
+         }
 
-	/**
-    for (var index = 0; index < allIndices.length; index++){
+     }
 
-        //specify the name of the div based on the namesOfDivIds[index]
-        var nameOfDiv = namesOfDivIds[index].substring(1) + "heat";
-        //append the non-visible placeholders on the svg
-        seqStdHeatSVG.selectAll("rect#" + nameOfDiv)
-                     .data(allStdDeviations[index].map(function(d) { return [d,index]; }))
-                     .enter()
-                     .append("svg:circle")
-                     .attr("class","stdHeatCircs")
-                     .attr("id", nameOfDiv )
-                     .attr("fill", function(d,i){return colorOrder[index];})
-                     //.style("stroke", function(d,i){return colorOrder[index];})
-                     //.attr("r", function(d,i){return stdMaps[index](d[0]);})
-                     //quantile
-                     .attr("r", function(d,i){return 0.5 + 0.5*qtlMaps[index](d[0]);})
-                     .attr("cx",function(d,i){return i*(seq_rect_width)+(seq_rect_width/2);})
-                     .attr("cy",function(d,i){return index*(seq_rect_width+0.5)+(seq_rect_width/2)})
-                     .on("mouseover",function(d,i){ mouseoverHeat(d[1]);})
-                     .on("mouseout",function(d,i){  mouseoutHeat();} )
+    
+    function brushSeqContext(p) {
+    
+        eBefore = eNow;
+        eNow = seqContextBrush.extent();
+    
+        eNow[0] = Math.floor(eNow[0]);
+        eNow[1] = Math.floor(eNow[1]);
+    
+        colorHeatForThisContextRegion(eNow);
+        
+        var eDistBrushExtent = brushDistHist.extent();
+        eDistBrushExtent[0] = Math.floor(eDistBrushExtent[0]);
+        eDistBrushExtent[1] = Math.floor(eDistBrushExtent[1]);
+    
+        zoomLength = eNow[1] - eNow[0];
+    
+        // If our user brushes over more than maxBrushValue residues, make it go back down to maxBrushValue residues
+        if (zoomLength > maxBrushValue) {
+            eNow[1] = eNow[0] + maxBrushValue;
+            seqContextBrush.extent([eNow[0], eNow[1]]);
+            seqContextBrush(d3.select(this));
+            zoomLength = maxBrushValue; //also reset zoom length
+            colorHeatForThisContextRegion(eNow);
+        }
+        
+        if (gl) {
+    	    gl.uniform1i(shaderVariables.mMinValue, eNow[0]);
+    	    gl.uniform1i(shaderVariables.mMaxValue, eNow[1]);
+    	}
+     
+        // If the Distance Histogram isn't brushed, only draw the Distance Histogram without drawing arcs 
+        // If the Distance Histogram IS brushed, draw the Distance Histogram and Draw the Arcs
+        if (eDistBrushExtent[0] == eDistBrushExtent[1]) {
+            // DistHistBrushExtent is same, only redraw the hist
+            var histAndArcData = getHistAndArcData(eNow[0], eNow[1]);
+            drawDistHistogram(histAndArcData[0]);
+        } else if (eDistBrushExtent[0] != eDistBrushExtent[1]) {
+            // DistHist has something brushed, redraw everything
+            var histAndArcData = getHistAndArcData(eNow[0], eNow[1]);
+            drawDistHistogram(histAndArcData[0]);
+            genChords(histAndArcData[1]);
+        }
+    
+        var isScrolling = 0;
+    
+        if (d3.event == null) {
+    
+        } else {
+            isScrolling = 1;
+        }
+    
+        setZoomParms(eNow[1] - eNow[0]);
+    
+        var textScale = d3.scale
+                          .linear()
+                          .domain([248, 1])
+                          .range([2, 16]);
+    
+        var textBufferScale = d3.scale
+                                .linear()
+                                .domain([248, 1])
+                                .range([0, 10]);
+    
+        var textDxScale = d3.scale
+                            .linear()
+                            .domain([248, 1])
+                            .range([10, 35]);
+    
+        //get the slice of dTIM corrosponding to the extent
+        var sliceOfdTIM = dTIM.slice(eNow[0], eNow[1]);
+        var sliceOfscTIM = scTIM.slice(eNow[0], eNow[1]);
+    
+        /////////////////////////////////////////////////
+        //      Clear Sequence and then re-render      //
+        /////////////////////////////////////////////////
+        var selection = seqZoomSVG.selectAll("rect.seqZoomSeqRects").data([]);
+    
+        selection.exit().remove();
+    
+        //put the sequence slice on the seqZoomSVG
+        var selection = seqZoomSVG.selectAll("rect.seqZoomSeqRects").data(sliceOfdTIM);
+    
+        selection.enter().append("rect");
+    
+        selection.attr("class", "seqZoomSeqRects").attr("fill", function(d, i) {
+                     if (d == sliceOfscTIM[i]) {
+                         return "#F7F7F7";
+                     } else {
+                         return "red";
+                     }
+                 })
+                 .attr("stroke", "black")
+                 .attr("stroke-width", 0.5)
+                 .attr("x", function(d, i) {
+                     return i * zoom_seq_rect_width;
+                 })
+                 .attr("y", function(d, i) {
+                     return zoom_positive_y_axis;
+                 })
+                 .attr("width", zoom_seq_rect_width)
+                 .attr("height", zoom_seq_rect_height)
+                 .on("mouseover", function(d, i) {
+                     return mouseover(d, i, sliceOfscTIM[i], "rect");
+                 })
+                 .on("mouseout", function(d, i) {
+                     return mouseout(d, i, sliceOfscTIM[i], "rect");
+                 });
+    
+        //put the sequence text on the seqZoomSVG
+        var selection = seqZoomSVG.selectAll("text").data([]);
+    
+        selection.exit().remove();
+    
+        var selection = seqZoomSVG.selectAll("text").data(sliceOfdTIM);
+    
+        selection.enter().append("text");
+    
+        selection.attr("x", function(d, i) {
+                     return (i * zoom_seq_rect_width) + zoom_seq_rect_width / 2 - textScale(Math.round(Math.abs(eNow[1] - eNow[0]))) / 2;
+                 })
+                 .attr("y", function() {
+                     return zoom_positive_y_axis + zoom_seq_rect_height / 2;
+                 })
+                 .attr("dy", ".35em")
+                 .attr("fill", function(d, i) {
+                     if (d == sliceOfscTIM[i]) {
+                         return "black";
+                     } else {
+                         return "white";
+                     }
+                 })
+                 .attr("font-size", textScale(Math.round(Math.abs(eNow[1] - eNow[0]))) + "px")
+                 .attr("font-family", "arial")
+                 .on("mouseover", function(d, i) {
+                     return mouseover(d, i, sliceOfscTIM[i], "text");
+                 })
+                 .on("mouseout", function(d, i) {
+                     return mouseout(d, i, sliceOfscTIM[i], "text");
+                 })
+                 .text(String);
+    
+        var alignBuffer = 2; //add buffer so the aligned view rects are not directly side-by-side
+        if (prevZoomLayout != zoomLayout) { //this means they are the same length to I just need to transition
+            //update prevZoomLayout
+            prevZoomLayout = zoomLayout;
+    
+            //for each characteristic, update the 
+            for (var p = 0; p < allIndices.length; p++) {
+    
+                var transitionTime = 0;
+                if (isScrolling) {
+                    transitionTime = 0;
+                } else {
+                    transitionTime = globalTransitionTime * 2;
+                }
+    
+                var setThisId = namesOfDivIds[p].substring(1) + "score";
+    
+                var selection = seqZoomSVG.selectAll("rect" + namesOfDivIds[p] + "score")
+                                          .data(globalPatternsZoom[p]
+                                          .slice(eNow[0], eNow[1]));
+    
+                if (zoomLayout == "Stacked") {
+                    selection.transition()
+                             .duration(3000) // 3 seconds
+                             .attr("class", "seqZoomScoreRects").attr("id", setThisId).attr("x", function(d, i) {
+                                 return i * zoom_seq_rect_width;
+                             })
+                             .attr("y", function(d) {
+                                 return d.pushed_y;
+                             })
+                             .attr("width", zoom_seq_rect_width)
+                             .attr("height", function(d) {
+                                 return d.pushed_height;
+                             })
+                             .attr("opacity", 1)
+                             .style("fill", function(d) {
+                                return d.pushed_color;
+                             });
+                }
+                if (zoomLayout == "Aligned") {
+    
+                    selection.transition()
+                             .duration(3000) // 3 seconds
+                             .attr("class", "seqZoomScoreRects")
+                             .attr("id", setThisId)
+                             .attr("x", function(d, i) {
+                                 return i * (zoom_seq_rect_width) + p * (zoom_seq_rect_width / namesOfDivIds.length);
+                             })
+                             .attr("y", function(d) {
+                                 return resetY(d.pushed_y, d.pushed_height * 2.5);
+                             })
+                             .attr("width", (zoom_seq_rect_width / namesOfDivIds.length) - alignBuffer)
+                             .attr("height", function(d) {
+                                 return d.pushed_height * 2.5;
+                             })
+                             .attr("opacity", 1)
+                             .style("fill", function(d) {
+                                 return d.pushed_color;
+                             });
+    
+                }
+            }
+    
+        } else {
+            if (zoomLayout == "Aligned") {
+    
+                /////////////////////////////////////////////////
+                // Clear Each Set of Scores then re-render     //
+                /////////////////////////////////////////////////
+                //for each characteristic, update the 
+                for (var p = 0; p < allIndices.length; p++) {
+    
+                    var transitionTime = 0;
+                    if (isScrolling) {
+                        transitionTime = 0;
+                    } else {
+                        transitionTime = globalTransitionTime * 2;
+                    }
+    
+                    var setThisId = namesOfDivIds[p].substring(1) + "score";
+    
+                    var selection = seqZoomSVG.selectAll("rect" + namesOfDivIds[p] + "score").data([]);
+    
+                    selection.exit().remove();
+    
+                    var selection = seqZoomSVG.selectAll("rect" + namesOfDivIds[p] + "score")
+                                              .data(globalPatternsZoom[p]
+                                              .slice(eNow[0], eNow[1]));
+    
+                    selection.enter().append("rect");
+    
+                    selection.attr("class", "seqZoomScoreRects")
+                             .attr("id", setThisId).attr("x", function(d, i) {
+                                 return i * (zoom_seq_rect_width) + p * (zoom_seq_rect_width / namesOfDivIds.length);
+                             })
+                             .attr("y", function(d) {
+                                 return resetY(d.pushed_y, d.pushed_height * 2.5);
+                             })
+                             .attr("width", (zoom_seq_rect_width / namesOfDivIds.length) - alignBuffer)
+                             .attr("height", function(d) {
+                                 return d.pushed_height * 2.5;
+                             })
+                             .attr("opacity", 1)
+                             .style("fill", function(d) {
+                                 return d.pushed_color;
+                             })
+                             .on("mouseover", function(d, i) {
+                                 mouseoverBar(this, eNow[0] + i);
+                             })
+                             .on("mouseout", function(d, i) {
+                                 mouseoutBar(this, eNow[0] + 1);
+                             });
+    
+                }
+    
+    
+            } else {
+    
+                /////////////////////////////////////////////////
+                // Clear Each Set of Scores then re-render     //
+                /////////////////////////////////////////////////
+    
+                var namesOfIdArray = [];
+                //for each characteristic, update the 
+                for (var p = 0; p < allIndices.length; p++) {
+    
+                    var transitionTime = 0;
+                    if (isScrolling) {
+                        transitionTime = 0;
+                    } else {
+                        transitionTime = globalTransitionTime * 2;
+                    }
+    
+                    var setThisId = namesOfDivIds[p].substring(1) + "score";
+    
+                    var selection = seqZoomSVG.selectAll("rect" + namesOfDivIds[p] + "score").data([]);
+    
+    
+                    selection.attr("class", "seqZoomScoreRects")
+                             .attr("id", setThisId)
+                             .attr("x", function(d, i) {
+                                 return i * zoom_seq_rect_width;
+                             })
+                             .attr("y", function(d) {
+                                 return d.pushed_y;
+                             })
+                             .attr("width", zoom_seq_rect_width)
+                             .attr("height", function(d) {
+                                 return d.pushed_height;
+                             })
+                             .attr("opacity", 1)
+                             .style("fill", function(d) {
+                                 return d.pushed_color;
+                             })
+                             .on("mouseover", function(d, i) {
+                                 mouseoverBar(this, eNow[0] + i);
+                             })
+                             .on("mouseout", function(d, i) {
+                                 mouseoutBar(this, eNow[0] + 1);
+                             });
+    
+                    selection.exit().remove();
+    
+                    var selection = seqZoomSVG.selectAll("rect" + namesOfDivIds[p] + "score")
+                                              .data(globalPatternsZoom[p]
+                                              .slice(eNow[0], eNow[1]));
+    
+                    selection.enter().append("rect");
+    
+                    selection.attr("class", "seqZoomScoreRects")
+                             .attr("id", setThisId)
+                             .attr("x", function(d, i) {
+                                 return i * zoom_seq_rect_width;
+                             })
+                             .attr("y", function(d) {
+                                 return d.pushed_y;
+                             })
+                             .attr("width", zoom_seq_rect_width)
+                             .attr("height", function(d) {
+                                 return d.pushed_height;
+                             })
+                             .attr("opacity", 1)
+                             .style("fill", function(d) {
+                                 return d.pushed_color;
+                             })
+                             .on("mouseover", function(d, i) {
+                                 mouseoverBar(this, eNow[0] + i);
+                             })
+                             .on("mouseout", function(d, i) {
+                                 mouseoutBar(this, eNow[0] + 1);
+                             });
+                }
+    
+            }
+        }
+    
+        //update the x-axis (svgForZoomXAxis) for seqZoomSVG
+        var svgForZoomXAxis = d3.select("svg.x_axis_for_zoom");
+    
+        var xZoomToAppendAxis = d3.scale
+                                  .linear()
+                                  .domain([eNow[0] + 1, eNow[1] + 1]) //changed from [eNow[0],eNow[1]]
+                                  .range([xZoomAxisPadding, zoom_seq_svg_width - xZoomAxisPadding]);
+    
+        var xAxisForZoom = d3.svg
+                             .axis()
+                             .scale(xZoomToAppendAxis)
+                             .orient("bottom")
+                             .ticks(zoomLength);
+    
+        //change the x-axis
+        svgForZoomXAxis.select(".zoomXAxis").call(xAxisForZoom);
+    }
+    
+    // First init the brushDistHist
+    // initialize the distance histogram to (2,8) Angstrom
+    var defaultDistHist = d3.select("#distanceHistogram");
+    brushDistHist.extent([3.3, 9]);
+    defaultDistHist.select(".brush").call(brushDistHist);
+    histDistBrushMove();
+    
+    // Then initialize all the histograms
+    //since they all have extents = (-3,3) can just call brushmove on them
+    for (var i = 0; i < allIndices.length; i++) {
+        brushmove(i);
+    }
+    
+    function layoutZoom() {
+    
+        prevZoomLayout = zoomLayout;
+        zoomLayout = document.getElementById('selectLayout').value;
+        
+        if (zoomLayout == "Stacked")
+        {
+            zoomAxisNegativeYScale.domain([0,globalCumMinNegX]);
+            zoomAxisPositiveYScale.domain([globalCumMaxPosX,0]);
+            svgForZoomYAxis.select(".y_axis_positive_zoom")
+                           .transition()
+                           .duration(3000)
+                           .call(yPositiveAxisZoom);
 
+            svgForZoomYAxis.select(".y_axis_negative_zoom")
+                           .transition()
+                           .duration(3000)
+                           .call(yNegativeAxisZoom);
+        }
+        else
+        {
+            zoomAxisNegativeYScale.domain([0,globalCumMinNegX/2.5]);
+            zoomAxisPositiveYScale.domain([globalCumMaxPosX/2.5,0]);
+            svgForZoomYAxis.select(".y_axis_positive_zoom")
+                           .transition()
+                           .duration(3000)
+                           .call(yPositiveAxisZoom);
 
-    }         
-	**/
-
-	//now put hidden rectangles on the svg (for the scores), for each of the 6 indices, so I can transition them later
-	for (var index = 0; index < allIndices.length; index++) {
-	
-	    //specify the name of the div based on the namesOfDivIds[index]
-	    var nameOfDiv = namesOfDivIds[index].substring(1) + "scoreNonZoom";
-	    //append the non-visible placeholders on the svg
-	    seqContextSVG.selectAll("rect#" + nameOfDiv).data(dTIM).enter().append("rect").attr("class", "seqContextScoreRects").attr("id", nameOfDiv).attr("opacity", 0) // note these are not visible at first
-	    .attr("x", function(d, i) {
-	        return i * seq_rect_width;
-	    }).attr("y", function(d, i) {
-	        return positive_y_axis;
-	    }).attr("width", seq_rect_width).attr("height", 0);
-	}
-	
-	
-	//document.write("<br>");
-	//add an x-axis (separate svg right below it)
-	var svgForSequenceXAxis = d3.select("#mainChart").append("svg").attr("class", "x_axis_for_seq").attr("width", seq_svg_width).attr("height", 20);
-	
-	//add a break inbetween the x-axis for the sequence and the zoom
-	var xAxisPadding = 2.5;
-	
-	// axis for the sequence
-	var xToAppendAxis = d3.scale.linear().domain([1, 248]) //changed from 0 to 1
-	.range([xAxisPadding, seq_svg_width - xAxisPadding]);
-	
-	// Create x axis for the seq svg
-	var xAxisForSequence = d3.svg.axis().scale(xToAppendAxis).orient("bottom").ticks(25);
-	
-	//append x-axis to the sequence  
-	svgForSequenceXAxis.append("g").attr("class", "seqXAxis").attr("transform", "translate(0," + 0 + ")").call(xAxisForSequence);
-
-	//one br between the context x-axis and the next set of components
-	document.write("<br>");
-
-	/////////////////////////////////////
-	//// Add the Distance Histogram ////
-	////////////////////////////////////
-	var marginDistHist = {
-	    top: 50,
-	    right: 30,
-	    bottom: 50,
-	    left: 30
-	},
-	    widthDistHist = 300 - marginDistHist.left - marginDistHist.right,
-	    heightDistHist = 300 - marginDistHist.top - marginDistHist.bottom;
-	
-	var xExtentDistHist = d3.extent(rawHistValues.map(function(d) {
-	    return d;
-	}));
-	
-	xExtentDistHist[0] = Math.floor(xExtentDistHist[0]);
-	xExtentDistHist[1] = Math.ceil(xExtentDistHist[1]);
-	
-	var numBinsDistHist = 20;
-	
-	var xDistHist = d3.scale.linear().domain(xExtentDistHist).range([0, widthDistHist]);
-	
-	var xAxisDistHist = d3.svg.axis().scale(xDistHist).orient("bottom").ticks(10);
-	
-	var distHistData = d3.layout.histogram().frequency(false).bins(xDistHist.ticks(numBinsDistHist))(rawHistValues.map(function(d) {
-	    return d;
-	}));
-	
-	var yDistHist = d3.scale.linear().domain([0, d3.max(distHistData, function(d) {
-	    return d.y;
-	})]).range([heightDistHist, 0]);
-	
-	//display y-axis as %
-	var formatPercent = d3.format(".0%");
-	var yAxisDistHist = d3.svg.axis().scale(yDistHist).orient("left").tickFormat(formatPercent).ticks(5);
-	
-	//will initialize this later
-	var brushDistHistExtent = [0, 0];
-	
-	// specify the brush function
-	var brushDistHist = d3.svg.brush().x(xDistHist).on("brush", histDistBrushMove);
-	
-	//append the svg and set its width and height
-	var distHistSVG = d3.select("#distanceHistogram").append("svg").attr("class", "distHistClass").attr("width", widthDistHist + marginDistHist.left + marginDistHist.right).attr("height", heightDistHist + marginDistHist.top + marginDistHist.bottom).append("g").attr("transform", "translate(" + marginDistHist.left + "," + marginDistHist.top + ")").attr("goffsetID", "thegOffset");
-	
-	//create by groups (g's) to hold the bars
-	var barDistHist = distHistSVG.selectAll("distHistBar").data(distHistData).enter().append("g").attr("class", "distHistBar").attr("transform", function(d) {
-	    return "translate(" + xDistHist(d.x) + "," + yDistHist(d.y) + ")";
-	}).call(brushDistHist);
-	
-	//for each bar, append a rectangle
-	barDistHist.append("rect").attr("x", 0).attr("width", xDistHist(distHistData[0].x + distHistData[0].dx) - xDistHist(distHistData[0].x) - 1).attr("id", "histrect").attr("fill", "#ccc").attr("height", function(d) {
-	    return heightDistHist - yDistHist(d.y);
-	});
-	
-	distHistSVG.select(".brush").call(brush);
-	
-	var contextDistHist = distHistSVG.append("g").attr("class", "brushContainer");
-	
-	contextDistHist.append("g").attr("class", "x brush").call(brushDistHist).selectAll("rect").attr("height", heightDistHist);
-	
-	contextDistHist.selectAll("rect").attr("height", heightDistHist);
-	
-	contextDistHist.selectAll(".resize").append("path").attr("d", resizePathDistHist);
-	
-	distHistSVG.append("g").attr("class", "x axis").attr("transform", "translate(0," + heightDistHist + ")").call(xAxisDistHist);
-	
-	distHistSVG.select(".axis").append("text").text("Distance (Unit: Angstrom)").attr("x", (widthDistHist / 2) - marginDistHist.left - marginDistHist.right).attr("y", marginDistHist.bottom / 1.5).style("font-size", 12);
-	
-	distHistSVG.append("g").attr("class", "y axis").style("font-size", 12).call(yAxisDistHist);
-	
-	
-	///chordColor
-	var initHistDistBrush = [3.3, 9];
-	var angBucketLength = 2;
-	var numTicksForChordColorScale = Math.round((initHistDistBrush[1] - initHistDistBrush[0]) / angBucketLength);
-	
-	var widthOfScale = 100;
-	var widthOfChordColorRect = widthOfScale / numTicksForChordColorScale;
-	var chordColorScale = d3.scale.linear().domain([3.3, 9]).range([marginDistHist.left, widthOfScale + marginDistHist.left]);
-	
-	var chordColorAxis = d3.svg.axis().scale(chordColorScale).ticks(numTicksForChordColorScale);
-	
-	//chordColorAxis.tickSize(2,0);
-	var theHistSVG = d3.select("svg.distHistClass");
-	theHistSVG.append("g").attr("class", "chordColorAxis")
-	//.attr("transform", "translate(" + marginDistHist.left + ", " + (marginDistHist.top/2) + ")")
-	.attr("transform", "translate(0, " + (marginDistHist.top / 2) + ")").call(chordColorAxis);
-	
-	var vector4Rects = [];
-	for (var i = 0; i < numTicksForChordColorScale; i++) {
-	    vector4Rects.push(i);
-	}
-	
-	theHistSVG.selectAll("rect.chordColorRects").data(vector4Rects).enter().append("rect").attr("fill", "#ccc").attr("class", "chordColorRects").attr("x", function(d, i) {
-	    return marginDistHist.left + i * widthOfChordColorRect;
-	}).attr("y", function(d, i) {
-	    return marginDistHist.top / 2 - 15;
-	}).attr("width", widthOfChordColorRect).attr("height", 10);
-	
-	
-	//this is called when the brush of the distance histogram is moved
-	
-	
-	function histDistBrushMove() {
-	
-	    reColorHistDistBrush();
-	    //update the chords
-	    var histAndArcData = getHistAndArcData(eNow[0], eNow[1]);
-	
-	    genChords(histAndArcData[1]); //[1] because only need the chords
-	    //update the brushed bars (I moved this to after the getHistAndArcData because I need the min/max for the color legend )
-	    //reColorHistDistBrush();
-	}
-	
-	var pushDarkGrey = d3.rgb('darkgrey').darker(1);
-	
-	function reColorHistDistBrush() {
-	    var e = brushDistHist.extent();
-	
-	    brushDistHistExtent = e;
-	
-	    //get the color vector for all bars
-	    var bar_colors = [];
-	    for (var bar_index = 0; bar_index < distHistData.length; bar_index++) {
-	        if (distHistData[bar_index].x >= e[0] && (distHistData[bar_index].x + distHistData[bar_index].dx) <= e[1]) {
-	            bar_colors.push(pushDarkGrey);
-	
-	        } else {
-	            bar_colors.push("#ccc");
-	        }
-	    }
-	
-	    //change the color of extent rectangles to blue
-	    var hist = d3.select("svg.distHistClass");
-	
-	    hist.selectAll("#histrect").data(bar_colors).attr("fill", function(d, i) {
-	        return d;
-	    });
-	
-	    //////////////////////////////////
-	    /////// Update the Legend ////////
-	    //////////////////////////////////
-	    chordColorScale = d3.scale.linear().domain([e[0], e[1]]).range([marginDistHist.left, 100 + marginDistHist.left]);
-	
-	    numTicksForChordColorScale = Math.round((e[1] - e[0]) / angBucketLength);
-	
-	    widthOfChordColorRect = widthOfScale / numTicksForChordColorScale;
-	
-	    chordColorAxis = d3.svg.axis().scale(chordColorScale)
-	    //.ticks(numTicksForChordColorScale);
-	    .ticks(3);
-	
-	    //chordColorAxis.tickSize(2,0);
-	    //change the x-axis
-	    hist.select(".chordColorAxis").call(chordColorAxis);
-	
-	    hist.selectAll(".chordColorRects").remove();
-	
-	    vector4Rects = [];
-	    for (var i = 0; i < numTicksForChordColorScale; i++) {
-	        vector4Rects.push(i);
-	    }
-	
-	    var range = maxChordDist - minChordDist;
-	
-	    var colorStep = (maxChordDist - minChordDist) / numTicksForChordColorScale;
-	
-	    theHistSVG.selectAll("rect.chordColorRects").data(vector4Rects).enter().append("rect").attr("fill", function(d, i) {
-	        return chordColor(1 - (((minChordDist + (i * colorStep)) - minChordDist) / range));
-	    }).attr("class", "chordColorRects").attr("x", function(d, i) {
-	        return marginDistHist.left + i * widthOfChordColorRect;
-	    }).attr("y", function(d, i) {
-	        return marginDistHist.top / 2 - 15;
-	    }).attr("width", widthOfChordColorRect).attr("height", 10);
-	
-	}
-	
-	//////////////////////////////////
-	//// scales for seqContextSVG ////
-	//////////////////////////////////
-	var seqPositiveYScale = d3.scale.linear().domain([0, globalCumMaxPosX]).range([0, positive_y_axis]);
-	
-	var seqNegativeYScale = d3.scale.linear().domain([globalCumMinNegX, 0]).range([negative_y_axis, 0]);
-	
-	///////////////////////////////
-	//// scales for seqZoomSVG ////
-	///////////////////////////////
-	var zoomPositiveYScale = d3.scale.linear().domain([0, globalCumMaxPosX]) //use the global max 
-	.range([0, zoom_positive_y_axis]);
-	
-	var zoomNegativeYScale = d3.scale.linear().domain([globalCumMinNegX, 0]) //use the global min 
-	.range([zoom_negative_y_axis, 0]);
-	
-	
-	// Seperate functions required for proper for-loop closures in previous index
-	
-	
-	function brush0() {
-	    brushmove(0);
-	}
-	
-	function brush1() {
-	    brushmove(1);
-	}
-	
-	function brush2() {
-	    brushmove(2);
-	}
-	
-	function brush3() {
-	    brushmove(3);
-	}
-	
-	function brush4() {
-	    brushmove(4);
-	}
-	
-	function brush5() {
-	    brushmove(5);
-	}
-	
-	var globalAlphaPatterns = [];
-	var globalBetaPatterns = [];
-	var globalCompPatterns = [];
-	var globalHydroPatterns = [];
-	var globalPhysicoPatterns = [];
-	var globalOtherPatterns = [];
-	var globalPatterns = [globalAlphaPatterns, globalBetaPatterns, globalCompPatterns, globalHydroPatterns, globalPhysicoPatterns, globalOtherPatterns];
-	
-	var globalZoomAlphaPatterns = [];
-	var globalZoomBetaPatterns = [];
-	var globalZoomCompPatterns = [];
-	var globalZoomHydroPatterns = [];
-	var globalZoomPhysicoPatterns = [];
-	var globalZoomOtherPatterns = [];
-	
-	var globalPatternsZoom = [globalZoomAlphaPatterns, globalZoomBetaPatterns, globalZoomCompPatterns, globalZoomHydroPatterns, globalZoomPhysicoPatterns, globalZoomOtherPatterns];
-	
-	//init all pattern arrays
-	for (var p = 0; p < allIndices.length; p++) {
-	    for (var i = 0; i < seqLength; i++) {
-	        globalPatterns[p].push({
-	            pushed_height: 0,
-	            pushed_y: positive_y_axis,
-	            pushed_color: colorOrder[p]
-	        });
-	        globalPatternsZoom[p].push({
-	            pushed_height: 0,
-	            pushed_y: zoom_positive_y_axis,
-	            pushed_color: colorOrder[p]
-	        });
-	    }
-	}
-	
-	function brushmove(index) {
-	
-	    var e = brushArray[index].extent();
-	
-	    //get the color vector i need to update the bars blue/grey
-	    var bar_colors = [];
-	    for (var bar_index = 0; bar_index < histDataArray[index].length; bar_index++) {
-	        if (histDataArray[index][bar_index].x >= e[0] && (histDataArray[index][bar_index].x + histDataArray[index][bar_index].dx) <= e[1]) {
-	            bar_colors.push(colorOrder[index]);
-	
-	        } else {
-	            bar_colors.push("#ccc"); //background grey
-	        }
-	    }
-	
-	    //select the correct histogram and update the rect colors
-	    var hist = d3.select(namesOfDivIds[index]);
-	
-	    hist.selectAll("#histrect").data(bar_colors).attr("fill", function(d, i) {
-	        return d;
-	    }).call(brush);
-	
-	    //for each residue 
-	    for (var i = 0; i < allIndexData[index].length; i++) {
-	
-	        //if the score is between the brush
-	        if (allIndexData[index][i] >= e[0] && allIndexData[index][i] <= e[1]) {
-	
-	            //specify the correct height, y-value, and color based on the value of the score positive or negative)
-	            var push_this_color = colorOrder[index];
-	            var push_this_height, push_this_y;
-	
-	            if (allIndexData[index][i] > 0) {
-	
-	                //set the global is brushed array to 1 to indicate this index has been brushed
-	                globalIsBrushedArray[i][0][posNegIndices[i][0].indexOf(index)] = 1;
-	
-	                //iterate through all values and update their height and Y value
-	                var cumulativeY = positive_y_axis;
-	                var cumulativeYZoom = zoom_positive_y_axis;
-	
-	                for (var posIdx = 0; posIdx < posNegIndices[i][0].length; posIdx++) {
-	
-	                    var thisIndex = posNegIndices[i][0][posIdx]; //e.g. posNegIndices[0][0] = [1,4,5]
-	                    var thisHeight = seqPositiveYScale(allIndexData[thisIndex][i]);
-	                    thisHeight *= globalIsBrushedArray[i][0][posIdx]; //multiply by 0 is not brushed
-	                    var thisHeightZoom = zoomPositiveYScale(allIndexData[thisIndex][i]);
-	                    thisHeightZoom *= globalIsBrushedArray[i][0][posIdx]; //multiply by 0 is not brushed
-	                    globalPatterns[thisIndex][i].pushed_height = Math.round(thisHeight);
-	                    globalPatternsZoom[thisIndex][i].pushed_height = Math.round(thisHeightZoom);
-	
-	                    cumulativeY = cumulativeY - Math.round(thisHeight);
-	                    cumulativeYZoom = cumulativeYZoom - Math.round(thisHeightZoom);
-	
-	                    globalPatterns[thisIndex][i].pushed_y = Math.round(cumulativeY);
-	                    globalPatternsZoom[thisIndex][i].pushed_y = Math.round(cumulativeYZoom);
-	                }
-	
-	                //else if allIndexData[index][i] is negative
-	            } else {
-	                //set the global is brushed array to 1 to indicate this index has been brushed
-	                globalIsBrushedArray[i][1][posNegIndices[i][1].indexOf(index)] = 1;
-	
-	                //iterate through all values and update their height and Y value
-	                var cumulativeY = positive_y_axis + seq_rect_height;
-	                var cumulativeYZoom = zoom_positive_y_axis + zoom_seq_rect_height;
-	                for (var posIdx = 0; posIdx < posNegIndices[i][1].length; posIdx++) {
-	
-	                    var thisIndex = posNegIndices[i][1][posIdx]; // e.g. posNegIndices[0][1] = [0,2,3]
-	                    var thisHeight = seqNegativeYScale(allIndexData[thisIndex][i]);
-	                    thisHeight *= globalIsBrushedArray[i][1][posIdx]; //multiply by 0 if not brushed
-	                    var thisHeightZoom = zoomNegativeYScale(allIndexData[thisIndex][i]);
-	                    thisHeightZoom *= globalIsBrushedArray[i][1][posIdx]; //multiply by 0 if not brushed
-	                    globalPatterns[thisIndex][i].pushed_height = Math.round(thisHeight);
-	                    globalPatternsZoom[thisIndex][i].pushed_height = Math.round(thisHeightZoom);
-	
-	                    globalPatterns[thisIndex][i].pushed_y = Math.round(cumulativeY);
-	                    globalPatternsZoom[thisIndex][i].pushed_y = Math.round(cumulativeYZoom);
-	                    //for the negatives you need the update after the pushed_y 
-	                    cumulativeY = cumulativeY + Math.round(thisHeight);
-	                    cumulativeYZoom = cumulativeYZoom + Math.round(thisHeightZoom);
-	                }
-	            }
-	            //if the score is not between the brush
-	        } else {
-	
-	            //update all values based on allIndexData[index][i] not brushed
-	            if (allIndexData[index][i] > 0) {
-	                //set is brushed indicator to 0
-	                globalIsBrushedArray[i][0][posNegIndices[i][0].indexOf(index)] = 0;
-	
-	                //iterate through all values and update their height and Y value
-	                var cumulativeY = positive_y_axis;
-	                var cumulativeYZoom = zoom_positive_y_axis;
-	                for (var posIdx = 0; posIdx < posNegIndices[i][0].length; posIdx++) {
-	
-	                    var thisIndex = posNegIndices[i][0][posIdx];
-	
-	                    var thisHeight = seqPositiveYScale(allIndexData[thisIndex][i]);
-	                    thisHeight *= globalIsBrushedArray[i][0][posIdx]; //multiply by 0 is not brushed
-	                    var thisHeightZoom = zoomPositiveYScale(allIndexData[thisIndex][i]);
-	                    thisHeightZoom *= globalIsBrushedArray[i][0][posIdx]; //multiply by 0 is not brushed
-	                    globalPatterns[thisIndex][i].pushed_height = Math.round(thisHeight);
-	                    globalPatternsZoom[thisIndex][i].pushed_height = Math.round(thisHeightZoom);
-	
-	                    cumulativeY = cumulativeY - Math.round(thisHeight);
-	                    cumulativeYZoom = cumulativeYZoom - Math.round(thisHeightZoom);
-	
-	                    globalPatterns[thisIndex][i].pushed_y = Math.round(cumulativeY);
-	                    globalPatternsZoom[thisIndex][i].pushed_y = Math.round(cumulativeYZoom);
-	
-	                }
-	            } else {
-	                //set is brushed indicator to 0
-	                globalIsBrushedArray[i][1][posNegIndices[i][1].indexOf(index)] = 0;
-	
-	                var cumulativeY = positive_y_axis + seq_rect_height;
-	                var cumulativeYZoom = zoom_positive_y_axis + zoom_seq_rect_height;
-	
-	                for (var posIdx = 0; posIdx < posNegIndices[i][1].length; posIdx++) {
-	
-	                    var thisIndex = posNegIndices[i][1][posIdx];
-	
-	                    var thisHeight = seqNegativeYScale(allIndexData[thisIndex][i]);
-	                    thisHeight *= globalIsBrushedArray[i][1][posIdx]; //multiply by 0 is not brushed
-	                    var thisHeightZoom = zoomNegativeYScale(allIndexData[thisIndex][i]);
-	                    thisHeightZoom *= globalIsBrushedArray[i][1][posIdx]; //multiply by 0 is not brushed
-	                    globalPatterns[thisIndex][i].pushed_height = Math.round(thisHeight);
-	                    globalPatternsZoom[thisIndex][i].pushed_height = Math.round(thisHeightZoom);
-	
-	                    globalPatterns[thisIndex][i].pushed_y = Math.round(cumulativeY);
-	                    globalPatternsZoom[thisIndex][i].pushed_y = Math.round(cumulativeYZoom);
-	
-	                    //for the negatives you need the update after the pushed_y 
-	                    cumulativeY = cumulativeY + Math.round(thisHeight);
-	                    cumulativeYZoom = cumulativeYZoom + Math.round(thisHeightZoom);
-	                }
-	            }
-	        }
-	    }
-	
-	    //for each characteristic, transition each rect
-	    for (var p = 0; p < allIndices.length; p++) {
-	        seqContextSVG.selectAll("rect" + namesOfDivIds[p] + "scoreNonZoom").data(globalPatterns[p]).transition().duration(globalTransitionTime).attr("x", function(d, i) {
-	            return i * seq_rect_width;
-	        }).attr("y", function(d) {
-	            return d.pushed_y;
-	        }).attr("width", seq_rect_width).attr("height", function(d) {
-	            return d.pushed_height;
-	        }).attr("class", "seqContextScoreRects").attr("opacity", 1).style("fill", function(d) {
-	            return d.pushed_color;
-	        })
-	    }
-	
-	    // update the chart brush
-	    seqContextSVG.select("#seqContextBrush").call(brushSeqContext);
-	}
-	
-	// end of brush function
-	
-	
-	function brushend(p) {
-	    // we do not utilize brushend
-	}
-	
-	document.write("<br><br>");
-	
-	////////////////////////////////////////////////
-	//    SVG for the Zoomed Sequence Y-Axis     ///
-	////////////////////////////////////////////////
-	var svgForZoomYAxis = d3.select("#zoomedChartYAxis").append("svg").attr("class", "y_axis_for_zoom").attr("width", 20).attr("height", zoom_seq_svg_height);
-	
-	/////////////////////////////////////////
-	////scales for Extra svgForZoomYAxis ////
-	/////////////////////////////////////////
-	var zoomAxisPositiveYScale = d3.scale.linear().domain([globalCumMaxPosX, 0]) //use the global max 
-	.range([0, zoom_positive_y_axis]);
-	
-	var zoomAxisNegativeYScale = d3.scale.linear().domain([0, globalCumMinNegX]) //use the global min 
-	.range([zoom_negative_y_axis + zoom_seq_rect_height, zoom_seq_svg_height]);
-	
-	//////////////////////////////////////
-	////Axes for the extra Y-axis SVG ////
-	//////////////////////////////////////
-	var yPositiveAxisZoom = d3.svg.axis().scale(zoomAxisPositiveYScale).orient("left").ticks(4);
-	var yNegativeAxisZoom = d3.svg.axis().scale(zoomAxisNegativeYScale).orient("left").ticks(4);
-	
-	//append the positive y-axis to the zoom
-	svgForZoomYAxis.append("g").attr("class", "y_axis_positive_zoom").style("font-size", 10).attr("transform", "translate(" + 20 + ",0)").call(yPositiveAxisZoom);
-	
-	//append the positive y-axis to the zoom
-	svgForZoomYAxis.append("g").attr("class", "y_axis_negative_zoom").style("font-size", 10).attr("transform", "translate(" + 20 + ",0)").call(yNegativeAxisZoom);
-	
-	/////////////////////////////////////
-	//    SVG for the Zoomed SVG      ///
-	/////////////////////////////////////
-	var seqZoomSVG = d3.select("#zoomedChart")
-						.append("svg")
-						.attr("class", "seqZoomSVG")
-						.attr("width", zoom_seq_svg_width)
-						.attr("height", zoom_seq_svg_height);
-	
-	var initdTIMSlice = dTIM.slice(0, zoomLength);
-	var initscTIMSlice = scTIM.slice(0, zoomLength);
-	//this puts the rectangles on the svg
-	seqZoomSVG.selectAll("rect").data(initdTIMSlice).enter().append("rect").attr("class", "seqZoomSeqRects").attr("fill", function(d, i) {
-	    if (d == initscTIMSlice[i]) {
-	        return "#F7F7F7";
-	    } else {
-	        return "red";
-	    }
-	}).attr("x", function(d, i) {
-	    return i * zoom_seq_rect_width;
-	}).attr("y", function(d, i) {
-	    return zoom_positive_y_axis;
-	}).attr("width", zoom_seq_rect_width).attr("height", zoom_seq_rect_height);
-	
-	//this puts the actual text on the bars
-	seqZoomSVG.selectAll("text").data(initdTIMSlice).enter().append("text")
-	// 10 is for the offset for the length of the letter
-	.attr("x", function(d, i) {
-	    return (i * zoom_seq_rect_width) + zoom_seq_rect_width / 2 - 10;
-	}).attr("y", function() {
-	    return zoom_positive_y_axis + zoom_seq_rect_height / 2;
-	}).attr("dx", ".35em").attr("dy", ".35em").attr("font-size", "16px").attr("font-family", "arial").attr("fill", function(d, i) {
-	    if (d == initscTIMSlice[i]) {
-	        return "black";
-	    } else {
-	        return "white";
-	    }
-	}).attr("stroke", "black").attr("stroke-width", 0.5).text(String);
-	
-	//iterate through each set of data and setup 6 sets of hidden rects for the future values to be binded to
-	for (var index = 0; index < allIndices.length; index++) {
-	
-	    var nameOfDiv = namesOfDivIds[index].substring(1) + "score";
-	
-	    seqZoomSVG.selectAll("rect#" + nameOfDiv).data(dTIM.slice(0, zoomLength)) //only need fixedZoomBrushLength
-	    .enter().append("rect").attr("class", "seqZoomScoreRects").attr("id", nameOfDiv).attr("opacity", 0) //hidden
-	    .attr("x", function(d, i) {
-	        return i * zoom_seq_rect_width;
-	    }).attr("y", function(d, i) {
-	        return zoom_positive_y_axis;
-	    }).attr("width", zoom_seq_rect_width).attr("height", 0);
-	
-	
-	} //end for
-	///////////////////////////////////////////////////
-	//    SVG for the X-Axis of the Zoomed SVG      ///
-	///////////////////////////////////////////////////
-	document.write("<br><br>");
-	
-	//this is just a padding to push the x-axis over slightly to be aligned with the zoom sequence
-	var svgPaddingForZoomXAxis = d3.select("body").append("svg").attr("width", 20).attr("height", 20);
-	//add an x-axis (separate svg right below it)
-	var svgForZoomXAxis = d3.select("#zoomedChart").append("svg").attr("class", "x_axis_for_zoom").attr("width", zoom_seq_svg_width).attr("height", 20);
-	
-	var xZoomAxisPadding = 10; //this is used so the values are not cutoff by the side of the svg
-	var xZoomToAppendAxis = d3.scale.linear().domain([1, 16]) //changed form [0,15]
-	.range([xZoomAxisPadding, zoom_seq_svg_width - xZoomAxisPadding]);
-	
-	// Create x axis for the zoom svg
-	var xAxisForZoom = d3.svg.axis().scale(xZoomToAppendAxis).orient("bottom").ticks(15);
-	
-	//append x-axis to the svgForZoomXAxis svg  
-	svgForZoomXAxis.append("g").attr("class", "x zoomXAxis").attr("transform", "translate(0," + 0 + ")").call(xAxisForZoom);
-	
-	
-	function resetY(inY, inH) {
-	    var outY;
-	
-	    if (inY <= zoom_positive_y_axis) {
-	        outY = zoom_positive_y_axis - inH;
-	    } else {
-	        outY = zoom_positive_y_axis + zoom_seq_rect_height;
-	    }
-	    return outY;
-	}
-	
-	var eBefore = [1, 1];
-	var eNow = [0, 0];
-	var maxBrushValue = 15;
-	
-	function colorHeatForThisContextRegion(extent){
-
-    	for (var index = 0; index < allIndices.length; index++){
-
-	        //specify the name of the div based on the namesOfDivIds[index]
-	        var nameOfDiv = namesOfDivIds[index].substring(1) + "heat";
-	        //append the non-visible placeholders on the svg
-	        seqStdHeatSVG.selectAll("rect#" + nameOfDiv)
-                         .attr("fill", function(d,i){if (extent[0]<=i && extent[1]>=i){
-                                                         return colorOrder[index];
-                                                     }else{
-                                                         return "black";
-                                                     }});
+            svgForZoomYAxis.select(".y_axis_negative_zoom")
+                           .transition()
+                           .duration(3000)
+                           .call(yNegativeAxisZoom);
         }
 
+
+        seqContextBrush.extent([seqContextBrush.extent()[0], seqContextBrush.extent()[0] + zoomLength]);
+        seqContextSVG.select("#seqContextBrush").call(seqContextBrush);
+        brushSeqContext(0);
+    
     }
-
-	
-	function brushSeqContext(p) {
-	
-	    eBefore = eNow;
-	    eNow = seqContextBrush.extent();
-	
-	    eNow[0] = Math.floor(eNow[0]);
-	    eNow[1] = Math.floor(eNow[1]);
-	
-	    //colorHeatForThisContextRegion(eNow);
-	    
-	    var eDistBrushExtent = brushDistHist.extent();
-	    eDistBrushExtent[0] = Math.floor(eDistBrushExtent[0]);
-	    eDistBrushExtent[1] = Math.floor(eDistBrushExtent[1]);
-	
-	    zoomLength = eNow[1] - eNow[0];
-	
-	    // If our user brushes over more than maxBrushValue residues, make it go back down to maxBrushValue residues
-	    if (zoomLength > maxBrushValue) {
-	        eNow[1] = eNow[0] + maxBrushValue;
-	        seqContextBrush.extent([eNow[0], eNow[1]]);
-	        seqContextBrush(d3.select(this));
-	        zoomLength = maxBrushValue; //also reset zoom length
-	        //colorHeatForThisContextRegion(eNow);
-	    }
-	    
-	    if (gl) {
-		    gl.uniform1i(shaderVariables.mMinValue, eNow[0]);
-		    gl.uniform1i(shaderVariables.mMaxValue, eNow[1]);
-		}
-  
-	    // If the Distance Histogram isn't brushed, only draw the Distance Histogram without drawing arcs 
-	    // If the Distance Histogram IS brushed, draw the Distance Histogram and Draw the Arcs
-	    if (eDistBrushExtent[0] == eDistBrushExtent[1]) {
-	        // DistHistBrushExtent is same, only redraw the hist
-	        var histAndArcData = getHistAndArcData(eNow[0], eNow[1]);
-	        drawDistHistogram(histAndArcData[0]);
-	    } else if (eDistBrushExtent[0] != eDistBrushExtent[1]) {
-	        // DistHist has something brushed, redraw everything
-	        var histAndArcData = getHistAndArcData(eNow[0], eNow[1]);
-	        drawDistHistogram(histAndArcData[0]);
-	        genChords(histAndArcData[1]);
-	    }
-	
-	    var isScrolling = 0;
-	
-	    if (d3.event == null) {
-	
-	    } else {
-	        isScrolling = 1;
-	    }
-	
-	    setZoomParms(eNow[1] - eNow[0]);
-	
-	    var textScale = d3.scale.linear().domain([248, 1]).range([2, 16]);
-	
-	    var textBufferScale = d3.scale.linear().domain([248, 1]).range([0, 10]);
-	
-	    var textDxScale = d3.scale.linear().domain([248, 1]).range([10, 35]);
-	
-	    //get the slice of dTIM corrosponding to the extent
-	    var sliceOfdTIM = dTIM.slice(eNow[0], eNow[1]);
-	    var sliceOfscTIM = scTIM.slice(eNow[0], eNow[1]);
-	
-	    /////////////////////////////////////////////////
-	    //      Clear Sequence and then re-render      //
-	    /////////////////////////////////////////////////
-	    var selection = seqZoomSVG.selectAll("rect.seqZoomSeqRects").data([]);
-	
-	    selection.exit().remove();
-	
-	    //put the sequence slice on the seqZoomSVG
-	    var selection = seqZoomSVG.selectAll("rect.seqZoomSeqRects").data(sliceOfdTIM);
-	
-	    selection.enter().append("rect");
-	
-	    selection.attr("class", "seqZoomSeqRects").attr("fill", function(d, i) {
-	        if (d == sliceOfscTIM[i]) {
-	            return "#F7F7F7";
-	        } else {
-	            return "red";
-	        }
-	    }).attr("stroke", "black").attr("stroke-width", 0.5).attr("x", function(d, i) {
-	        return i * zoom_seq_rect_width;
-	    }).attr("y", function(d, i) {
-	        return zoom_positive_y_axis;
-	    }).attr("width", zoom_seq_rect_width).attr("height", zoom_seq_rect_height).on("mouseover", function(d, i) {
-	        return mouseover(d, i, sliceOfscTIM[i], "rect");
-	    }).on("mouseout", function(d, i) {
-	        return mouseout(d, i, sliceOfscTIM[i], "rect");
-	    });
-	
-	    //put the sequence text on the seqZoomSVG
-	    var selection = seqZoomSVG.selectAll("text").data([]);
-	
-	    selection.exit().remove();
-	
-	    var selection = seqZoomSVG.selectAll("text").data(sliceOfdTIM);
-	
-	    selection.enter().append("text");
-	
-	    selection.attr("x", function(d, i) {
-	        return (i * zoom_seq_rect_width) + zoom_seq_rect_width / 2 - textScale(Math.round(Math.abs(eNow[1] - eNow[0]))) / 2;
-	    }).attr("y", function() {
-	        return zoom_positive_y_axis + zoom_seq_rect_height / 2;
-	    }).attr("dy", ".35em").attr("fill", function(d, i) {
-	        if (d == sliceOfscTIM[i]) {
-	            return "black";
-	        } else {
-	            return "white";
-	        }
-	    }).attr("font-size", textScale(Math.round(Math.abs(eNow[1] - eNow[0]))) + "px").attr("font-family", "arial").on("mouseover", function(d, i) {
-	        return mouseover(d, i, sliceOfscTIM[i], "text");
-	    }).on("mouseout", function(d, i) {
-	        return mouseout(d, i, sliceOfscTIM[i], "text");
-	    }).text(String);
-	
-	    var alignBuffer = 2; //add buffer so the aligned view rects are not directly side-by-side
-	    if (prevZoomLayout != zoomLayout) { //this means they are the same length to I just need to transition
-	        //update prevZoomLayout
-	        prevZoomLayout = zoomLayout;
-	
-	        //for each characteristic, update the 
-	        for (var p = 0; p < allIndices.length; p++) {
-	
-	            var transitionTime = 0;
-	            if (isScrolling) {
-	                transitionTime = 0;
-	            } else {
-	                transitionTime = globalTransitionTime * 2;
-	            }
-	
-	            var setThisId = namesOfDivIds[p].substring(1) + "score";
-	
-	            var selection = seqZoomSVG.selectAll("rect" + namesOfDivIds[p] + "score").data(globalPatternsZoom[p].slice(eNow[0], eNow[1]));
-	
-	            if (zoomLayout == "Stacked") {
-	                selection.transition().duration(3000) // 3 seconds
-	                .attr("class", "seqZoomScoreRects").attr("id", setThisId).attr("x", function(d, i) {
-	                    return i * zoom_seq_rect_width;
-	                }).attr("y", function(d) {
-	                    return d.pushed_y;
-	                }).attr("width", zoom_seq_rect_width).attr("height", function(d) {
-	                    return d.pushed_height;
-	                }).attr("opacity", 1).style("fill", function(d) {
-	                    return d.pushed_color;
-	                });
-	            }
-	            if (zoomLayout == "Aligned") {
-	
-	                selection.transition().duration(3000) // 3 seconds
-	                .attr("class", "seqZoomScoreRects").attr("id", setThisId).attr("x", function(d, i) {
-	                    return i * (zoom_seq_rect_width) + p * (zoom_seq_rect_width / namesOfDivIds.length);
-	                }).attr("y", function(d) {
-	                    return resetY(d.pushed_y, d.pushed_height * 2.5);
-	                }).attr("width", (zoom_seq_rect_width / namesOfDivIds.length) - alignBuffer).attr("height", function(d) {
-	                    return d.pushed_height * 2.5;
-	                }).attr("opacity", 1).style("fill", function(d) {
-	                    return d.pushed_color;
-	                });
-	
-	            }
-	        }
-	
-	    } else {
-	        if (zoomLayout == "Aligned") {
-	
-	            /////////////////////////////////////////////////
-	            // Clear Each Set of Scores then re-render     //
-	            /////////////////////////////////////////////////
-	            //for each characteristic, update the 
-	            for (var p = 0; p < allIndices.length; p++) {
-	
-	                var transitionTime = 0;
-	                if (isScrolling) {
-	                    transitionTime = 0;
-	                } else {
-	                    transitionTime = globalTransitionTime * 2;
-	                }
-	
-	                var setThisId = namesOfDivIds[p].substring(1) + "score";
-	
-	                var selection = seqZoomSVG.selectAll("rect" + namesOfDivIds[p] + "score").data([]);
-	
-	                selection.exit().remove();
-	
-	                var selection = seqZoomSVG.selectAll("rect" + namesOfDivIds[p] + "score").data(globalPatternsZoom[p].slice(eNow[0], eNow[1]));
-	
-	                selection.enter().append("rect");
-	
-	                selection.attr("class", "seqZoomScoreRects").attr("id", setThisId).attr("x", function(d, i) {
-	                    return i * (zoom_seq_rect_width) + p * (zoom_seq_rect_width / namesOfDivIds.length);
-	                }).attr("y", function(d) {
-	                    return resetY(d.pushed_y, d.pushed_height * 2.5);
-	                }).attr("width", (zoom_seq_rect_width / namesOfDivIds.length) - alignBuffer).attr("height", function(d) {
-	                    return d.pushed_height * 2.5;
-	                }).attr("opacity", 1).style("fill", function(d) {
-	                    return d.pushed_color;
-	                }).on("mouseover", function(d, i) {
-	                    mouseoverBar(this, eNow[0] + i);
-	                }).on("mouseout", function(d, i) {
-	                    mouseoutBar(this, eNow[0] + 1);
-	                });
-	
-	            }
-	
-	
-	        } else {
-	
-	            /////////////////////////////////////////////////
-	            // Clear Each Set of Scores then re-render     //
-	            /////////////////////////////////////////////////
-	
-	            var namesOfIdArray = [];
-	            //for each characteristic, update the 
-	            for (var p = 0; p < allIndices.length; p++) {
-	
-	                var transitionTime = 0;
-	                if (isScrolling) {
-	                    transitionTime = 0;
-	                } else {
-	                    transitionTime = globalTransitionTime * 2;
-	                }
-	
-	                var setThisId = namesOfDivIds[p].substring(1) + "score";
-	
-	                var selection = seqZoomSVG.selectAll("rect" + namesOfDivIds[p] + "score").data([]);
-	
-	
-	                selection.attr("class", "seqZoomScoreRects").attr("id", setThisId).attr("x", function(d, i) {
-	                    return i * zoom_seq_rect_width;
-	                }).attr("y", function(d) {
-	                    return d.pushed_y;
-	                }).attr("width", zoom_seq_rect_width).attr("height", function(d) {
-	                    return d.pushed_height;
-	                }).attr("opacity", 1).style("fill", function(d) {
-	                    return d.pushed_color;
-	                }).on("mouseover", function(d, i) {
-	                    mouseoverBar(this, eNow[0] + i);
-	                }).on("mouseout", function(d, i) {
-	                    mouseoutBar(this, eNow[0] + 1);
-	                });
-	
-	                selection.exit().remove();
-	
-	                var selection = seqZoomSVG.selectAll("rect" + namesOfDivIds[p] + "score").data(globalPatternsZoom[p].slice(eNow[0], eNow[1]));
-	
-	                selection.enter().append("rect");
-	
-	                selection.attr("class", "seqZoomScoreRects").attr("id", setThisId).attr("x", function(d, i) {
-	                    return i * zoom_seq_rect_width;
-	                }).attr("y", function(d) {
-	                    return d.pushed_y;
-	                }).attr("width", zoom_seq_rect_width).attr("height", function(d) {
-	                    return d.pushed_height;
-	                }).attr("opacity", 1).style("fill", function(d) {
-	                    return d.pushed_color;
-	                }).on("mouseover", function(d, i) {
-	                    mouseoverBar(this, eNow[0] + i);
-	                }).on("mouseout", function(d, i) {
-	                    mouseoutBar(this, eNow[0] + 1);
-	                });
-	            }
-	
-	        }
-	    }
-	
-	    //update the x-axis (svgForZoomXAxis) for seqZoomSVG
-	    var svgForZoomXAxis = d3.select("svg.x_axis_for_zoom");
-	
-	    var xZoomToAppendAxis = d3.scale.linear().domain([eNow[0] + 1, eNow[1] + 1]) //changed from [eNow[0],eNow[1]]
-	    .range([xZoomAxisPadding, zoom_seq_svg_width - xZoomAxisPadding]);
-	
-	    var xAxisForZoom = d3.svg.axis().scale(xZoomToAppendAxis).orient("bottom").ticks(zoomLength);
-	
-	    //change the x-axis
-	    svgForZoomXAxis.select(".zoomXAxis").call(xAxisForZoom);
-	}
-	
-	// First init the brushDistHist
-	// initialize the distance histogram to (2,8) Angstrom
-	var defaultDistHist = d3.select("#distanceHistogram");
-	brushDistHist.extent([3.3, 9]);
-	defaultDistHist.select(".brush").call(brushDistHist);
-	histDistBrushMove();
-	
-	// Then initialize all the histograms
-	//since they all have extents = (-3,3) can just call brushmove on them
-	for (var i = 0; i < allIndices.length; i++) {
-	    brushmove(i);
-	}
-	
-	function layoutZoom() {
-	
-	    prevZoomLayout = zoomLayout;
-	    zoomLayout = document.getElementById('selectLayout').value;
-	    
-	    if (zoomLayout == "Stacked")
-	    {
-  			zoomAxisNegativeYScale.domain([0,globalCumMinNegX]);
-  			zoomAxisPositiveYScale.domain([globalCumMaxPosX,0]);
-  			svgForZoomYAxis.select(".y_axis_positive_zoom").transition().duration(3000).call(yPositiveAxisZoom);
-  			svgForZoomYAxis.select(".y_axis_negative_zoom").transition().duration(3000).call(yNegativeAxisZoom);
-  		}
-  		else
-  		{
-	  		zoomAxisNegativeYScale.domain([0,globalCumMinNegX/2.5]);
-  			zoomAxisPositiveYScale.domain([globalCumMaxPosX/2.5,0]);
-  			svgForZoomYAxis.select(".y_axis_positive_zoom").transition().duration(3000).call(yPositiveAxisZoom);
-  			svgForZoomYAxis.select(".y_axis_negative_zoom").transition().duration(3000).call(yNegativeAxisZoom);
-  		}
-
-
-	    seqContextBrush.extent([seqContextBrush.extent()[0], seqContextBrush.extent()[0] + zoomLength]);
-	    seqContextSVG.select("#seqContextBrush").call(seqContextBrush);
-	    brushSeqContext(0);
-	
-	}
     </script>
 
     <script>
-	    document.getElementById('selectLayout').value = "Stacked";
+       document.getElementById('selectLayout').value = "Stacked";
 
-	</script>
+    </script>
 </body> 
 </html>
