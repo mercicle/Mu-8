@@ -620,7 +620,7 @@
     var qtlMaps=[];
     
     for (var index = 0; index < allIndices.length; index++){
-        qtlMaps.push(d3.scale.quantile().domain(allStdDeviations[index]).range([0,1]) );
+        qtlMaps.push(d3.scale.quantile().domain(allStdDeviations[index]).range([0,1,2,3]) );
     }
 
 
@@ -688,7 +688,7 @@
                      //.style("stroke", function(d,i){return colorOrder[index];})
                      //.attr("r", function(d,i){return stdMaps[index](d[0]);})
                      //quantile
-                     .attr("r", function(d,i){return 1 + 1.5*qtlMaps[index](d[0]);})
+                     .attr("r", function(d,i){return 0.5 + 0.5*qtlMaps[index](d[0]);})
                      .attr("cx",function(d,i){return i*(seq_rect_width)+(seq_rect_width/2);})
                      .attr("cy",function(d,i){return index*(seq_rect_width+0.5)+(seq_rect_width/2)})
                      .on("mouseover",function(d,i){ mouseoverHeat(d[1]);})
