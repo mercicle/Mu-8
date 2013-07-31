@@ -73,7 +73,9 @@ function initShaders() {
     gl.useProgram(shaderProgram);
 
     shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+	shaderProgram.tangentAttribute = gl.getAttribLocation(shaderProgram, "aTangent");	
     gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+	gl.enableVertexAttribArray(shaderProgram.nextVertexPositionAttribute);
 
     shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
     gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
@@ -103,20 +105,23 @@ function drawScene() {
 
     mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 250.0, pMatrix);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, triangleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexColorBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, triangleVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, linesVertexPositionBuffer);
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, linesVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, linesTangentBuffer);
+    gl.vertexAttribPointer(shaderProgram.tangentAttribute, linesTangentBuffer.itemSize, gl.FLOAT, false, 0, 0);    	
+    gl.bindBuffer(gl.ARRAY_BUFFER, linesVertexColorBuffer);
+    gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, linesVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
     setMatrixUniforms();
 	gl.uniform4f(shaderProgram.pixelOffset, 0., 0., 0., 0.);
 	
-    gl.drawArrays(gl.LINES, 0, triangleVertexPositionBuffer.numItems);
+    gl.drawArrays(gl.LINES, 0, linesVertexPositionBuffer.numItems);
 
 // thicker lines
-    gl.uniform4f(shaderProgram.pixelOffset, 1./250., 0., 0., 0.); // one pixel offset = 1./width=1./250.
-    gl.drawArrays(gl.LINES, 0, triangleVertexPositionBuffer.numItems);
-    gl.uniform4f(shaderProgram.pixelOffset, 0., 1./250., 0., 0.);	
-    gl.drawArrays(gl.LINES, 0, triangleVertexPositionBuffer.numItems);
+thickness = 3; //should preferably be odd. 3 means 3 lines at -1, 0, +1
+for (i=0; i<thickness; i++) {
+    gl.uniform1f(shaderProgram.pixelOffset, (i-thickness/2)*1./250.); // one pixel offset = 1./width=1./250.
+    gl.drawArrays(gl.LINES, 0, linesVertexPositionBuffer.numItems);
+	}
 
 }
 

@@ -38,18 +38,23 @@
     <script id="shader-vs" type="x-shader/x-vertex">
     	// Must keep shaders in HTML file.
 	    attribute vec3 aVertexPosition;
+		attribute vec3 aTangent;
 	    attribute vec4 aVertexColor;
 
 	    uniform mat4 uMVMatrix;
 	    uniform mat4 uPMatrix;
-		uniform vec4 pixelOffset;
+		uniform float pixelOffset;
   
 	    varying vec4 vColor;
 
 	    void main(void) {
 	    	vec4 p = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
 			p/=abs(p.w);
-			gl_Position = p+pixelOffset;
+			vec4 v = uPMatrix * uMVMatrix * vec4(aTangent, 0.0);
+			v.xy /= sqrt(v.x*v.x+v.y*v.y);
+			p.x += v.y*pixelOffset;
+			p.y -= v.x*pixelOffset;
+			gl_Position = p;
 	    	vColor = aVertexColor;
 	    }
     </script> 

@@ -1,8 +1,8 @@
-var triangleVertexPositionBuffer;
-var triangleVertexColorBuffer;
+var linesVertexPositionBuffer;
+var linesVertexColorBuffer;
 function initBuffers() {
-    triangleVertexPositionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
+    linesVertexPositionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, linesVertexPositionBuffer);
 var vertices = [
 101.018997, 39.717999, 68.419998, 100.307999, 38.458000, 68.230003,
 101.018997, 39.717999, 68.419998, 101.958000, 39.970001, 67.277000,
@@ -4082,10 +4082,10 @@ var vertices = [
 43.411999, 32.580002, 40.938000, 43.589001, 33.840000, 41.205002,
 0];
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-	triangleVertexPositionBuffer.numItems = 8152 ;
-    triangleVertexPositionBuffer.itemSize = 3;
-triangleVertexColorBuffer = gl.createBuffer();
-gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexColorBuffer);
+	linesVertexPositionBuffer.numItems = 8152 ;
+    linesVertexPositionBuffer.itemSize = 3;
+linesVertexColorBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, linesVertexColorBuffer);
 var colors = [
 0.470588, 0.866667, 0.533333, 2.000000, 0.470588, 0.866667, 0.533333, 2.000000, 
 0.470588, 0.866667, 0.533333, 2.000000, 0.470588, 0.866667, 0.533333, 2.000000, 
@@ -8165,6 +8165,20 @@ var colors = [
 0.337255, 0.733333, 0.200000, 248.000000, 0.337255, 0.733333, 0.200000, 248.000000, 
 0];
 gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
-triangleVertexColorBuffer.itemSize = 4;
-triangleVertexColorBuffer.numItems = 8152;
+linesVertexColorBuffer.itemSize = 4;
+linesVertexColorBuffer.numItems = 8152;
+
+
+
+	linesTangentBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, linesTangentBuffer);
+var tangents = new Array();
+for (i=0; i<linesVertexColorBuffer.numItems; i++) {
+ for (j=0; j<6; j++) {
+	tangents[i*6+j] = vertices[i*6+j%3]-vertices[i*6+j%3+3];
+  }
+}
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(tangents), gl.STATIC_DRAW);
+	linesTangentBuffer.numItems = 8152 ;
+    linesTangentBuffer.itemSize = 3;
 }
