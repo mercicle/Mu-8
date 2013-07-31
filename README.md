@@ -1,12 +1,12 @@
-BioVis
+Mu-8 - A Visualization Tool to Analyze Protein Mutation
 ======
 
-BioVis Tool - Contest Submission for 3rd IEEE Symposium on Biological Data Visualization
+Contest Submission for 3rd IEEE Symposium on Biological Data Visualization
 
 Introduction
 ========
 
-The objective of this **BioVis** project was to develop a methodology and visualization that is capable of helping biologists identify mutations that affect protein function. The specific problem used for the development of the tool was the assessment of a [defective triosephosphate isomerase (TIM)](http://www.ncbi.nlm.nih.gov/pubmed/21839742).
+The objective of the Mu-8 project is to develop a methodology and visualization that is capable of helping biologists identify mutations that affect protein function. The specific problem used for the development of the tool was the assessment of a [defective triosephosphate isomerase (TIM)](http://www.ncbi.nlm.nih.gov/pubmed/21839742).
 
 Here is a [link to the demo](https://googledrive.com/host/0B7G1I9OfZ_ylbDUxa0JqLVMyRzg/).
 
