@@ -618,11 +618,34 @@
     }
 
     var qtlMaps=[];
-    
     for (var index = 0; index < allIndices.length; index++){
         qtlMaps.push(d3.scale.quantile().domain(allStdDeviations[index]).range([0,1,2,3]) );
     }
 
+    var stdHeightMaps = [];
+    for (var index = 0; index < allIndices.length; index++){
+        stdHeightMaps.push(d3.scale.linear().domain(allStdDeviations[index]).range([1,5]).clamp(true));
+    }
+
+    for (var index = 0; index < allIndices.length; index++){
+
+        //specify the name of the div based on the namesOfDivIds[index]
+        var nameOfDiv = namesOfDivIds[index].substring(1) + "heat";
+        //append the non-visible placeholders on the svg
+        seqStdHeatSVG.selectAll("rect#" + nameOfDiv)
+                     .data(allStdDeviations[index].map(function(d) { return d; }))
+                     .enter()
+                     .append("rect")
+                     .attr("class","stdHeatRects")
+                     .attr("id", nameOfDiv )
+                     .attr("fill", function(d,i){return colorOrder[index];})
+                     .style("stroke", "white")
+                     .style("stroke-width", 0.5)
+                     .attr("x",function(d,i){return i*seq_rect_width;})
+                     .attr("y",function(d,i){return index*seq_rect_width-stdHeightMaps[index](d)+seq_rect_width})
+                     .attr("width",seq_rect_width)
+                     .attr("height",function(d,i){return stdHeightMaps[index](d);})
+    }
 
     /**
     for (var index = 0; index < allIndices.length; index++){
@@ -673,6 +696,7 @@
 
 	}
 
+	/**
     for (var index = 0; index < allIndices.length; index++){
 
         //specify the name of the div based on the namesOfDivIds[index]
@@ -696,6 +720,7 @@
 
 
     }         
+	**/
 
 	//now put hidden rectangles on the svg (for the scores), for each of the 6 indices, so I can transition them later
 	for (var index = 0; index < allIndices.length; index++) {
@@ -1297,7 +1322,7 @@
 	    eNow[0] = Math.floor(eNow[0]);
 	    eNow[1] = Math.floor(eNow[1]);
 	
-	    colorHeatForThisContextRegion(eNow);
+	    //colorHeatForThisContextRegion(eNow);
 	    
 	    var eDistBrushExtent = brushDistHist.extent();
 	    eDistBrushExtent[0] = Math.floor(eDistBrushExtent[0]);
@@ -1311,7 +1336,7 @@
 	        seqContextBrush.extent([eNow[0], eNow[1]]);
 	        seqContextBrush(d3.select(this));
 	        zoomLength = maxBrushValue; //also reset zoom length
-	        colorHeatForThisContextRegion(eNow);
+	        //colorHeatForThisContextRegion(eNow);
 	    }
 	    
 	    if (gl) {
