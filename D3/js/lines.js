@@ -1,5 +1,6 @@
 var linesVertexPositionBuffer;
 var linesVertexColorBuffer;
+var quadPosBuffer;
 function initBuffers() {
     linesVertexPositionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, linesVertexPositionBuffer);
@@ -8169,7 +8170,6 @@ linesVertexColorBuffer.itemSize = 4;
 linesVertexColorBuffer.numItems = 8152;
 
 
-
 	linesTangentBuffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, linesTangentBuffer);
 var tangents = new Array();
@@ -8177,8 +8177,143 @@ for (i=0; i<linesVertexColorBuffer.numItems; i++) {
  for (j=0; j<6; j++) {
 	tangents[i*6+j] = vertices[i*6+j%3]-vertices[i*6+j%3+3];
   }
+  var n1 = Math.sqrt(tangents[i*6+0]*tangents[i*6+0]+tangents[i*6+1]*tangents[i*6+1]+tangents[i*6+2]*tangents[i*6+2]);
+  var n2 = Math.sqrt(tangents[i*6+3]*tangents[i*6+3]+tangents[i*6+4]*tangents[i*6+4]+tangents[i*6+5]*tangents[i*6+5]);
+  tangents[i*6+0]/=n1; tangents[i*6+1]/=n1; tangents[i*6+2]/=n1;
+  tangents[i*6+3]/=n2; tangents[i*6+4]/=n2; tangents[i*6+5]/=n2;
 }
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(tangents), gl.STATIC_DRAW);
 	linesTangentBuffer.numItems = 8152 ;
     linesTangentBuffer.itemSize = 3;
+
+	
+// generate cylinders instead of lines
+
+var Ncyl = 10;
+var R = 0.3;
+var vtxCyl = new Array();
+var normalsCyl = new Array();
+var colorsCyl = new Array();
+var trianglesCyl = new Array();
+for (i=0; i<8152/2; i++) {
+ for (j=0; j<Ncyl; j++) {
+   colorsCyl[i*Ncyl*2*4+j*4+0] = colors[i*8+0];
+   colorsCyl[i*Ncyl*2*4+j*4+1] = colors[i*8+1];
+   colorsCyl[i*Ncyl*2*4+j*4+2] = colors[i*8+2];
+   colorsCyl[i*Ncyl*2*4+j*4+3] = colors[i*8+3];
+   colorsCyl[i*Ncyl*2*4+j*4+0+Ncyl*4] = colors[i*8+4];
+   colorsCyl[i*Ncyl*2*4+j*4+1+Ncyl*4] = colors[i*8+5];
+   colorsCyl[i*Ncyl*2*4+j*4+2+Ncyl*4] = colors[i*8+6];
+   colorsCyl[i*Ncyl*2*4+j*4+3+Ncyl*4] = colors[i*8+7];
+   
+   var oX = 0.;
+   var oY = tangents[i*6+2];
+   var oZ = -tangents[i*6+1]; //orthogonal vector   
+   var n = Math.sqrt(oX*oX+oY*oY+oZ*oZ);
+   oX/=n;
+   oY/=n;
+   oZ/=n;
+   var bX = tangents[i*6+1]*oZ-tangents[i*6+2]*oY; //biorthogonal vector
+   var bY = tangents[i*6+2]*oX-tangents[i*6+0]*oZ;
+   var bZ = tangents[i*6+0]*oY-tangents[i*6+1]*oX;   
+   var theta = j*3.1416*2./Ncyl;
+   var ctheta = Math.cos(theta)*R;
+   var stheta = Math.sin(theta)*R;
+   vtxCyl[i*Ncyl*6+j*3+0] = vertices[i*6+0] + oX*ctheta + bX*stheta;
+   vtxCyl[i*Ncyl*6+j*3+2] = vertices[i*6+1] + oY*ctheta + bY*stheta; // by some strange phenomenon, the Y and Z are swapped wrt the line version
+   vtxCyl[i*Ncyl*6+j*3+1] = vertices[i*6+2] + oZ*ctheta + bZ*stheta;
+   normalsCyl[i*Ncyl*6+j*3+0] = oX*ctheta + bX*stheta;
+   normalsCyl[i*Ncyl*6+j*3+2] = oY*ctheta + bY*stheta;
+   normalsCyl[i*Ncyl*6+j*3+1] = oZ*ctheta + bZ*stheta;
+   
+   vtxCyl[i*Ncyl*6+j*3+0+Ncyl*3] = vertices[i*6+3] + oX*ctheta + bX*stheta;
+   vtxCyl[i*Ncyl*6+j*3+2+Ncyl*3] = vertices[i*6+4] + oY*ctheta + bY*stheta;
+   vtxCyl[i*Ncyl*6+j*3+1+Ncyl*3] = vertices[i*6+5] + oZ*ctheta + bZ*stheta; 
+   normalsCyl[i*Ncyl*6+j*3+0+Ncyl*3] = oX*ctheta + bX*stheta;
+   normalsCyl[i*Ncyl*6+j*3+2+Ncyl*3] = oY*ctheta + bY*stheta;
+   normalsCyl[i*Ncyl*6+j*3+1+Ncyl*3] = oZ*ctheta + bZ*stheta;   
+   
+   trianglesCyl[i*Ncyl*6+j*6+0] = i*Ncyl*2+j;
+   trianglesCyl[i*Ncyl*6+j*6+1] = i*Ncyl*2+(j+1)%Ncyl;
+   trianglesCyl[i*Ncyl*6+j*6+2] = i*Ncyl*2+j+Ncyl;
+   
+   trianglesCyl[i*Ncyl*6+j*6+3] = i*Ncyl*2+(j+1)%Ncyl;
+   trianglesCyl[i*Ncyl*6+j*6+4] = i*Ncyl*2+j+Ncyl;
+   trianglesCyl[i*Ncyl*6+j*6+5] = i*Ncyl*2+(j+1)%Ncyl+Ncyl;   
+ }
+}
+
+// try to fill the gaps between cylinders ; not great.
+/*for (i=0; i<8152*Ncyl-16*Ncyl; i++) {
+  nearestDist = 1E9;
+  nearestID = -1;
+  for (j=Ncyl; j<16*Ncyl; j+=2*Ncyl) {
+    d = (vtxCyl[i*3]-vtxCyl[(i+j)*3])*(vtxCyl[i*3]-vtxCyl[(i+j)*3]) + (vtxCyl[i*3+1]-vtxCyl[(i+j)*3+1])*(vtxCyl[i*3+1]-vtxCyl[(i+j)*3+1]) + (vtxCyl[i*3+2]-vtxCyl[(i+j)*3+2])*(vtxCyl[i*3+2]-vtxCyl[(i+j)*3+2]);
+   if (d<nearestDist) {
+     nearestDist = d;
+     nearestID = i+j;
+   }   
+  }
+  if (nearestDist<0.05) {
+   vtxCyl[i*3] = (vtxCyl[i*3]+vtxCyl[nearestID*3])*0.5;
+   vtxCyl[i*3+1] = (vtxCyl[i*3+1]+vtxCyl[nearestID*3+1])*0.5;
+   vtxCyl[i*3+2] = (vtxCyl[i*3+2]+vtxCyl[nearestID*3+2])*0.5;
+   vtxCyl[nearestID*3] = vtxCyl[i*3];
+   vtxCyl[nearestID*3+1] = vtxCyl[i*3+1];
+   vtxCyl[nearestID*3+2] = vtxCyl[i*3+2];
+  }
+}*/
+
+	vtxCylBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vtxCylBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vtxCyl), gl.STATIC_DRAW);
+	vtxCylBuffer.numItems = 8152*Ncyl;
+    vtxCylBuffer.itemSize = 3;
+	
+	normalsCylBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, normalsCylBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normalsCyl), gl.STATIC_DRAW);
+	normalsCylBuffer.numItems = 8152*Ncyl;
+    normalsCylBuffer.itemSize = 3;	
+
+	colCylBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, colCylBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colorsCyl), gl.STATIC_DRAW);
+	colCylBuffer.numItems = 8152*Ncyl;
+    colCylBuffer.itemSize = 4;
+
+	triCylBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, triCylBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(trianglesCyl), gl.STATIC_DRAW);
+	triCylBuffer.numItems = 8152*Ncyl;
+    triCylBuffer.itemSize = 3;
+	
+	
+	var vtxQuad = new Array();
+	vtxQuad[0]=-1.;
+	vtxQuad[1]=-1.;
+	vtxQuad[2]=0.;
+	vtxQuad[3]=-1.;
+	vtxQuad[4]=1.;
+	vtxQuad[5]=0.;
+	vtxQuad[6]=1.;
+	vtxQuad[7]=1.;
+	vtxQuad[8]=0.;
+	vtxQuad[9]=-1.;
+	vtxQuad[10]=-1.;
+	vtxQuad[11]=0.;
+	vtxQuad[12]=1.;
+	vtxQuad[13]=1.;
+	vtxQuad[14]=0.;
+	vtxQuad[15]=1.;
+	vtxQuad[16]=-1.;
+	vtxQuad[17]=0.;
+	
+	
+    quadPosBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, quadPosBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vtxQuad), gl.STATIC_DRAW);
+	quadPosBuffer.numItems = 6;
+    quadPosBuffer.itemSize = 3;	
+
 }

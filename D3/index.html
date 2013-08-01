@@ -30,9 +30,9 @@
   
 	    void main(void) {
 	    	if (vColor.w<float(valMin) || vColor.w>float(valMax))
-		    	gl_FragColor = vec4(0.5, 0.5, 0.5, 0.2); 
+				gl_FragColor = vec4(0.5, 0.5, 0.5, 0.2); 		    	
 		    else
-		    	gl_FragColor = vec4(vColor.r*1., vColor.g*1., vColor.b*1., 1);
+				gl_FragColor = vec4(vColor.r*1., vColor.g*1., vColor.b*1., 1);				    
 		}
     </script>
     <script id="shader-vs" type="x-shader/x-vertex">
@@ -58,6 +58,81 @@
 	    	vColor = aVertexColor;
 	    }
     </script> 
+    <script id="shaderCyl-fs" type="x-shader/x-fragment">
+    	// Must keep shaders in HTML file.
+	    precision mediump float;
+	    varying vec4 vColor;
+		varying vec4 vNormals;
+  		varying vec4 vPos;	
+	    uniform int valMin;
+	    uniform int valMax;
+  
+        float snoise(vec2 v) {
+          return fract(sin(dot(v.xy, vec2(12.9898, 78.233)))*43758.5453);
+        }
+  
+	    void main(void) {
+		    float lighting = max(0.5, vNormals.z);
+	    	if (vColor.w<float(valMin) || vColor.w>float(valMax)) {
+				gl_FragColor = vec4(0.5*lighting, 0.5*lighting, 0.5*lighting, 0.3); 		    	
+				if ( snoise(floor(vPos.xy*2000.)/2000.) < 0.7) {
+				  discard;
+				}
+			} else {
+   			    gl_FragColor = vec4(vColor.r*lighting, vColor.g*lighting, vColor.b*lighting, 1);				    
+			}
+		}
+    </script>	
+    <script id="shaderCyl-vs" type="x-shader/x-vertex">
+    	// Must keep shaders in HTML file.
+	    attribute vec3 aVertexPosition;		
+	    attribute vec4 aVertexColor;
+		attribute vec3 aNormals;
+		
+	    uniform mat4 uMVMatrix;
+	    uniform mat4 uPMatrix;		
+	    varying vec4 vColor;
+		varying vec4 vNormals;
+		varying vec4 vPos;		
+		
+
+	    void main(void) {
+	    	vec4 p = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+			p/=abs(p.w);			
+			gl_Position = p;
+			vPos = p;
+	    	vColor = aVertexColor;
+			vNormals = uMVMatrix*vec4(aNormals, 0.);
+			float n = sqrt(vNormals.x*vNormals.x+vNormals.y*vNormals.y+vNormals.z*vNormals.z);
+			vNormals/=n;
+	    }
+    </script> 	
+   <script id="shaderQuad-fs" type="x-shader/x-fragment">
+    	// Must keep shaders in HTML file.
+	    precision mediump float;
+	    varying vec4 vPos;
+        uniform sampler2D uSampler;
+		
+	    void main(void) {	            
+			vec4 v = vec4(0.,0.,0.,0.);			
+			for (int i=-4; i<=4; i++) {
+			 for (int j=-4; j<=4; j++) { // didn't manage to make mipmapping work ; manually filter
+			   v+= texture2D(uSampler, vec2(vPos.x+float(i)/2048., vPos.y+float(j)/2048.));  
+			 }
+			}			
+			gl_FragColor = vec4(v.xyz/81., 1.); 		    	
+		}
+    </script>
+    <script id="shaderQuad-vs" type="x-shader/x-vertex">
+    	// Must keep shaders in HTML file.
+	    attribute vec3 aVertexPosition;			      
+	    varying vec4 vPos;        
+	    void main(void) {
+	    	vec4 p = vec4(aVertexPosition.x*0.5+0.5, aVertexPosition.y*0.5+0.5, 0., 1.);
+			gl_Position = vec4(aVertexPosition.xy, 0.1, 1.);
+	    	vPos = p;
+	    }
+    </script> 	
     <script type="text/javascript" src="js/webGL.js"></script>
     
     <link href="css/styles.css" rel="stylesheet" type="text/css"><!-- stylesheet -->
@@ -1573,6 +1648,7 @@
         }
         
         if (gl) {
+		    gl.useProgram(shaderProgram);    
     	    gl.uniform1i(shaderVariables.mMinValue, eNow[0]);
     	    gl.uniform1i(shaderVariables.mMaxValue, eNow[1]);
     	}

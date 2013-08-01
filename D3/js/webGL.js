@@ -1,4 +1,4 @@
- 
+
 var gl = null;
 
 function initGL(canvas) {
@@ -8,7 +8,7 @@ function initGL(canvas) {
         });
         gl.viewportWidth = canvas.width;
         gl.viewportHeight = canvas.height;
-    } catch (e) {}
+    } catch (e) { }
     if (!gl) {
         alert("Could not initialise WebGL, sorry :-(");
     }
@@ -50,16 +50,27 @@ function getShader(gl, id) {
     return shader;
 }
 
+var useCylinders = true;
 
 var shaderProgram;
+var shaderProgramQuad;
 var shaderVariables = {
     'mMinValue': 0,
-    'mMaxValue': 1	
+    'mMaxValue': 1
 };
 
 function initShaders() {
-    var fragmentShader = getShader(gl, "shader-fs");
-    var vertexShader = getShader(gl, "shader-vs");
+    var fragmentShader;
+    var vertexShader;
+
+    if (useCylinders) {
+        fragmentShader = getShader(gl, "shaderCyl-fs");
+        vertexShader = getShader(gl, "shaderCyl-vs");
+    } else {
+        fragmentShader = getShader(gl, "shader-fs");
+        vertexShader = getShader(gl, "shader-vs");
+    }
+
 
     shaderProgram = gl.createProgram();
     gl.attachShader(shaderProgram, vertexShader);
@@ -69,24 +80,45 @@ function initShaders() {
     if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
         alert("Could not initialise shaders");
     }
-
-    gl.useProgram(shaderProgram);
+	gl.useProgram(shaderProgram);    
 
     shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
-	shaderProgram.tangentAttribute = gl.getAttribLocation(shaderProgram, "aTangent");	
+    if (useCylinders) {
+        shaderProgram.tangentAttribute = gl.getAttribLocation(shaderProgram, "aNormals");
+        gl.enableVertexAttribArray(shaderProgram.normalsAttribute);
+    } else {
+        shaderProgram.tangentAttribute = gl.getAttribLocation(shaderProgram, "aTangent");
+        gl.enableVertexAttribArray(shaderProgram.tangentAttribute);
+    }
     gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-	gl.enableVertexAttribArray(shaderProgram.nextVertexPositionAttribute);
+
 
     shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
     gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
 
     shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
     shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
-	shaderProgram.pixelOffset = gl.getUniformLocation(shaderProgram, "pixelOffset");
-	
+
+    if (useCylinders)
+        shaderProgram.pixelOffset = gl.getUniformLocation(shaderProgram, "pixelOffset");
+
     shaderVariables.mMinValue = gl.getUniformLocation(shaderProgram, "valMin");
     shaderVariables.mMaxValue = gl.getUniformLocation(shaderProgram, "valMax");
+    gl.uniform1i(shaderVariables.mMinValue, 0);
+    gl.uniform1i(shaderVariables.mMaxValue, 15);	
 	
+	var fragmentShaderQuad = getShader(gl, "shaderQuad-fs");
+	var vertexShaderQuad = getShader(gl, "shaderQuad-vs");
+    shaderProgramQuad = gl.createProgram();
+    gl.attachShader(shaderProgramQuad, vertexShaderQuad);
+    gl.attachShader(shaderProgramQuad, fragmentShaderQuad);
+    gl.linkProgram(shaderProgramQuad);
+    if (!gl.getProgramParameter(shaderProgramQuad, gl.LINK_STATUS)) {
+        alert("Could not initialise shaders");
+    }	
+	gl.useProgram(shaderProgramQuad);
+	shaderProgramQuad.vertexPositionAttribute = gl.getAttribLocation(shaderProgramQuad, "aVertexPosition");
+	shaderProgramQuad.samplerUniform = gl.getUniformLocation(shaderProgramQuad, "uSampler");
 }
 
 
@@ -100,29 +132,73 @@ function setMatrixUniforms() {
 }
 
 function drawScene() {
-    gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+	
+	gl.bindFramebuffer(gl.FRAMEBUFFER, rttFramebuffer);
+	
+    gl.viewport(0, 0, 2048, 2048);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 250.0, pMatrix);
+    mat4.perspective(45, 1., 0.1, 2048., pMatrix);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, linesVertexPositionBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, linesVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-    gl.bindBuffer(gl.ARRAY_BUFFER, linesTangentBuffer);
-    gl.vertexAttribPointer(shaderProgram.tangentAttribute, linesTangentBuffer.itemSize, gl.FLOAT, false, 0, 0);    	
-    gl.bindBuffer(gl.ARRAY_BUFFER, linesVertexColorBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, linesVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
-    setMatrixUniforms();
-	gl.uniform4f(shaderProgram.pixelOffset, 0., 0., 0., 0.);
+	gl.useProgram(shaderProgram);    
+	for (i=0; i<5; i++) {
+		gl.disableVertexAttribArray(i);
+	}	
+    if (useCylinders) {
+        gl.bindBuffer(gl.ARRAY_BUFFER, vtxCylBuffer);
+		gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, vtxCylBuffer.itemSize, gl.FLOAT, false, 0, 0);
+        gl.bindBuffer(gl.ARRAY_BUFFER, normalsCylBuffer);
+		gl.enableVertexAttribArray(shaderProgram.normalsAttribute);
+        gl.vertexAttribPointer(shaderProgram.normalsAttribute, normalsCylBuffer.itemSize, gl.FLOAT, false, 0, 0);
+        gl.bindBuffer(gl.ARRAY_BUFFER, colCylBuffer);
+		gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
+        gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, colCylBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, triCylBuffer);
+        setMatrixUniforms();
+        gl.drawElements(gl.TRIANGLES, triCylBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+
+    } else {
+        gl.bindBuffer(gl.ARRAY_BUFFER, linesVertexPositionBuffer);
+		gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, linesVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+        gl.bindBuffer(gl.ARRAY_BUFFER, linesTangentBuffer);
+		gl.enableVertexAttribArray(shaderProgram.tangentAttribute);
+        gl.vertexAttribPointer(shaderProgram.tangentAttribute, linesTangentBuffer.itemSize, gl.FLOAT, false, 0, 0);
+        gl.bindBuffer(gl.ARRAY_BUFFER, linesVertexColorBuffer);
+		gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
+        gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, linesVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
+        setMatrixUniforms();
+        gl.uniform4f(shaderProgram.pixelOffset, 0., 0., 0., 0.);
+
+        gl.drawArrays(gl.LINES, 0, linesVertexPositionBuffer.numItems);
+
+        // thicker lines
+        thickness = 23; //should preferably be odd. 3 means 3 lines at -1, 0, +1
+        for (i = 0; i < thickness; i++) {
+            gl.uniform1f(shaderProgram.pixelOffset, (i - thickness / 2) * 1. / 2048.); // one pixel offset = 1./width=1./250.
+            gl.drawArrays(gl.LINES, 0, linesVertexPositionBuffer.numItems);
+        }
+
+    }
 	
-    gl.drawArrays(gl.LINES, 0, linesVertexPositionBuffer.numItems);
+	
 
-// thicker lines
-thickness = 3; //should preferably be odd. 3 means 3 lines at -1, 0, +1
-for (i=0; i<thickness; i++) {
-    gl.uniform1f(shaderProgram.pixelOffset, (i-thickness/2)*1./250.); // one pixel offset = 1./width=1./250.
-    gl.drawArrays(gl.LINES, 0, linesVertexPositionBuffer.numItems);
-	}
-
+	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.viewport(0, 0, 250, 250);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);       
+		gl.useProgram(shaderProgramQuad);
+	for (i=0; i<5; i++) {
+		gl.disableVertexAttribArray(i);
+	}		
+        gl.bindBuffer(gl.ARRAY_BUFFER, quadPosBuffer);
+		gl.enableVertexAttribArray(shaderProgramQuad.vertexPositionAttribute);
+		gl.vertexAttribPointer(shaderProgramQuad.vertexPositionAttribute, quadPosBuffer.itemSize, gl.FLOAT, false, 0, 0);
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, rttTexture);
+        gl.uniform1i(shaderProgramQuad.samplerUniform, 0);
+		gl.drawArrays(gl.TRIANGLES , 0, quadPosBuffer.numItems);
 }
 
 var lastTime = 0;
@@ -190,10 +266,10 @@ function handleMouseMove(event) {
 
     var deltaX = newX - lastMouseX;
     var deltaY = newY - lastMouseY;
-    
+
     deltaX *= -3.5;
     deltaY *= -3.5;
-    
+
     var newRotationMatrix = mat4.create();
     mat4.identity(newRotationMatrix);
 
@@ -225,21 +301,48 @@ function resetView() {
     ty = 0;
     tz = -100;
     mat4.identity(mvMatrix);
-    mat4.translate(mvMatrix, [-00, -0.0, -100.0]);
-    mat4.translate(mvMatrix, [-73.5, -40.5, -51.6]);
+    mat4.translate(mvMatrix, [-00, -0.0, -100.0]);	
+	mat4.translate(mvMatrix, [-73.5, -40.5, -51.6]);
 }
 
+var rttFramebuffer;
+    function initTextureFramebuffer() {
+        rttFramebuffer = gl.createFramebuffer();
+        gl.bindFramebuffer(gl.FRAMEBUFFER, rttFramebuffer);
+        rttFramebuffer.width = 2048;
+        rttFramebuffer.height = 2048;
+
+        rttTexture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, rttTexture);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR );        
+
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, rttFramebuffer.width, rttFramebuffer.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);		
+
+        var renderbuffer = gl.createRenderbuffer();
+        gl.bindRenderbuffer(gl.RENDERBUFFER, renderbuffer);
+        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, rttFramebuffer.width, rttFramebuffer.height);
+
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, rttTexture, 0);
+        gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, renderbuffer);
+
+        gl.bindTexture(gl.TEXTURE_2D, null);
+        gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    }
+	
 function webGLStart() {
     var canvas = document.getElementById("canvas3d");
 
 
     initGL(canvas);
+	initTextureFramebuffer();
     initShaders();
     initBuffers();
 
     gl.clearColor(1.0, 1.0, 1.0, 1.0);
-    //gl.enable(gl.DEPTH_TEST);
-    gl.disable(gl.DEPTH_TEST);
+    gl.enable(gl.DEPTH_TEST);
+    //gl.disable(gl.DEPTH_TEST);
 
     //gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
     //gl.blendFunc(gl.GL_ONE, gl.GL_ONE); 
