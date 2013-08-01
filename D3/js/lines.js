@@ -8189,13 +8189,13 @@ for (i=0; i<linesVertexColorBuffer.numItems; i++) {
 	
 // generate cylinders instead of lines
 
-var Ncyl = 10;
+var Ncyl = 6;
 var R = 0.3;
 var vtxCyl = new Array();
 var normalsCyl = new Array();
 var colorsCyl = new Array();
 var trianglesCyl = new Array();
-for (i=0; i<8152/2; i++) {
+for (i=0; i<4076; i++) {
  for (j=0; j<Ncyl; j++) {
    colorsCyl[i*Ncyl*2*4+j*4+0] = colors[i*8+0];
    colorsCyl[i*Ncyl*2*4+j*4+1] = colors[i*8+1];
@@ -8213,25 +8213,25 @@ for (i=0; i<8152/2; i++) {
    oX/=n;
    oY/=n;
    oZ/=n;
-   var bX = tangents[i*6+1]*oZ-tangents[i*6+2]*oY; //biorthogonal vector
+   var bX = tangents[i*6+1]*oZ-tangents[i*6+2]*oY; //binormal vector
    var bY = tangents[i*6+2]*oX-tangents[i*6+0]*oZ;
    var bZ = tangents[i*6+0]*oY-tangents[i*6+1]*oX;   
    var theta = j*3.1416*2./Ncyl;
    var ctheta = Math.cos(theta)*R;
    var stheta = Math.sin(theta)*R;
    vtxCyl[i*Ncyl*6+j*3+0] = vertices[i*6+0] + oX*ctheta + bX*stheta;
-   vtxCyl[i*Ncyl*6+j*3+2] = vertices[i*6+1] + oY*ctheta + bY*stheta; // by some strange phenomenon, the Y and Z are swapped wrt the line version
-   vtxCyl[i*Ncyl*6+j*3+1] = vertices[i*6+2] + oZ*ctheta + bZ*stheta;
+   vtxCyl[i*Ncyl*6+j*3+1] = vertices[i*6+1] + oY*ctheta + bY*stheta; 
+   vtxCyl[i*Ncyl*6+j*3+2] = vertices[i*6+2] + oZ*ctheta + bZ*stheta;
    normalsCyl[i*Ncyl*6+j*3+0] = oX*ctheta + bX*stheta;
-   normalsCyl[i*Ncyl*6+j*3+2] = oY*ctheta + bY*stheta;
-   normalsCyl[i*Ncyl*6+j*3+1] = oZ*ctheta + bZ*stheta;
+   normalsCyl[i*Ncyl*6+j*3+1] = oY*ctheta + bY*stheta;
+   normalsCyl[i*Ncyl*6+j*3+2] = oZ*ctheta + bZ*stheta;
    
    vtxCyl[i*Ncyl*6+j*3+0+Ncyl*3] = vertices[i*6+3] + oX*ctheta + bX*stheta;
-   vtxCyl[i*Ncyl*6+j*3+2+Ncyl*3] = vertices[i*6+4] + oY*ctheta + bY*stheta;
-   vtxCyl[i*Ncyl*6+j*3+1+Ncyl*3] = vertices[i*6+5] + oZ*ctheta + bZ*stheta; 
+   vtxCyl[i*Ncyl*6+j*3+1+Ncyl*3] = vertices[i*6+4] + oY*ctheta + bY*stheta;
+   vtxCyl[i*Ncyl*6+j*3+2+Ncyl*3] = vertices[i*6+5] + oZ*ctheta + bZ*stheta; 
    normalsCyl[i*Ncyl*6+j*3+0+Ncyl*3] = oX*ctheta + bX*stheta;
-   normalsCyl[i*Ncyl*6+j*3+2+Ncyl*3] = oY*ctheta + bY*stheta;
-   normalsCyl[i*Ncyl*6+j*3+1+Ncyl*3] = oZ*ctheta + bZ*stheta;   
+   normalsCyl[i*Ncyl*6+j*3+1+Ncyl*3] = oY*ctheta + bY*stheta;
+   normalsCyl[i*Ncyl*6+j*3+2+Ncyl*3] = oZ*ctheta + bZ*stheta;   
    
    trianglesCyl[i*Ncyl*6+j*6+0] = i*Ncyl*2+j;
    trianglesCyl[i*Ncyl*6+j*6+1] = i*Ncyl*2+(j+1)%Ncyl;
@@ -8285,7 +8285,7 @@ for (i=0; i<8152/2; i++) {
 	triCylBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, triCylBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(trianglesCyl), gl.STATIC_DRAW);
-	triCylBuffer.numItems = 8152*Ncyl;
+	triCylBuffer.numItems = 8152*Ncyl*3;
     triCylBuffer.itemSize = 3;
 	
 	
