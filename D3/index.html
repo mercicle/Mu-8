@@ -599,8 +599,8 @@
           .attr("x", margin.left).attr("y", margin.top / 2)
           .attr("stroke", colorOrder[i])
           .attr("stroke-width", "0.5px")
-          .attr("font-size", "14px")
-          .attr("font-family", "Times New Roman");
+          .attr("font-size", "13px")
+          .attr("font-family", "Helvetica");
     
         //create groups to hold the bars
         var bar = svg.selectAll(".bar")
@@ -654,6 +654,7 @@
         svg.append("g")
            .attr("class", "y axis")
            .style("font-size", 10)
+           .style("font-family", "Helvetica")
            .call(yAxis);
     }
     
@@ -696,7 +697,7 @@
     var seqArcContextSVG = d3.select("#mainArcChart")
                              .append("svg")
                              .attr("class", "seqArcContextSVG")
-                             .attr("style", "border:1px solid black;")
+                             .attr("style", "border-bottom:1px solid black;")
                              .attr("width", seq_svg_width)
                              .attr("height", arcContextHeight);
     
@@ -756,7 +757,7 @@
                      }
                  })
                  .attr("font-size", "2px")
-                 .attr("font-family", "arial")
+                 .attr("font-family", "Helvetica")
                  .text(String);
     
     //////////////////////////////////////////////////
@@ -1008,12 +1009,14 @@
                .append("text")
                .text("Distance (Unit: Angstrom)")
                .attr("x", (widthDistHist / 2) - marginDistHist.left - marginDistHist.right).attr("y", marginDistHist.bottom / 1.5)
-               .style("font-size", 12);
+               .style("font-size", 12)
+               .style("font-family", "Helvetica");
     
     distHistSVG.append("g")
                .attr("class", "y axis")
                .style("font-size", 12)
-               .call(yAxisDistHist);
+               .call(yAxisDistHist)
+               .style("font-family", "Helvetica");;
     
    
     ///chordColor
@@ -1457,6 +1460,7 @@
     svgForZoomYAxis.append("g")
                    .attr("class", "y_axis_positive_zoom")
                    .style("font-size", 10)
+                   .style("font-family", "Helvetica")
                    .attr("transform", "translate(" + 20 + ",0)")
                    .call(yPositiveAxisZoom);
     
@@ -1464,6 +1468,7 @@
     svgForZoomYAxis.append("g")
                    .attr("class", "y_axis_negative_zoom")
                    .style("font-size", 10)
+                   .style("font-family", "Helvetica")
                    .attr("transform", "translate(" + 20 + ",0)")
                    .call(yNegativeAxisZoom);
     
@@ -1514,7 +1519,7 @@
               .attr("dx", ".35em")
               .attr("dy", ".35em")
               .attr("font-size", "16px")
-              .attr("font-family", "arial")
+              .attr("font-family", "Helvetica")
               .attr("fill", function(d, i) {
                   if (d == initscTIMSlice[i]) {
                       return "black";
@@ -1755,7 +1760,7 @@
                      }
                  })
                  .attr("font-size", textScale(Math.round(Math.abs(eNow[1] - eNow[0]))) + "px")
-                 .attr("font-family", "arial")
+                 .attr("font-family", "Helvetica")
                  .on("mouseover", function(d, i) {
                      return mouseover(d, i, sliceOfscTIM[i], "text");
                  })

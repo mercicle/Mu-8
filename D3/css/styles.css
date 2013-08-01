@@ -21,6 +21,7 @@ html,body { height:100%; position: absolute;}
 #theTitle{
 font-size: 20px;
 font-style: bold;
+font-family: "Helvetica";
 margin-bottom: 5px;
 }
 
