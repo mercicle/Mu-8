@@ -26,13 +26,13 @@
 	    varying vec4 vColor;
   
 	    uniform int valMin;
-	    uniform int valMax;
-  
+	    uniform int valMax;		
+
 	    void main(void) {
 	    	if (vColor.w<float(valMin) || vColor.w>float(valMax))
 				gl_FragColor = vec4(0.5, 0.5, 0.5, 0.2); 		    	
 		    else
-				gl_FragColor = vec4(vColor.r*1., vColor.g*1., vColor.b*1., 1);				    
+				gl_FragColor = vec4(vColor.r*1., vColor.g*1., vColor.b*1., 1.);	
 		}
     </script>
     <script id="shader-vs" type="x-shader/x-vertex">
@@ -46,7 +46,6 @@
 		uniform float pixelOffset;
   
 	    varying vec4 vColor;
-
 	    void main(void) {
 	    	vec4 p = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
 			p/=abs(p.w);
@@ -112,15 +111,15 @@
 	    precision mediump float;
 	    varying vec4 vPos;
         uniform sampler2D uSampler;
-		
+		uniform float texW;
 	    void main(void) {	            
-			vec4 v = vec4(0.,0.,0.,0.);			
+			vec4 v = vec4(0.,0.,0.,0.);	            
 			for (int i=-4; i<=4; i++) {
 			 for (int j=-4; j<=4; j++) { // didn't manage to make mipmapping work ; manually filter
-			   v+= texture2D(uSampler, vec2(vPos.x+float(i)/2048., vPos.y+float(j)/2048.));  
+			   v+= texture2D(uSampler, vec2(vPos.x+float(i)/texW, vPos.y+float(j)/texW));  
 			 }
 			}			
-			gl_FragColor = vec4(v.xyz/81., 1.); 		    	
+			gl_FragColor = vec4(v.xyz/(81.), 1.); 		    	
 		}
     </script>
     <script id="shaderQuad-vs" type="x-shader/x-vertex">

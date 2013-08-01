@@ -1,5 +1,6 @@
 
 var gl = null;
+var sizeRT = 2048;
 
 function initGL(canvas) {
     try {
@@ -84,7 +85,7 @@ function initShaders() {
 
     shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
     if (useCylinders) {
-        shaderProgram.tangentAttribute = gl.getAttribLocation(shaderProgram, "aNormals");
+        shaderProgram.normalsAttribute = gl.getAttribLocation(shaderProgram, "aNormals");
         gl.enableVertexAttribArray(shaderProgram.normalsAttribute);
     } else {
         shaderProgram.tangentAttribute = gl.getAttribLocation(shaderProgram, "aTangent");
@@ -99,7 +100,7 @@ function initShaders() {
     shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
     shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
 
-    if (useCylinders)
+    if (!useCylinders)
         shaderProgram.pixelOffset = gl.getUniformLocation(shaderProgram, "pixelOffset");
 
     shaderVariables.mMinValue = gl.getUniformLocation(shaderProgram, "valMin");
@@ -119,6 +120,8 @@ function initShaders() {
 	gl.useProgram(shaderProgramQuad);
 	shaderProgramQuad.vertexPositionAttribute = gl.getAttribLocation(shaderProgramQuad, "aVertexPosition");
 	shaderProgramQuad.samplerUniform = gl.getUniformLocation(shaderProgramQuad, "uSampler");
+	shaderProgramQuad.texWUniform = gl.getUniformLocation(shaderProgramQuad, "texW");
+	gl.uniform1f(shaderProgramQuad.texWUniform, sizeRT);
 }
 
 
@@ -135,15 +138,17 @@ function drawScene() {
 	
 	gl.bindFramebuffer(gl.FRAMEBUFFER, rttFramebuffer);
 	
-    gl.viewport(0, 0, 2048, 2048);
+    gl.viewport(0, 0, sizeRT, sizeRT);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    mat4.perspective(45, 1., 0.1, 2048., pMatrix);
+    mat4.perspective(45, 1., 0.5, 300., pMatrix);
 
 	gl.useProgram(shaderProgram);    
 	for (i=0; i<5; i++) {
 		gl.disableVertexAttribArray(i);
 	}	
+	gl.activeTexture(gl.TEXTURE0);
+	gl.bindTexture(gl.TEXTURE_2D, null);
     if (useCylinders) {
         gl.bindBuffer(gl.ARRAY_BUFFER, vtxCylBuffer);
 		gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
@@ -170,14 +175,14 @@ function drawScene() {
 		gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
         gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, linesVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
         setMatrixUniforms();
-        gl.uniform4f(shaderProgram.pixelOffset, 0., 0., 0., 0.);
+        gl.uniform1f(shaderProgram.pixelOffset, 0.);
 
         gl.drawArrays(gl.LINES, 0, linesVertexPositionBuffer.numItems);
 
         // thicker lines
-        thickness = 23; //should preferably be odd. 3 means 3 lines at -1, 0, +1
-        for (i = 0; i < thickness; i++) {
-            gl.uniform1f(shaderProgram.pixelOffset, (i - thickness / 2) * 1. / 2048.); // one pixel offset = 1./width=1./250.
+        thickness = 5*(sizeRT/250); //should preferably be odd. 3 means 3 lines at -1, 0, +1
+        for (k = 0; k < thickness; k++) {
+            gl.uniform1f(shaderProgram.pixelOffset, (k - thickness / 2)/ sizeRT); // one pixel offset = 1./width=1./sizeRT
             gl.drawArrays(gl.LINES, 0, linesVertexPositionBuffer.numItems);
         }
 
@@ -186,7 +191,7 @@ function drawScene() {
 	
 
 	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    gl.viewport(0, 0, 250, 250);
+    gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);       
 		gl.useProgram(shaderProgramQuad);
 	for (i=0; i<5; i++) {
@@ -309,8 +314,8 @@ var rttFramebuffer;
     function initTextureFramebuffer() {
         rttFramebuffer = gl.createFramebuffer();
         gl.bindFramebuffer(gl.FRAMEBUFFER, rttFramebuffer);
-        rttFramebuffer.width = 2048;
-        rttFramebuffer.height = 2048;
+        rttFramebuffer.width = sizeRT;
+        rttFramebuffer.height = sizeRT;
 
         rttTexture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, rttTexture);
