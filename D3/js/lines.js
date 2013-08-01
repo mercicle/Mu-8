@@ -8244,17 +8244,17 @@ for (i=0; i<4076; i++) {
 }
 
 // try to fill the gaps between cylinders ; not great.
-/*for (i=0; i<8152*Ncyl-16*Ncyl; i++) {
+/*for (i=0; i<8152*Ncyl-64*Ncyl; i++) {
   nearestDist = 1E9;
   nearestID = -1;
-  for (j=Ncyl; j<16*Ncyl; j+=2*Ncyl) {
+  for (j=Ncyl; j<64*Ncyl; j+=2*Ncyl) {
     d = (vtxCyl[i*3]-vtxCyl[(i+j)*3])*(vtxCyl[i*3]-vtxCyl[(i+j)*3]) + (vtxCyl[i*3+1]-vtxCyl[(i+j)*3+1])*(vtxCyl[i*3+1]-vtxCyl[(i+j)*3+1]) + (vtxCyl[i*3+2]-vtxCyl[(i+j)*3+2])*(vtxCyl[i*3+2]-vtxCyl[(i+j)*3+2]);
    if (d<nearestDist) {
      nearestDist = d;
      nearestID = i+j;
    }   
   }
-  if (nearestDist<0.05) {
+  if (nearestDist<0.5*0.5) {
    vtxCyl[i*3] = (vtxCyl[i*3]+vtxCyl[nearestID*3])*0.5;
    vtxCyl[i*3+1] = (vtxCyl[i*3+1]+vtxCyl[nearestID*3+1])*0.5;
    vtxCyl[i*3+2] = (vtxCyl[i*3+2]+vtxCyl[nearestID*3+2])*0.5;

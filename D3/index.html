@@ -128,7 +128,7 @@
 	    attribute vec3 aVertexPosition;			      
 	    varying vec4 vPos;        
 	    void main(void) {
-	    	vec4 p = vec4(aVertexPosition.x*0.5+0.5, -aVertexPosition.y*0.5+0.5, 0., 1.);
+	    	vec4 p = vec4(aVertexPosition.x*0.5+0.5, aVertexPosition.y*0.5+0.5, 0., 1.);
 			gl_Position = vec4(aVertexPosition.xy, 0.1, 1.);
 	    	vPos = p;
 	    }
