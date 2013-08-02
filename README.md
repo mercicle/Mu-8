@@ -1,7 +1,7 @@
 Mu-8: Visualizing Differences between a Protein and its Family
 ======
 
-More information on this project and the latest released version is available at http://mu-8.com
+*More information on this project and the latest released version is available at http://mu-8.com*
 
 
 
