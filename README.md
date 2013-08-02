@@ -1,5 +1,5 @@
 Mu-8: Visualizing Differences between a Protein and its Family
-======
+------
 
 **More information on this project and the latest released version is available at http://mu-8.com**
 
@@ -12,7 +12,7 @@ The objective of the Mu-8 project is to develop and interactive visualization te
 Contest Submission for 3rd IEEE Symposium on Biological Data Visualization
 
 Team
-========
+-----
 
 Johnathan Mercer (mercer at fas.harvard.edu) 
 
