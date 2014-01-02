@@ -1,0 +1,3 @@
+
+
+./mongoimport -d mu8 -c AAindices --file /local/main/AAIndicesForMongo.json

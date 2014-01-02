@@ -1,0 +1,36 @@
+<div class="navbar navbar-inverse navbar-fixed-top" style="z-index: 10;">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </a>
+            <a class="brand" href="#">Mu-8</a>
+
+            <% if (username !== "") { %>
+            <div class="nav-collapse collapse logged-in-menu">
+
+                <ul class="nav pull-right">
+                    <li><a href="#users/userguide">User Guide</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><%= username %> <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#users/account">Account</a></li>
+                            <li><a href="#users/logout">Log out</a></li>                            
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <% } else { %>
+ 
+                <ul class="nav pull-right">                    
+                    <li><a href="#users/login">Log in</a></li>
+                    <li><a href="#users/signup">Sign up</a></li>
+                    <li><a href="#about">About</a></li>
+                </ul>
+        
+            <% } %>
+        </div>
+    </div>
+</div>

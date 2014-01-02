@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title> Mu-8 </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="John Mercer">
+
+    <link href="css/bootstrap.css"            rel="stylesheet">
+    <link href="css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="css/styles.css"               rel="stylesheet">
+    <link href='http://fonts.googleapis.com/css?family=Varela+Round|Carrois+Gothic+SC|Karla|Quantico|Audiowide' rel='stylesheet' type='text/css'>
+    <link href="css/demo_page.css" rel="stylesheet">
+    <link href="css/demo_table.css" rel="stylesheet">
+  
+    <link href="css/jquery-ui-1.10.3.custom.min.css" rel="stylesheet">
+    <link href="css/viz_styles.css" rel="stylesheet">
+
+    <script src="http://use.edgefonts.net/andika.js"></script>
+    <script src="http://use.edgefonts.net/arvo.js"></script>
+
+</head>
+
+<body>
+
+<div class="header"></div>
+
+<div class="container">
+
+    <div class="row-fluid">
+        <div id="content" class="span12>"></div>
+    </div>
+
+    <div id="spinningWheel" class="modal fade" tabindex="-1" role="dialog" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="text-align: center">
+                    <h3 id="spinningWheelTitle"> Loading, please wait... </h3>
+                </div>
+                <div class="modal-body" >
+                    <div style="height:160px">
+                      <span id="spinCenter" style="position: absolute;display: block;top: 60%;left: 50%;"></span>
+                    </div>
+                </div>
+                <div class="mdal-footer" style="text-align: center"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p> Copyright 2013, Harvard University </p>
+    </footer>
+
+</div>
+<!-- /container -->
+
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="libraries/jquery-1.8.2.min.js"></script>
+<script src="libraries/jquery-ui-1.10.3.custom.min.js"></script>
+<script src="libraries/jquery.form.js"></script>
+<script src="libraries/jquery.dataTables.min.js"></script>
+
+<script src="libraries/glMatrix-0.9.5.min.js"></script>
+<script src="libraries/webgl-utils.js"></script> 
+<script src="libraries/webGL.js"></script> 
+
+
+<script src="libraries/underscore-min.js"></script>
+<script src="libraries/backbone-min.js"></script>
+<script src="libraries/spin.js"></script>
+<script src="libraries/bootstrap.min.js"></script>
+<script src="libraries/d3.v3.min.js"></script>
+
+<!-- Visualiation Scipts -->
+<!-- Mu-8 Scripts -->
+<!-- <script type="text/javascript" src="js/viz/data.js"></script>  -->
+<script type="text/javascript" src="js/viz/lines.js"></script> 
+<script type="text/javascript" src="js/viz/helperFunctions.js"></script>
+<script type="text/javascript" src="js/viz/spinner.js"></script>
+<script type="text/javascript" src="js/viz/globalVarsForViz.js"></script>
+<script type="text/javascript" src="js/viz/brushMove.js"></script>
+<script type="text/javascript" src="js/viz/brushSeqContext.js"></script> 
+<script type="text/javascript" src="js/viz/distHistFunctions.js"></script> 
+<script type="text/javascript" src="js/viz/zoomLayout.js"></script>
+<script type="text/javascript" src="js/viz/setup.js"></script>
+
+<script src="js/utils.js"></script>
+
+<script src="js/views/paginator.js"></script>
+<script src="js/views/header.js"></script>
+<script src="js/views/home.js"></script>
+
+<script src="js/views/signup.js"></script>
+<script src="js/views/login.js"></script>
+<script src="js/views/account.js"></script>
+<script src="js/views/accountEdit.js"></script>
+<script src="js/views/passwordChange.js"></script>
+<script src="js/views/userguide.js"></script>
+
+<script src="js/models/user.js"></script> 
+
+
+
+<script src="js/models/computation.js"></script>
+<script src="js/models/aaindex.js"></script>
+ 
+<script src="js/views/computationCreate.js"></script>
+<script src="js/views/computationList.js"></script> 
+ 
+<script src="js/views/visualize.js"></script>
+<script src="js/views/aaIndexList.js"></script>
+
+
+<script src="js/views/svg.js"></script>
+
+
+<script src="js/views/about.js"></script>
+<script src="js/BackBoneRouter.js"></script>
+</body>
+</html>

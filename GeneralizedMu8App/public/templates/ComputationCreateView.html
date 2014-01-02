@@ -1,0 +1,80 @@
+<div class="row-fluid">
+    <form class="form-horizontal span12" 
+          enctype="multipart/form-data" 
+          name="computationForm">
+
+        <fieldset>
+
+            <legend> Mu-8 Sequence Analysis </legend>
+            <br/>
+
+            <div class="row">
+                <div class="span8">
+                    <div class="control-group">
+                        <label for="computationName" class="control-label">Name:</label>
+
+                        <div class="controls">
+                            <input type="text" id="computationName" name="computationName" value=""/>
+                            <span class="help-inline"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="description" class="control-label">Description:</label>
+
+                        <div class="controls">
+                            <textarea id="description" name="description" style="width: 90%;" rows="6"></textarea>
+                        </div>
+                    </div>
+ 
+                    <div class="control-group">
+                        <label for="public" class="control-label">Public:</label>
+
+                        <div class="controls">
+                            <select class="input-small" id="isPublic" name="isPublic">
+                                <option value="Public">Public</option>
+                                <option value="Private">Private</option>
+                            </select>
+                            <span class="help-inline"></span>
+                        </div>
+                    </div>
+
+
+                    <div class="control-group">
+                        <label for="msaFile" class="control-label">Multiple Sequence Alignment:</label>
+
+                        <div class="controls">
+                            <input type="file" id="msaFile" class="input-file large" name="msaFile" />
+                            <span class="help-inline"></span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="pdbFile" class="control-label">PDB Structure:</label>
+
+                        <div class="controls">
+                            <input type="file" id="pdbFile" class="input-file large" name="pdbFile" />
+                            <span class="help-inline"></span>
+                        </div>
+                    </div>
+                     
+                </div>
+
+            </div>
+
+        </fieldset>
+
+        <div class="form-actions">
+            <a href="#" class="btn btn-primary compute">Compute</a>
+            <a href="#" class="btn cancel">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<div class="row-fluid status-bar">
+    <div class="span12">
+        <div class="alert alert-success" style="display: none">
+            <b>Success!</b> Computing!
+        </div>
+    </div>
+</div>

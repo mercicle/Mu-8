@@ -1,0 +1,15 @@
+<td><%= no %></td>
+<td><%= computationName %></td>
+<td><%= description %></td>
+<td><%= isPublic %></td>
+<td><%= status %></td>
+<td>
+	 <a href="#" class="delete btn btn-danger">Delete</a>
+	<% if (status == "Available") { %>
+		 <a href="#visualize/<%= id %>" class="visualize btn ">Visualize</a>
+	<% } else { %>
+	<% } %>
+</td>
+
+
+

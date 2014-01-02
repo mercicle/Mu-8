@@ -1,0 +1,70 @@
+<div class="row-fluid">
+
+    <form class="form-horizontal span12">
+
+        <fieldset>
+
+            <legend>User Details</legend>
+            <br/>
+
+            <div class="row">
+                <div class="span8">
+
+                    <div class="control-group">
+                        <label for="firstname" class="control-label">First Name:</label>
+
+                        <div class="controls">
+                            <input type="text" id="firstname" name="firstname" value="<%= firstname %>"/>
+                            <span class="help-inline"></span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="lastname" class="control-label">Last Name:</label>
+
+                        <div class="controls">
+                            <input type="text" id="lastname" name="lastname" value="<%= lastname %>"/>
+                            <span class="help-inline"></span>
+                        </div>
+                    </div>                    
+                    
+<!--                    <div class="control-group">
+                        <label for="email" class="control-label">Email:</label>
+
+                        <div class="controls">
+                            <input type="text" id="email" name="email" value="<%= email %>"/>
+                            <span class="help-inline"></span>
+                        </div>
+                    </div>-->
+                    
+<!--                    <div class="control-group">                        
+
+                        <div class="controls">
+                            <input type="checkbox" id="affiliation" name="affiliation" value="affiliation"/>
+                            <span class="checkbox-label"> Affiliate</span>
+                            <span class="help-inline"></span>
+                        </div>
+                    </div>-->
+
+                </div>                
+
+            </div>
+
+        </fieldset>
+
+        <div class="form-actions">
+            <a href="#" class="btn btn-primary save">Save</a>
+            <a href="#" class="btn cancel">Cancel</a>
+        </div>
+
+    </form>
+
+</div>
+
+<div class="row-fluid status-bar">
+    <div class="span12">
+        <div class="alert alert-success" style="display: none">
+            <b>Success!</b> User registered successfully
+        </div>
+    </div>
+</div>

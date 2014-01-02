@@ -1,0 +1,187 @@
+
+table.tbaaindex{font-size:80%; } 
+
+/*html,body { height:100%; position: absolute;}*/
+
+/* uservisinfobox from http://theory.info/harvardstat221#?s=d3 workshop&v=function-and-its-derivative*/
+.uservisinfobox {
+  position : absolute;
+  background : rgba(0, 0, 0, 0.4);
+  color : white;
+  padding : 10px;
+  border-radius : 5px;
+}
+
+.uservisinfobox p {
+  text-align : left;
+  font-family : "Garamond";
+  font-size : 19px;
+  margin : 0px;
+}
+ 
+.selectWrapper{
+   padding-left: 260px;
+}
+
+#histogramWrapper, #mainChartWrapper, #zoomChartWrapper, #controls
+{
+	overflow: hidden;
+}
+ 
+/* This style is for the histogram rectangles */
+.bar rect {
+  fill: steelblue; 
+  shape-rendering: crispEdges;
+  font-size: 5;
+}
+
+/* This style is for the text (frequeny count) on the histogram rectangles */
+.bar text {
+  fill: #fff;
+  font-size: 5;
+}
+
+.distHistBar{
+  fill: #fff;
+}
+
+/* This style is for the axes */
+.axis path, .axis line, .y_axis_positive_zoom, .y_axis_negative_zoom {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.chordColorAxis path, .chordColorAxis line  {
+             fill: none;
+           stroke: #000;
+  shape-rendering: crispEdges;
+        font-size: 8;
+}
+
+/* This style is for the seuence x-axis */
+.seqXAxis {
+  fill: black;
+  stroke: black;
+  font-size: 8;
+  shape-rendering: crispEdges;
+}
+
+/* This style is for the Zoom x-axis */
+.zoomXAxis{
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+}
+
+.distHistXAxis{
+    fill: none;
+    stroke: black;
+    font-size: 12px;
+}
+
+ /* This style is for the text on the Zoom x-axis */
+.zoomXAxis text {
+    font-family: arial;
+    font-size: 10px;
+}
+
+/* This is the style for the brush and extent classes */
+.brush .extent {
+  stroke: #ccc; 
+  fill-opacity: .2; 
+  shape-rendering: crispEdges;
+  fill: steelblue; 
+}
+
+/** add this to get the grey handle bars -otherwise they are black **/
+.resize path {
+  fill: #eee;
+  stroke: #666;
+}
+
+.chart rect {
+  fill: steelblue;
+  /** for borders **/
+  stroke:black; 
+  stroke-width:0.5;
+}
+ 
+.seqContextSeqRects {
+  fill: steelblue;  /** fill: lightgrey; **/
+  /** for borders **/
+  stroke:black; 
+  stroke-width:0.5;
+}
+
+.seqContextSeqText {
+  fill: white;   
+  font-size: 2px;
+  font-family:arial;
+}
+
+.chordColorRects{
+  stroke:black; 
+  stroke-width:0.5;
+}
+
+.seqZoomSeqText {
+  fill: black;   
+}
+
+.seqContextScoreRects {
+  /** for borders **/
+  stroke:black; 
+  stroke-width:0.5;
+}
+
+.seqZoomScoreRects {
+  /** for borders **/
+  stroke:black; 
+  stroke-width:0.5;
+}
+
+.horizDiv {
+  /*overflow: hidden;*/
+  float: left; 
+  width: 182px;
+}
+
+.horizDiv1st {
+  float: left; 
+  width: 182px;
+}
+
+#threedview {
+  float: left;
+  padding-top: 26px;
+}
+
+#zoomChartWrapper{
+	overflow: hidden;
+	width: 1300px;
+	height: 310px;
+	margin: 0px;
+	padding: 0px;
+}
+
+#zoomedChartYAxis{
+	width: 20px;
+	height: 275px;
+	float: left;
+}
+
+#zoomedChart{
+	overflow: hidden;
+	float: left;
+	width:600px;
+}
+
+#distanceHistogram{
+	overflow: hidden;
+	float: left;
+	height: 300px;
+	width: 300px;
+	padding-top: 26px;
+	padding-left: 30px;
+}

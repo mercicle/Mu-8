@@ -1,0 +1,18 @@
+{
+    "name": "genets",
+    "description": "Computational and Visualization Framework for Genetic Networks",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+        "express": "3.x",
+        "mongodb": "1.1.8",
+        "socket.io": "0.9.10",
+        "connect-mongo": "0.3.x",
+        "node-csv": "0.1.2",
+        "forever": "0.10.8"
+    },
+    "engines": {
+        "node": "0.8.4",
+        "npm": "1.1.49"
+    }
+}

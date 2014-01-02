@@ -1,0 +1,89 @@
+<div class="row-fluid">
+
+    <form class="form-horizontal span12">
+
+        <fieldset>
+            <legend>Computation Results</legend>
+            <div class="row">
+                <div class="span8">
+                    <!--  
+                    <div class="control-group">
+                        <label for="computationId" class="control-label">Id:</label>
+                        <div class="controls">
+                            <input id="computationId" name="computationId" type="text" 
+                                value="<%= _id === null ? '' : _id %>"
+                                   disabled/>
+                        </div>
+                    </div>
+                    -->
+                    <div class="control-group">
+                        <label for="computationName" class="control-label">Computation Name:</label>
+
+                        <div class="controls">
+                            <input type="text" id="computationName" name="computationName" value="<%= computationName %>" />
+                            <span class="help-inline"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="description" class="control-label">Description</label>
+                        <div class="controls">
+                            <textarea id="description" name="description" style="width: 90%;" rows="6" ><%= description %></textarea>
+                        </div>
+                    </div>
+                    <!--   
+                    <div class="control-group">
+                        <label for="public" class="control-label">Is Public:</label>
+                        <div class="controls">
+                            <select class="input-small" id="isPublic" name="isPublic">
+                                <option value="Public" <%= isPublic == 'Public' ? "selected":"" %> >Public</option>
+                                <option value="Private" <%= isPublic == 'Private' ? "selected":""%> >Private</option>
+                            </select>
+                            <span class="help-inline"></span>
+                        </div>
+                    </div>   -->                                      
+                </div>
+            </div>
+        </fieldset>        
+        <!-- <div class="form-actions"> --> 
+           &nbsp;&nbsp;&nbsp; <a href="#visualize/<%= _id %>" class="btn btn-primary visualize offset1" >Visualize</a>
+                              <a href="#" class="btn cancel">Cancel</a>
+        <!-- </div>         -->
+    </form>
+</div>
+
+<div class="table-responsive" style="clear: both; border-top: 1px solid #DDDDDD;">
+    <h3> Your Gene Set </h3>
+    <table id="testgeneTable" class="table table-bordered table-striped table-hover" style="clear: both">
+        <thead>
+            <tr>
+                <th width="5%">#</th>
+                <th width="15%">Gene</th>
+                <th width="15%">Gene AUC</th>
+                <th width="15%">Gene P-Value</th>
+                <th width="25%">Neighborhood Threshold </th>
+                <th width="25%">Neighborhood Order </th>
+            </tr>
+        </thead>
+        <tbody>            
+        </tbody>
+    </table>
+</div>
+<br>
+<br>
+<div class="table-responsive" style="clear: both; border-top: 1px solid #DDDDDD;">
+    <h3> Predicted Genes </h3>
+    <table id="candidateTable" class="table table-bordered table-striped table-hover" style="clear: both">
+        <thead>
+            <tr>
+                <th width="5%">#</th>
+                <th width="25%">Gene</th>
+                <th width="25%">Gene Likelihood</th>
+                <th width="30%">Gene P-Value</th> 
+            </tr>
+        </thead>
+        <tbody>            
+        </tbody>
+    </table>
+</div>
+ 
