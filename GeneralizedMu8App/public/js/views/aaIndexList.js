@@ -14,7 +14,7 @@ window.AAIndexListView = Backbone.View.extend({
             this.$('#aaindicesTable tbody').append(new AAIndexListItemView({model: aaindices[i], no: i+1}).render().el);
         }
          
-        this.$('#aaindicesTable').dataTable({"bAutoWidth": false,"aaSorting": [], "bPaginate": false,"bFilter": false});        
+        this.$('#aaindicesTable').dataTable({"bAutoWidth": false});        
 
         return this;
     }
@@ -35,10 +35,10 @@ window.AAIndexListItemView = Backbone.View.extend({
         $(this.el).html(this.template({
                 no: this.options.no,
                 id: this.model.get("_id"),
-                name: this.model.get("name"), 
+                accession: this.model.get("accession"), 
                 description: this.model.get("description"), 
-                category: this.model.get("category"), 
-                aaindexIndex: this.model.get("aaindexIndex"),
+                category: this.model.get("category"),
+                aaIndexIndex: this.model.get("aaIndexIndex"),
         }));
         
         return this;
@@ -47,20 +47,52 @@ window.AAIndexListItemView = Backbone.View.extend({
     events: {
         "click .add"        : "addAAIndex",
         "click .remove"     : "removeAAIndex",
+        "click"             :  "exchangeIndices",
     },
     
+    exchangeIndices: function(event){
+        
+        accessionOfNewIndex = this.model.get("accession");
+        
+        console.log("exchanging "+accessionOfNewIndex);
+
+        var thisRoute = Backbone.history.fragment;
+        var computationId = thisRoute.split("/")[1];
+
+        console.log('computationId'+computationId);
+
+        newIndexData = [];
+        if(typeof computationId != 'undefined'){
+          ///visualdata/:computationId/:accession
+          $.getJSON('/visualdata/' + computationId + '/' + accessionOfNewIndex,
+            function(data){ 
+
+                    $.each( data , function( i , item ) { 
+                       newIndexData.push(data[i]);
+                    }); 
+
+          }).done(function() { console.log( "Done getting new AA index data" ); 
+                               $( "#dialogAAIndexSelector" ).remove();
+                               updateData();
+                               updateVizWithNewAAIndex();
+                               updateHistograms();
+                             });
+        } 
+
+    },
+
     addAAIndex: function(event){
 
         event.preventDefault();
+       
+        var thisAAIndex = this.model.get("accession");
         
-        var thisAAIndex = this.model.get("name");
-        
-        var rowID = 'row'+this.model.get("aaindexIndex");
-        var aaindexIndex = this.model.get("aaindexIndex");
+        var rowID = 'row'+this.model.get("aaIndexIndex");
+        var aaindexIndex = this.model.get("aaIndexIndex");
 
         $(this.$el).attr('id',rowID);
 
-        var thisButton = d3.select("#i"+this.model.get("aaindexIndex"));
+        var thisButton = d3.select("#i"+this.model.get("aaIndexIndex"));
 
         thisButton.classed("add",false);
         thisButton.classed("remove",true);
@@ -73,21 +105,21 @@ window.AAIndexListItemView = Backbone.View.extend({
         $.getJSON('/aaIndices/' + thisAAIndex,
             function(data){ jQuery.each( data.genes , function( i , item ) { }); 
         }).done(function() {  });
-
+      
         return false;
     },
 
     removeAAIndex: function(event){
 
         event.preventDefault();
-        
-        var thisAAIndex = this.model.get("name");
+  
+        var thisAAIndex = this.model.get("accession");
  
-        var rowID = 'row' + this.model.get("aaindexIndex");
-        var aaindexIndex = this.model.get("aaindexIndex");
+        var rowID = 'row' + this.model.get("aaIndexIndex");
+        var aaindexIndex = this.model.get("aaIndexIndex");
         $(this.$el).attr('id',rowID);
 
-        var thisButton = d3.select("#i"+this.model.get("aaindexIndex"));
+        var thisButton = d3.select("#i"+this.model.get("aaIndexIndex"));
 
         thisButton.text("Add");
         thisButton.classed("add",true);
@@ -98,7 +130,7 @@ window.AAIndexListItemView = Backbone.View.extend({
         $.getJSON('/aaIndices/' + thisAAIndex,
             function(data){ jQuery.each( data.genes , function( i , item ) {  }); 
         }).done(function() {  });
-
+       
         return false;
     }
 });

@@ -172,8 +172,7 @@ function setupVisualization(){
     /////////////////////////////////////////////////////////////////
     // Global Y max and global min/max x extents for histograms   ///
     /////////////////////////////////////////////////////////////////
-
-    console.log("foo");
+;
     for (var i = 0; i < allIndices.length; i++) {
     
         var x_extent = d3.extent(allIndices[i].map(function(d){
@@ -224,7 +223,7 @@ function setupVisualization(){
     ///////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////       Insert the Histograms   //////////////////////////////// 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    console.log("foo");
+ 
     for (var i = 0; i < allIndices.length; i++) {
     
         // # of bins for histogram
@@ -288,6 +287,7 @@ function setupVisualization(){
         //histogram title
         d3.select(namesOfDivIds[i] + " svg")
             .append("text").text(namesOfIndices[i])
+            .attr("id", "title")
             .attr("x", margin.left).attr("y", margin.top / 2)
             .attr("stroke", colorOrder[i])
             .attr("stroke-width", "0.5px")
@@ -350,6 +350,8 @@ function setupVisualization(){
            .call(yAxis);
     }
     
+    setupDoubleClick();
+
     ////////////////////////////////////////////////
     //       Parameters for the seqContextSVG     //
     ////////////////////////////////////////////////

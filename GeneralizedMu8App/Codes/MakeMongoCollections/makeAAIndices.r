@@ -187,6 +187,7 @@ sink(aaIndexMongoFile)
 accessions <- keys(indexHash)
  
 #indexHash[["AURR980118"]]
+aaIndexIndex <- 1
 for (accession in accessions){
   
     thisObj <- indexHash[[accession]]
@@ -205,10 +206,13 @@ for (accession in accessions){
                             ',"description": ', paste('"',thisObj@description,'"',sep=""),
                             ',"category": ',paste('"',thisObj@category,'"',sep=""),
                             ',"indices": ',indexElements,
+                            ',"aaIndexIndex": ',aaIndexIndex,
                             '}', sep="" )
     
     cat(thisIndex)
     cat('\n')
+    
+    aaIndexIndex <- aaIndexIndex + 1
 }
 
 sink()

@@ -1,6 +1,8 @@
 
 var defaultIndexData = [];
-
+var newIndexData = [];
+var accessionOfNewIndex = null;
+var indexOfNewAccession = null;
 var refSeq = [];
 // Gather Data and store into array variables.
 var alphaValues = [];
@@ -45,7 +47,8 @@ var histValueObjects = [];
 
 var rawHistValues = [];
 
-var namesOfDivIds = ["#alpha", "#beta", "#comp", "#hydro", "#physico", "#other"];
+var namesOfDivIds = ["#first", "#second", "#third", "#fourth", "#fifth", "#sixth"];
+//var namesOfDivIds = ["#alpha", "#beta", "#comp", "#hydro", "#physico", "#other"];
 var namesOfIndices = ["Alpha Helix", "Beta Sheet", "Composition", "Hydrophobicity", "Physico-Chemical", "Other"];
 
 var histDataArray = []; //will hold the array of data values for histogram buckets needed for brush coloring of histograms

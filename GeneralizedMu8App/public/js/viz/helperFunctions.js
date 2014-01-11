@@ -11,6 +11,70 @@ Neither the name of Harvard University nor the names of its contributors may be 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+function updateVizWithNewAAIndex(){
+
+        console.log("Update "+ nameOfIndexClicked + " with " + accessionOfNewIndex)
+
+        //data I need to update
+        //1. 
+}
+
+var nameOfIndexClicked = "";
+function setupDoubleClick(){
+
+    for (var i = 0; i < allIndices.length; i++) {
+        d3.select(namesOfDivIds[i] + "Button")
+            .data([{"indexName":namesOfDivIds[i], "index":i}])
+            .on("click", function(d){
+
+                                        nameOfIndexClicked = d.indexName;
+                                        indexOfNewAccession = d.index;
+                                        popupPathwaySelector();
+
+                                    })
+
+       //$(namesOfDivIds[i] + "Button").click(function() { nameOfIndexClicked = namesOfDivIds[i];console.log(nameOfIndexClicked); });
+    }
+    
+}
+
+function popupPathwaySelector(){
+
+    $("#spinningWheelTitle").html("Getting Amino Acid Indices...");
+    $('#spinningWheel').modal('show');
+
+    var dialogID = "dialogAAIndexSelector";
+
+    d3.select("body")
+        .data([null])        //add id to the data so I can use in the close method
+          .append("div")
+            .attr("id", dialogID)
+
+    var aaIndexList = new AAIndexCollection();
+
+    aaIndexList.fetch({
+        success: function(){
+
+                  $("#" + dialogID ).html(new AAIndexListView({model: aaIndexList}).el);
+
+                  $( "#" + dialogID ).dialog({ width: 900,
+                                               height: 600,
+                                               autoOpen: true, 
+                                               dialogClass: dialogID,
+                                               position: { my: "center", at: "center", of: window },
+                                               close: function( event, ui ){ 
+                                                                              
+                                                                              $(this).remove();
+                                                                            },
+                                               title: "Amino Acid Indices"
+                                              });
+
+                  $('#spinningWheel').modal('hide');
+        }
+    });
+}
+
+
 function colorHeatForThisContextRegion(extent){
 
     for (var index = 0; index < allIndices.length; index++){

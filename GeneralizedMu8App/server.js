@@ -61,11 +61,12 @@ app.delete('/computations/:id', computations.deleteComputation);
   Setup routes for visualizing results
  ***************************************************************/
 app.get('/visualdata/:computationId', visual.getDataForVisualization); 
+app.get('/visualdata/:computationId/:accession', visual.getNewIndexForVisualization); 
 
 /***************************************************************
   Setup routes for  aaIndices access
  ***************************************************************/
-app.get('/aaIndices', aaIndices.getAllIndexNames);
+app.get('/aaIndices', aaIndices.getAllIndices);
 app.get('/aaIndices/:aaIndexName', aaIndices.getIndexValues);
 
 // finally, create the server and output a console message

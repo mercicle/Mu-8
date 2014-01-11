@@ -90,6 +90,7 @@ var AppRouter = Backbone.Router.extend({
             $.getJSON("/visualdata/" + computationId,
             
                 function(data){
+
                     $.each( data , function( i , item ) { 
                        defaultIndexData.push(data[i]);
                     }); 
@@ -98,9 +99,14 @@ var AppRouter = Backbone.Router.extend({
                     prepareData();
                     setupVisualization();
                     webGLStart();
+
                 }
 
-            ).done(function(){  $('#spinningWheel').modal('hide');});
+            ).done(function(){  
+
+                                $('#spinningWheel').modal('hide');
+
+                             });
         }
     },
  

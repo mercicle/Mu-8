@@ -70,6 +70,6 @@ writePC(indices,"PhysicoChemicalPC1","1st Principal Component of Physico-Chemica
 
 sink()
 
-#./mongoimport -d mu8 -c AAInidices --file /Users/mercer/p4/data/AAIndicesForMongo.json
+#./mongoimport -d mu8 -c AAIndices --file /Users/mercer/p4/data/AAIndicesForMongo.json
 
  

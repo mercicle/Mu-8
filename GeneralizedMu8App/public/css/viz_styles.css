@@ -1,5 +1,5 @@
 
-table.tbaaindex{font-size:80%; } 
+/*table.tbaaindex{font-size:80%; } */
 
 /*html,body { height:100%; position: absolute;}*/
 
@@ -23,7 +23,7 @@ table.tbaaindex{font-size:80%; }
    padding-left: 260px;
 }
 
-#histogramWrapper, #mainChartWrapper, #zoomChartWrapper, #controls
+#histogramWrapper, #mainChartWrapper, #zoomChartWrapper, #controls, #buttonWrapper
 {
 	overflow: hidden;
 }
@@ -145,6 +145,19 @@ table.tbaaindex{font-size:80%; }
   /*overflow: hidden;*/
   float: left; 
   width: 182px;
+}
+
+.horizDivButton {
+  /*overflow: hidden;*/
+  float: left; 
+  width: 40px;
+  margin-left: 10px;
+}
+
+.horizDivButton1st {
+  float: left; 
+  width: 40px;
+  margin-left: 10px;
 }
 
 .horizDiv1st {
