@@ -924,4 +924,30 @@ function setupVisualization(){
     for (var i = 0; i < allIndices.length; i++) {
         brushmove(i);
     }
+
+    /*
+    var tour = new Tour();
+
+    // Add your steps. Not too many, you don't really want to get your users sleepy
+    tour.addSteps([
+      {
+        element: "#histogramWrapperTour", // string (jQuery selector) - html element next to which the step popover should be shown
+        title: "Exchanging AA Indices", // string - title of the popover
+        content: "The 1st principal component is used  ge for other amino acid indices. " // string - content of the popover
+      },
+      {
+        element: "#mainArcChart",
+        title: "3D Distance Chords",
+        content: "This chords illustrate how far away amino acid indices are from one another"
+      }
+    ]);
+
+    // Initialize the tour
+    tour.init();
+
+    // Start the tour
+    tour.start();
+    */
+     tl.pg.init();
+
 }

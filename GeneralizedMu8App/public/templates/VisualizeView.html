@@ -130,6 +130,8 @@
 
     </div>
     -->
+    <div id="histogramWrapperTour"></div>
+
     <div id="histogramWrapper">
 
         <div class="horizDiv1st" id="first"></div>
@@ -180,4 +182,39 @@
         </div>
     </div>
 </div>
+
+<!-- Step 2: the ul element where you specify tour targets and content -->
+    <ul id="tlyPageGuide" data-tourtitle="Learn Mu8 Functionality">
+        <li class="tlypageguide_left" data-tourtarget="#histogramWrapperTour">
+          <div>
+            By default the histograms are the 1st principal component of each amino-acid index. You can exchange these with an individual amino acid index by double-clicking near the title of each histogram. 
+          </div>
+        </li>
+        <li class="tlypageguide_left" data-tourtarget="#mainArcChart">
+          <div>
+            These 3D chords help you assess the distance between two or more amino acids. The darker the chord the closer together (in Angstroms).
+          </div>
+        </li>
+        <li class="tlypageguide_left" data-tourtarget="#mainChart">
+          <div>
+            The context view shows the entire sequence with the scores rendered above and below.
+          </div>
+        </li>
+        <li class="tlypageguide_top" data-tourtarget="#threedview">
+          <div>
+            The 3D view provides a link between the sequence and the tertiary structure. 
+          </div>
+        </li>
+       <li class="tlypageguide_top" data-tourtarget="#zoomedChart">
+          <div>
+            This linked view enables you to zoom into a specific region of the sequence. You can also mouse-over the bar to see specific values.
+          </div>
+        </li>
+        <li class="tlypageguide_top" data-tourtarget="#distanceHistogram">
+          <div>
+            This 'distance histogram' shows you the distribution of 3D distances amongst the residues. You may brush this histogram to filter the distance chords rendered above.
+          </div>
+        </li>
+ 
+    </ul>
  
