@@ -79,20 +79,14 @@ exports.getDataForVisualization = function(req, res) {
               }
 
               var finalResultsToSendBack = [];
+
               //now get the 3d distances I need for the viz
               var pdbCollection = db.collection('PDB_ForID_' + computationId);
               pdbCollection.find({}).toArray(function(err, positions){
-
                     var pdbDistancesToSendback = helpers.computeDistances(positions);
-                    //console.log('pdbDistancesToSendback:');
-                    //console.log(pdbDistancesToSendback[0][0]);
-                    //console.log(pdbDistancesToSendback[1][0]);
                     finalResultsToSendBack.push(residueScoresToSendBack,stdDevToSendBack,pdbDistancesToSendback);
-
                     res.send(finalResultsToSendBack);
-
               });
-
           });
       });
     });
@@ -103,7 +97,7 @@ exports.getNewIndexForVisualization = function(req, res) {
     
     var computationId = req.params.computationId;
     var accession = req.params.accession;
-    
+
     console.log('inside getNewIndexForVisualization:');
     console.log('computationId: ' + computationId);
 
@@ -158,14 +152,10 @@ exports.getNewIndexForVisualization = function(req, res) {
 
               }
 
-              var finalResultsToSendBack = [];
-              //now get the 3d distances I need for the viz
-              var pdbCollection = db.collection('PDB_ForID_' + computationId);
-              pdbCollection.find({}).toArray(function(err, positions){
-                    var pdbDistancesToSendback = helpers.computeDistances(positions);
-                    finalResultsToSendBack.push(residueScoresToSendBack,stdDevToSendBack,pdbDistancesToSendback);
-                    res.send(finalResultsToSendBack);
-              });
+             var finalResultsToSendBack = [];
+
+              finalResultsToSendBack.push(residueScoresToSendBack,stdDevToSendBack);
+              res.send(finalResultsToSendBack);
           });
       });
     });

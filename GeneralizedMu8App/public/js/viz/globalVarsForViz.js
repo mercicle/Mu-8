@@ -3,6 +3,8 @@ var defaultIndexData = [];
 var newIndexData = [];
 var accessionOfNewIndex = null;
 var indexOfNewAccession = null;
+var authorYearOfNewIndex = "";
+
 var refSeq = [];
 // Gather Data and store into array variables.
 var alphaValues = [];

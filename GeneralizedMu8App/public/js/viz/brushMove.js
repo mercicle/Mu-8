@@ -18,7 +18,7 @@ function brushmove(index) {
     //select the correct histogram and update the rect colors
     var hist = d3.select(namesOfDivIds[index]);
 
-    hist.selectAll("#histrect").data(bar_colors).attr("fill", function(d, i) {
+    hist.selectAll(".histrect").data(bar_colors).attr("fill", function(d, i) {
         return d;
     }).call(brushArray[index]);
 

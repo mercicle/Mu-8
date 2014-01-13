@@ -281,7 +281,9 @@ function setupVisualization(){
                     .append("svg")
                     .attr("width", width + margin.left + margin.right)
                     .attr("height", height + margin.top + margin.bottom)
+                    .attr("id","histSVG"+i)
                     .append("g")
+                    .attr("id","svgTransformGroup")
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
     
         //histogram title
@@ -295,6 +297,7 @@ function setupVisualization(){
             .attr("font-family", "Helvetica");
     
         //create groups to hold the bars
+        /*
         var bar = svg.selectAll(".bar")
                      .data(data)
                      .enter()
@@ -304,8 +307,20 @@ function setupVisualization(){
                          return "translate(" + x(d.x) + "," + y(d.y) + ")";
                      })
                      .call(brush);
-    
+        */
+          var bar = svg.selectAll(".bar")
+                    .data(data)
+                    .enter()
+                    .append("rect")
+                      .attr("x", function(d) { return x(d.x)}) 
+                      .attr("y", function(d) { return y(d.y)}) 
+                      .attr("width", x(data[0].x + data[0].dx)  - x(data[0].x)-1)
+                      .attr("height", function(d) { return height - y(d.y); })
+                      .attr("class", "histrect" )  
+                      .attr("fill", "#ccc") 
+
         //for each bar, append a rectangle
+        /*
         bar.append("rect")
            .attr("x", 0)
            .attr("width", x(data[0].x + data[0].dx) - x(data[0].x) - 1)
@@ -314,12 +329,12 @@ function setupVisualization(){
            .attr("height", function(d) {
                return height - y(d.y);
            });
-    
+      */
         svg.select(".brush")
            .call(brush);
     
         //context for the brush
-        var context = svg.append("g");
+        var context = svg.append("g").attr("id","contextGroup");
     
         //append the group with brush
         context.append("g")
@@ -338,13 +353,13 @@ function setupVisualization(){
     
         //append x-axis 
         svg.append("g")
-           .attr("class", "x axis")
+           .attr("class", "x axis xAxis")
            .attr("transform", "translate(0," + height + ")")
            .call(xAxis);
     
         //append the y-axis 
         svg.append("g")
-           .attr("class", "y axis")
+           .attr("class", "y axis yAxis")
            .style("font-size", 10)
            .style("font-family", "Helvetica")
            .call(yAxis);

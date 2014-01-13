@@ -11,34 +11,89 @@ Neither the name of Harvard University nor the names of its contributors may be 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+//Source of this function: http://bl.ocks.org/tmcw/4067674
+function myDoubleClick() {
+    var event = d3.dispatch('click', 'dblclick');
+    function cc(selection) {
+        var down,
+            tolerance = 5,
+            last,
+            wait = null;
+        // euclidean distance
+        function dist(a, b) {
+            //I added this if to account for the undefined error
+            if (typeof a==='undefined'|| typeof b==='undefined') return 1;
+            return Math.sqrt(Math.pow(a[0] - b[0], 2), Math.pow(a[1] - b[1], 2));
+        }
+        selection.on('mousedown', function() {
+            down = d3.mouse(document.body);
+            last = +new Date();
+        });
+        selection.on('mouseup', function() {
+            if (dist(down, d3.mouse(document.body)) > tolerance) {
+                return;
+            } else {
+                if (wait) {
+                    window.clearTimeout(wait);
+                    wait = null;
+                    event.dblclick(d3.event);
+                } else {
+                    wait = window.setTimeout((function(e) {
+                        return function() {
+                            event.click(e);
+                            wait = null;
+                        };
+                    })(d3.event), 200);
+                }
+            }
+        });
+    };
+    return d3.rebind(cc, event, 'on');
+}
+
+
 function updateVizWithNewAAIndex(){
 
         console.log("Update "+ nameOfIndexClicked + " with " + accessionOfNewIndex)
-
-        //data I need to update
-        //1. 
 }
 
 var nameOfIndexClicked = "";
 function setupDoubleClick(){
 
     for (var i = 0; i < allIndices.length; i++) {
+        /*
         d3.select(namesOfDivIds[i] + "Button")
             .data([{"indexName":namesOfDivIds[i], "index":i}])
             .on("click", function(d){
 
                                         nameOfIndexClicked = d.indexName;
                                         indexOfNewAccession = d.index;
-                                        popupPathwaySelector();
+                                        popupAAIndexSelector();
 
                                     })
+        */
+        var myDblClick = myDoubleClick();
+        d3.select("#histSVG"+i)
+            .data([{"indexName":namesOfDivIds[i], "index":i}])
+          //.select("#title")
+          .call(myDblClick)
+        
+            myDblClick.on('dblclick', function(d) {
+                console.log("double click");
+                 
+                 var thisData = d.currentTarget.__data__;
+                 console.log(thisData);
+                nameOfIndexClicked = thisData.indexName;
+                indexOfNewAccession = thisData.index;
+                popupAAIndexSelector();
+            });
 
        //$(namesOfDivIds[i] + "Button").click(function() { nameOfIndexClicked = namesOfDivIds[i];console.log(nameOfIndexClicked); });
     }
     
 }
 
-function popupPathwaySelector(){
+function popupAAIndexSelector(){
 
     $("#spinningWheelTitle").html("Getting Amino Acid Indices...");
     $('#spinningWheel').modal('show');

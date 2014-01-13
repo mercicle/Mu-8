@@ -1,3 +1,4 @@
+var d3 = require('d3');
 
 function ScoreSequence(sequence,scores){
 
@@ -11,7 +12,9 @@ function ScoreSequence(sequence,scores){
 }
 
 function ResidueToIndexMap(aa, scores){
-  x=0;
+  
+  var x = d3.mean(scores);
+
   if (aa=="A"){
     x=scores[0];
   }else if (aa=="R"){

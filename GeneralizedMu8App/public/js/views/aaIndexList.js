@@ -53,8 +53,23 @@ window.AAIndexListItemView = Backbone.View.extend({
     exchangeIndices: function(event){
         
         accessionOfNewIndex = this.model.get("accession");
-        
-        console.log("exchanging "+accessionOfNewIndex);
+
+        var desc = this.model.get("description");
+
+        var splitDesc = desc.split("(");
+
+        if (splitDesc.length==2){
+            authorYearOfNewIndex = splitDesc[1].replace(')', '');
+        }else if (splitDesc.length==3){
+            authorYearOfNewIndex = splitDesc[2].replace(')', '');
+        }else{
+            authorYearOfNewIndex = desc.splice(0,Math.round(desc.length/2)).replace(')', ''); + "..."
+        }
+ 
+        //authorYearOfNewIndex
+
+
+        console.log("exchanging " + accessionOfNewIndex);
 
         var thisRoute = Backbone.history.fragment;
         var computationId = thisRoute.split("/")[1];
@@ -75,7 +90,11 @@ window.AAIndexListItemView = Backbone.View.extend({
                                $( "#dialogAAIndexSelector" ).remove();
                                updateData();
                                updateVizWithNewAAIndex();
-                               updateHistograms();
+                               updateHistogramData();
+                               updateHistogramViz();
+
+                               updateHeatData();
+                               updateHeatMaps();
                              });
         } 
 

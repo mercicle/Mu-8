@@ -35,6 +35,11 @@
   font-size: 5;
 }
 
+.histBarGroup { /*removed rect from here*/
+  fill: steelblue; 
+  shape-rendering: crispEdges;
+  font-size: 5;
+}
 /* This style is for the text (frequeny count) on the histogram rectangles */
 .bar text {
   fill: #fff;
@@ -146,18 +151,22 @@
   float: left; 
   width: 182px;
 }
+.horizDiv1st {
+  float: left; 
+  width: 182px;
+}
 
 .horizDivButton {
   /*overflow: hidden;*/
   float: left; 
-  width: 40px;
-  margin-left: 10px;
+  width: 10px;
+  margin-left: 40px;
 }
 
 .horizDivButton1st {
   float: left; 
-  width: 40px;
-  margin-left: 10px;
+  width: 10px;
+  margin-left: 40px;
 }
 
 .horizDiv1st {

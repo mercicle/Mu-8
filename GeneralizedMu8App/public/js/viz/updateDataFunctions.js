@@ -10,16 +10,16 @@ function updateData(){
 		//OtherPropertiesPC1
 		//PhysicoChemicalPC1
 
-		//set the default sequence
-		defaultIndexData[0][0].forEach(function(x){return refSeq.push(x[0])});
- 
+ 		//update the index data with the new values based on the index of the selected hist
+ 		defaultIndexData[0][indexOfNewAccession] = newIndexData[0][0];
  		defaultIndexData[1][indexOfNewAccession] = newIndexData[1][0];
- 		defaultIndexData[2][indexOfNewAccession] = newIndexData[2][0];
 
  		stdAlpha=[]; stdBeta=[]; stdComp=[];stdHydro=[];stdPhy=[];stdOth=[];
 		alphaValues =[]; betaValues=[]; compValues=[];hydroValues=[];physicoValues=[];otherValues=[];
 	    cumMinNegX =[];cumMaxPosX=[];
-	    namesOfIndices[indexOfNewAccession] = accessionOfNewIndex;
+
+	    //update the new of the index 
+	    namesOfIndices[indexOfNewAccession] = authorYearOfNewIndex;//accessionOfNewIndex;
 
 	    stdAlpha = defaultIndexData[1][0].map(function(d){return d[1]});
 	    stdBeta = defaultIndexData[1][1].map(function(d){return d[1]});
@@ -177,190 +177,191 @@ function updateData(){
 	});
 
 }
+ 
+function updateHistogramData(){
 
-function updateHistograms(){
+    histDataArray = []; 
+    x_extent_array = [];
+    x_extent_array=[];
+    // set global y by iterating through the datasets
+    globalYMax = 0, min_x_extent = 0, max_x_extent=0;
+    for (var i = 0; i < allIndices.length; i++){
 
-    /////////////////////////////////////////////////////////////////
-    // Global Y max and global min/max x extents for histograms   ///
-    /////////////////////////////////////////////////////////////////
-   histDataArray = [];x_extent_array=[];
-    for (var i = 0; i < allIndices.length; i++) {
-    
-        var x_extent = d3.extent(allIndices[i].map(function(d){
-            return d.myvar;
-        }));
-
+        var x_extent = d3.extent(allIndices[i].map(function(d) {return d.myvar;}));
         // i use the ceiling and floor functions to get integer min/max for the x pixel space
         x_extent[0] = Math.floor(x_extent[0]);
         x_extent[1] = Math.ceil(x_extent[1]);
-    
+        
         x_extent_array.push(x_extent);
-    
-        if (x_extent_array[i][1] > max_x_extent) {
+        
+        if (x_extent_array[i][1] > max_x_extent){
             max_x_extent = x_extent_array[i][1];
         }
-        if (x_extent_array[i][0] < min_x_extent) {
+        if (x_extent_array[i][0] < min_x_extent){
             min_x_extent = x_extent_array[i][0];
         }
-    
+
         // # of bins for histogram (sqrt(n))
         var num_bins = Math.round(Math.sqrt(seqLength));
-    
+        
         // this is the transformation function for input space to pixel space
-        var x = d3.scale
-                  .linear()
-                  .domain(x_extent)
-                  .range([0, width]);
-    
-        var data = d3.layout
-                     .histogram()
-                     .frequency(false)
-                     .bins(x.ticks(num_bins))(allIndices[i].map(function(d) {
-                         return d.myvar;
-                     }));
-    
+        var x = d3.scale.linear()
+                          .domain(x_extent)
+                          .range([0, width]);
+        
+        var data = d3.layout.histogram()
+                              .frequency(false)
+                              .bins(x.ticks(num_bins))
+                                (allIndices[i].map(function(d) {return d.myvar;}));
+        //console.log(data);
         histDataArray.push(data);
-    
-        var localYMax = d3.max(data, function(d) {
-            return d.y;
-        });
-    
+
+        var localYMax = d3.max(data, function(d) {return d.y;});
+
         //update the globalYMax
-        if (localYMax > globalYMax) {
+        if (localYMax > globalYMax){
             globalYMax = localYMax;
         }
     }
-    
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////       Insert the Histograms   //////////////////////////////// 
-    //////////////////////////////////////////////////////////////////////////////////////////////
- 
-    for (var i = 0; i < allIndices.length; i++) {
-    
+}
+
+function updateHistogramViz(){
+
+    brushArray=[];
+    //brushArray.splice(exchangeIndex,1);
+
+    // Loop over each of the indices to create the visualization (allIndices[i] = data to construct histogram i)
+    for (var i = 0; i < allIndices.length; i++){
+
         // # of bins for histogram
-        var num_bins = Math.round(Math.sqrt(seqLength));
-    
+        var num_bins = Math.round(Math.sqrt(seqLength)); 
+        
         // this is the transformation function for input space to pixel space
-        var x = d3.scale
-                  .linear()
-                  .domain([min_x_extent, max_x_extent])
-                  .range([0, width]);
-
+        var x = d3.scale.linear()
+                          .domain([min_x_extent,max_x_extent])
+                          .range([0, width]);
+        
         // Create x axis.
-        var xAxis = d3.svg
-                      .axis()
-                      .scale(x)
-                      .orient("bottom")
-                      .ticks(5);
+        var xAxis = d3.svg.axis()
+                            .scale(x)
+                            .orient("bottom")
+                            .ticks(5);
+        
+        var data = d3.layout.histogram()
+                              .frequency(false)
+                              .bins(x.ticks(num_bins))
+                                (allIndices[i].map(function(d) {return d.myvar;}));
 
-        var data = d3.layout
-                     .histogram()
-                     .frequency(false)
-                     .bins(x.ticks(num_bins))(allIndices[i].map(function(d) {
-                         return d.myvar;
-                     }));
-
-        var y = d3.scale
-                  .linear()
-                  .domain([0, globalYMax])
-                  .range([height, 0]);
-    
+        var y = d3.scale.linear()
+                          .domain([0, globalYMax])
+                          .range([height, 0]);
+          
         //display y-axis as %
         var formatPercent = d3.format(".0%");
-
-        var yAxis = d3.svg
-                      .axis()
-                      .scale(y)
-                      .orient("left")
-                      .tickFormat(formatPercent)
-                      .ticks(5);
-    
+        
+        var yAxis = d3.svg.axis()
+                            .scale(y)
+                            .orient("left")
+                            .tickFormat(formatPercent)
+                            .ticks(5);
+                  
         // specify the brush function 
-        brush = d3.svg
-                      .brush()
-                      .x(x)
-                      .on("brush", brushFunctionArray[i]);
-    
+        var brush = d3.svg.brush()
+                             .x(x)
+                             .on("brush", brushFunctionArray[i])
+
         //Initialize the brush 
-        //brush.extent([min_x_extent, max_x_extent]);
-    
+        brush.extent([min_x_extent, max_x_extent]);
+
         // add brush to brush array
-        //brushArray.push(brush);
-    
+        brushArray.push(brush);
+        //if(i==exchangeIndex){
+        //    brushArray.splice(exchangeIndex, 0, brush);
+        //}else{
+        //    brush = brushArray[i];
+        //}
+
         //append the svg 
-        /*
-        var svg = d3.select(namesOfDivIds[i])
-                    .append("svg")
-                    .attr("width", width + margin.left + margin.right)
-                    .attr("height", height + margin.top + margin.bottom)
-                    .append("g")
-                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        var svg = d3.select("#histSVG"+i).select("#svgTransformGroup");
+ 
+        d3.select("#histSVG"+i).select("#title")
+          .text(namesOfIndices[i])
 
-    	*/
+        var bar = svg.selectAll(".histrect")
+                      .data(data)
+                      .attr("x", function(d) { return x(d.x)}) 
+                      .attr("y", function(d) { return y(d.y)}) 
+                      .attr("width", x(data[0].x + data[0].dx)  - x(data[0].x)-1)
+                      .attr("height", function(d) { return height - y(d.y); }) 
 
-        var svg = d3.select(namesOfDivIds[i])
-                    .select("svg")
+          svg.select(".brush").call(brush);
 
-        //histogram title
-        d3.select(namesOfDivIds[i] + " svg")
-            .select("#title")
-            .text(namesOfIndices[i])
-            .attr("x", margin.left).attr("y", margin.top / 2)
-            .attr("stroke", colorOrder[i])
-            .attr("stroke-width", "0.5px")
-            .attr("font-size", "13px")
-            .attr("font-family", "Helvetica");
-    
-        //create groups to hold the bars
-        var bar = svg.selectAll(".bar")
-                     .data(data)
-                     .attr("transform", function(d) {
-                         return "translate(" + x(d.x) + "," + y(d.y) + ")";
-                     })
-                     .call(brush);
-    
-        //for each bar, append a rectangle
-        bar.selectAll("#histrect")
-           .attr("x", 0)
-           .attr("width", x(data[0].x + data[0].dx) - x(data[0].x) - 1)
-           .attr("id", "histrect") //added this for the brushing (blue/grey)
-           .attr("fill", "#ccc")
-           .attr("height", function(d) {
-               return height - y(d.y);
-           });
-    
-        svg.select(".brush")
-           .call(brushArray[i]);
-    
-    /*
-        //context for the brush
-        var context = svg.append("g");
-    
-        //append the group with brush
-        context.append("g")
-               .attr("class", "x brush")
-               .call(brush)
-               .selectAll("rect")
-               .attr("height", height);
-    
-        //for the brush handle bars
-        context.selectAll("rect")
-               .attr("height", height);
+          //context for the brush
+          var context = svg.select("#contextGroup");
 
-        context.selectAll(".resize")
-               .append("path")
-               .attr("d", resize_path);
-    */
-        //append x-axis 
-        svg.select("x axis")
-           .attr("transform", "translate(0," + height + ")")
-           .call(xAxis);
-    
-        //append the y-axis 
-        svg.select("y axis")
-           .style("font-size", 10)
-           .style("font-family", "Helvetica")
-           .call(yAxis);
+          //append the group with brush
+          context.select("g")
+                  .attr("class", "x brush")
+                  .call(brush)
+                  .selectAll("rect")
+                  .attr("height", height);
+           
+          //for the brush handle bars
+          context.selectAll("rect")
+                    .attr("height", height);
+          context.selectAll(".pathClass")
+                      .attr("d", resize_path);
+           
+          //append x-axis 
+          svg.select(".xAxis").remove()
+          svg.select(".yAxis").remove()
 
+          //append x-axis 
+          svg.append("g")
+            .attr("class", "x axis xAxis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis); 
+
+          //append the y-axis 
+          svg.append("g")
+            .attr("class", "y axis yAxis") 
+            .style("font-size",10)
+            .call(yAxis);
+
+       brushmove(i);
     }
+}
+
+function updateHeatData(){
+	stdExtents=[];
+	stdMaps=[];
+    for (var index = 0; index < allIndices.length; index++){
+        stdExtents.push(d3.extent(allStdDeviations[index]));
+        stdMaps.push(d3.scale
+                       .linear()
+                       .domain(stdExtents[index])
+                       .range([0,1])
+                       .clamp(true)
+                    );
+    }	
+}
+
+function updateHeatMaps(){
+
+    seqStdHeatSVG  = d3.select(".stdHeatMap") 
+ 	var index = indexOfNewAccession;
+ 	
+    //specify the name of the div based on the namesOfDivIds[index]
+    var nameOfDiv = namesOfDivIds[index].substring(1) + "heat";
+    //append the non-visible placeholders on the svg
+
+    seqStdHeatSVG.selectAll("#" + nameOfDiv)
+                 .data(allStdDeviations[index].map(function(d) { return d; }))
+                 .attr("fill", function(d,i){return d3.hsl(0, 0, 1 - stdMaps[index](d)).toString();}) 
+                 .attr("x",function(d,i){return i*seq_rect_width;})
+                 .attr("y",function(d,i){return index*seq_rect_width + (index*2)})
+                 .attr("width",seq_rect_width)
+                 .attr("height",seq_rect_width);
+
+    
 }
