@@ -63,6 +63,8 @@ app.delete('/computations/:id', computations.deleteComputation);
 app.get('/visualdata/:computationId', visual.getDataForVisualization); 
 app.get('/visualdata/:computationId/:accession', visual.getNewIndexForVisualization); 
 
+app.get('/staticvisualdata/:computationId', visual.getLinesFileForVisualization); 
+
 /***************************************************************
   Setup routes for  aaIndices access
  ***************************************************************/

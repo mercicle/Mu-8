@@ -78,24 +78,25 @@ window.AAIndexListItemView = Backbone.View.extend({
 
         newIndexData = [];
         if(typeof computationId != 'undefined'){
-          ///visualdata/:computationId/:accession
-          $.getJSON('/visualdata/' + computationId + '/' + accessionOfNewIndex,
-            function(data){ 
 
-                    $.each( data , function( i , item ) { 
-                       newIndexData.push(data[i]);
-                    }); 
+              ///visualdata/:computationId/:accession
+              $.getJSON('/visualdata/' + computationId + '/' + accessionOfNewIndex,
+                function(data){ 
 
-          }).done(function() { console.log( "Done getting new AA index data" ); 
-                               $( "#dialogAAIndexSelector" ).remove();
-                               updateData();
-                               updateVizWithNewAAIndex();
-                               updateHistogramData();
-                               updateHistogramViz();
+                        $.each( data , function( i , item ) { 
+                           newIndexData.push(data[i]);
+                        }); 
 
-                               updateHeatData();
-                               updateHeatMaps();
-                             });
+              }).done(function() { console.log( "Done getting new AA index data" ); 
+                                   $( "#dialogAAIndexSelector" ).remove();
+                                   updateData();
+                                   updateVizWithNewAAIndex();
+                                   updateHistogramData();
+                                   updateHistogramViz();
+
+                                   updateHeatData();
+                                   updateHeatMaps();
+                                 });
         } 
 
     },

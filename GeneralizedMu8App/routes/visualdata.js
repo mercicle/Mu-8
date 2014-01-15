@@ -16,6 +16,33 @@ var residueMap = require('../serversideJS/ResidueToIndexMap.js');
 
 var helpers = require('../serversideJS/helperFunctions.js');
 
+var mime = require('mime');
+
+exports.getLinesFileForVisualization = function(req, res) {
+
+    var computationID = req.params.computationId;
+
+    var filePath = 'processedPDBFiles/'+'lines_'+computationID+'.js';
+    console.log("Returning " + filePath);
+
+    fs.readFile(filePath, function(err, data) {
+
+      if (err) {
+        res.writeHead(500);
+        res.end("");
+        next(err);
+        return;
+      }
+
+      res.contentType = mime.lookup(filePath);
+      res.writeHead(200);
+      res.end(data); 
+      
+    });
+
+}
+
+
 exports.getDataForVisualization = function(req, res) {
     
     var computationId = req.params.computationId;

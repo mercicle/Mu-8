@@ -87,26 +87,35 @@ var AppRouter = Backbone.Router.extend({
             $("#spinningWheelTitle").html("Loading the awesome :)");
             $('#spinningWheel').modal('show');
             
-            $.getJSON("/visualdata/" + computationId,
+            $.get( '/staticvisualdata/' + computationId, function( data, textStatus, jqxhr ) {
             
-                function(data){
+                console.log( 'processedPDBFiles/lines_' + computationId + '.js' );
 
-                    $.each( data , function( i , item ) { 
-                       defaultIndexData.push(data[i]);
-                    }); 
+                $( "#lines" ).text( data );
 
-                    seqLength = defaultIndexData[0][0].length;
-                    prepareData();
-                    setupVisualization();
-                    webGLStart();
+                $.getJSON("/visualdata/" + computationId,
+                
+                    function(data){
 
-                }
+                        $.each( data , function( i , item ) { 
+                           defaultIndexData.push(data[i]);
+                        }); 
 
-            ).done(function(){  
+                        seqLength = defaultIndexData[0][0].length;
+                        prepareData();
+                        setupVisualization();
+                        webGLStart();
 
-                                $('#spinningWheel').modal('hide');
+                    }
 
-                             });
+                ).done(function(){  
+
+                                    $('#spinningWheel').modal('hide');
+
+                                 });
+ 
+            });//$.getScript
+
         }
     },
  
