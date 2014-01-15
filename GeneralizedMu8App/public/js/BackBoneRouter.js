@@ -84,7 +84,7 @@ var AppRouter = Backbone.Router.extend({
             //inject the SVG template with the svgView wrapper
             $('#content').html(this.visualizeView.el);
  
-            $("#spinningWheelTitle").html("Loading the awesome :)");
+            $("#spinningWheelTitle").html("Loading Visualization");
             $('#spinningWheel').modal('show');
             
             $.get( '/staticvisualdata/' + computationId, function( data, textStatus, jqxhr ) {
