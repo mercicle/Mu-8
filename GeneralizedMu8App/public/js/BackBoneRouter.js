@@ -2,6 +2,7 @@ var AppRouter = Backbone.Router.extend({
 
     routes: {
         ""                              : "home",
+        "demo"                          : "demo",
         "users/login"                   : "login",
         "users/signup"                  : "signup",
         "users/account"                 : "account",
@@ -70,13 +71,9 @@ var AppRouter = Backbone.Router.extend({
         }
     },
 
-    visualize: function(computationId){
+    demo: function(){
 
-        if (!this.user.get("_id")){
-            this.navigate("users/account", true);
-        }
-        else {
-
+            var computationId = '52d704db032dc50000000001';
             if (!this.visualizeView) {
                 this.visualizeView = new VisualizeView();
             }
@@ -84,7 +81,7 @@ var AppRouter = Backbone.Router.extend({
             //inject the SVG template with the svgView wrapper
             $('#content').html(this.visualizeView.el);
  
-            $("#spinningWheelTitle").html("Loading Visualization");
+            $("#spinningWheelTitle").html("Loading the awesome :)");
             $('#spinningWheel').modal('show');
             
             $.get( '/staticvisualdata/' + computationId, function( data, textStatus, jqxhr ) {
@@ -93,6 +90,20 @@ var AppRouter = Backbone.Router.extend({
 
                 $( "#lines" ).text( data );
 
+                $.get( '/staticvisualdataAll/' + computationId, function( data, textStatus, jqxhr ) {
+
+                        $( "#allData" ).text( data );
+
+
+                        seqLength = allFinalResultsJS[0][0].length;
+                        prepareData();
+                        setupVisualization();
+                        webGLStart();
+                         $('#spinningWheel').modal('hide');
+
+                });//$.getScript
+
+                /*
                 $.getJSON("/visualdata/" + computationId,
                 
                     function(data){
@@ -113,7 +124,72 @@ var AppRouter = Backbone.Router.extend({
                                     $('#spinningWheel').modal('hide');
 
                                  });
+                */
+
+
+            });//$.getScript
  
+    },
+ 
+    visualize: function(computationId){
+
+        if (!this.user.get("_id")){
+            this.navigate("users/account", true);
+        }
+        else {
+
+            if (!this.visualizeView) {
+                this.visualizeView = new VisualizeView();
+            }
+
+            //inject the SVG template with the svgView wrapper
+            $('#content').html(this.visualizeView.el);
+ 
+            $("#spinningWheelTitle").html("Loading Mu-8 (Approx. 2-5 min)");
+            $('#spinningWheel').modal('show');
+            
+            $.get( '/staticvisualdata/' + computationId, function( data, textStatus, jqxhr ) {
+            
+                console.log( 'processedPDBFiles/lines_' + computationId + '.js' );
+
+                $( "#lines" ).text( data );
+
+                $.get( '/staticvisualdataAll/' + computationId, function( data, textStatus, jqxhr ) {
+
+                        $( "#allData" ).text( data );
+
+
+                        seqLength = defaultIndexData[0][0].length;
+                        prepareData();
+                        setupVisualization();
+                        webGLStart();
+                         $('#spinningWheel').modal('hide');
+
+                });//$.getScript
+
+                /*
+                $.getJSON("/visualdata/" + computationId,
+                
+                    function(data){
+
+                        $.each( data , function( i , item ) { 
+                           defaultIndexData.push(data[i]);
+                        }); 
+
+                        seqLength = defaultIndexData[0][0].length;
+                        prepareData();
+                        setupVisualization();
+                        webGLStart();
+
+                    }
+
+                ).done(function(){  
+
+                                    $('#spinningWheel').modal('hide');
+
+                                 });
+                */
+
             });//$.getScript
 
         }

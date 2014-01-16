@@ -42,10 +42,10 @@ function computeDistances(data){
 	}
 	return [matrixRows,histValueObjects];
 }
-
+ 
  
 module.exports = {    
     getColumnJ: getColumnJ,
-    computeDistances : computeDistances
+    computeDistances : computeDistances 
 }
  

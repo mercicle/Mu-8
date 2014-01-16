@@ -17,8 +17,6 @@ exports.getAllIndices = function(req, res) {
             res.send(aaindices);
         });
     });
-
-
 }
  
 exports.getIndexValues = function(req, res) {

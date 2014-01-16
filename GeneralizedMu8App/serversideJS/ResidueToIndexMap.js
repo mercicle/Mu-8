@@ -13,7 +13,7 @@ function ScoreSequence(sequence,scores){
 
 function ResidueToIndexMap(aa, scores){
   
-  var x = d3.mean(scores);
+  var x = 0;//d3.mean(scores);
 
   if (aa=="A"){
     x=scores[0];

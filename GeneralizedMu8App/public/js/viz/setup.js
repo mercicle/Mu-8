@@ -294,6 +294,7 @@ function setupVisualization(){
             .attr("stroke", colorOrder[i])
             .attr("stroke-width", "0.5px")
             .attr("font-size", "13px")
+            .attr("text-decoration","underline")
             .attr("font-family", "Helvetica");
     
         //create groups to hold the bars

@@ -5,9 +5,10 @@
 <td><%= status %></td>
 <td>
 	 <a href="#" class="delete btn btn-danger">Delete</a>
-	<% if (status == "Available") { %>
+	<% if (status == "Ready") { %>
 		 <a href="#visualize/<%= id %>" class="visualize btn ">Visualize</a>
 	<% } else { %>
+	   Uploading...
 	<% } %>
 </td>
 

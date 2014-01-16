@@ -1,3 +1,30 @@
 
 
-./mongoimport -d mu8 -c AAindices --file /local/main/AAIndicesForMongo.json
+./mongoimport -d mu8 -c AAIndices --file /local/main/AAIndicesForMongo.json
+
+/home/ec2-user/Mu8Gen/data
+mongoimport -d mu8 -c AAIndices --file /home/ec2-user/Mu8Gen/data/AAIndicesForMongo.json
+
+#to import and use mongo go here:
+cd /var/lib/mongo
+
+
+"52d710e75e69c02814000001"
+
+nohup supervisor server.js &
+
+supervisor server.js
+
+npm install supervisor -g
+
+ps -u ec2-user
+
+db.getCollectionNames().forEach(function(c) {
+
+    if(c.indexOf("PDB_ForID") != -1) { 
+        db.getCollection(c).drop();
+    }
+    if(c.indexOf("MSA_ForID") != -1) { 
+        db.getCollection(c).drop();
+    }
+});

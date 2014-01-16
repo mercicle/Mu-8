@@ -45,7 +45,6 @@ app.get('/users/checkUsernameAtLogin/:username', user.checkUsernameAtLogin);
 app.get('/users/checkEmail/:email', user.checkEmail);
 app.put('/users/changePassword/:id', user.changePassword);
 
-
 /***************************************************************
   Setup routes for the computation management 
  ***************************************************************/
@@ -64,6 +63,7 @@ app.get('/visualdata/:computationId', visual.getDataForVisualization);
 app.get('/visualdata/:computationId/:accession', visual.getNewIndexForVisualization); 
 
 app.get('/staticvisualdata/:computationId', visual.getLinesFileForVisualization); 
+app.get('/staticvisualdataAll/:computationId', visual.getAllResultsFileForVisualization); 
 
 /***************************************************************
   Setup routes for  aaIndices access

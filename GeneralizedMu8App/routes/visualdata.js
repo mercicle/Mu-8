@@ -23,21 +23,44 @@ exports.getLinesFileForVisualization = function(req, res) {
     var computationID = req.params.computationId;
 
     var filePath = 'processedPDBFiles/'+'lines_'+computationID+'.js';
-    console.log("Returning " + filePath);
+    //console.log("Returning " + filePath);
 
     fs.readFile(filePath, function(err, data) {
 
       if (err) {
         res.writeHead(500);
         res.end("");
-        next(err);
         return;
       }
 
       res.contentType = mime.lookup(filePath);
       res.writeHead(200);
       res.end(data); 
-      
+
+    });
+
+}
+
+
+exports.getAllResultsFileForVisualization = function(req, res) {
+
+    var computationID = req.params.computationId;
+ 
+    var filePath = 'processedFiles/'+'finalResults_'+computationID+'.js';
+    //console.log("Returning " + filePath);
+
+    fs.readFile(filePath, function(err, data) {
+
+      if (err) {
+        res.writeHead(500);
+        res.end("");
+        return;
+      }
+
+      res.contentType = mime.lookup(filePath);
+      res.writeHead(200);
+      res.end(data); 
+
     });
 
 }
@@ -47,8 +70,8 @@ exports.getDataForVisualization = function(req, res) {
     
     var computationId = req.params.computationId;
     
-    console.log('inside getDataForVisualization:');
-    console.log('computationId: ' + computationId);
+    //console.log('inside getDataForVisualization:');
+    //console.log('computationId: ' + computationId);
     var prinCompNames = ["AlphaHelixPC1","BetaSheetPC1","CompositionPC1","HydrophobicityPC1","OtherPropertiesPC1","PhysicoChemicalPC1"];
 
     var MongoClient = require('mongodb').MongoClient;
@@ -64,8 +87,8 @@ exports.getDataForVisualization = function(req, res) {
 
               var referenceSequence  = sequences[0].sequence.split("");
 
-              console.log('referenceSequence');
-              console.log(referenceSequence);
+              //console.log('referenceSequence');
+              //console.log(referenceSequence);
 
               var residueScoresToSendBack = [];
               var stdDevToSendBack = [];
@@ -73,7 +96,7 @@ exports.getDataForVisualization = function(req, res) {
 
                     var aaindex = aaindices[aai].indices;
                     var thisAccession  = aaindices[aai].accession;
-                    console.log('aaindex: ' + aaindices[aai].accession);
+                    //console.log('aaindex: ' + aaindices[aai].accession);
 
                     var numCol = sequences[0].sequence.length;
                     var scoredMSA = [];
@@ -125,8 +148,8 @@ exports.getNewIndexForVisualization = function(req, res) {
     var computationId = req.params.computationId;
     var accession = req.params.accession;
 
-    console.log('inside getNewIndexForVisualization:');
-    console.log('computationId: ' + computationId);
+    //console.log('inside getNewIndexForVisualization:');
+    //console.log('computationId: ' + computationId);
 
     var MongoClient = require('mongodb').MongoClient;
     MongoClient.connect('mongodb://localhost:27017/mu8', function(err, db){
@@ -147,7 +170,7 @@ exports.getNewIndexForVisualization = function(req, res) {
 
                     var aaindex = aaindices[aai].indices;
                     var thisAccession  = aaindices[aai].accession;
-                    console.log('aaindex: ' + aaindices[aai].accession);
+                    //console.log('aaindex: ' + aaindices[aai].accession);
 
                     var numCol = sequences[0].sequence.length;
                     var scoredMSA = [];

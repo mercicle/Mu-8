@@ -217,19 +217,21 @@ function updateHistogramData(){
         histDataArray.push(data);
 
         var localYMax = d3.max(data, function(d) {return d.y;});
-
+        console.log(localYMax)
         //update the globalYMax
         if (localYMax > globalYMax){
             globalYMax = localYMax;
         }
+        console.log(globalYMax);
     }
 }
+
 
 function updateHistogramViz(){
 
     brushArray=[];
     //brushArray.splice(exchangeIndex,1);
-
+    /*
     // Loop over each of the indices to create the visualization (allIndices[i] = data to construct histogram i)
     for (var i = 0; i < allIndices.length; i++){
 
@@ -330,6 +332,153 @@ function updateHistogramViz(){
 
        brushmove(i);
     }
+    */
+
+    for (var i = 0; i < allIndices.length; i++) {
+
+    	var svg = d3.select("#histSVG"+i).remove();
+        // # of bins for histogram
+        var num_bins = Math.round(Math.sqrt(seqLength));
+    
+        // this is the transformation function for input space to pixel space
+        var x = d3.scale
+                  .linear()
+                  .domain([min_x_extent, max_x_extent])
+                  .range([0, width]);
+
+        // Create x axis.
+        var xAxis = d3.svg
+                      .axis()
+                      .scale(x)
+                      .orient("bottom")
+                      .ticks(5);
+
+        var data = d3.layout
+                     .histogram()
+                     .frequency(false)
+                     .bins(x.ticks(num_bins))(allIndices[i].map(function(d) {
+                         return d.myvar;
+                     }));
+
+        var y = d3.scale
+                  .linear()
+                  .domain([0, globalYMax])
+                  .range([height, 0]);
+    
+        //display y-axis as %
+        var formatPercent = d3.format(".0%");
+
+        var yAxis = d3.svg
+                      .axis()
+                      .scale(y)
+                      .orient("left")
+                      .tickFormat(formatPercent)
+                      .ticks(5);
+    
+        // specify the brush function 
+        brush = d3.svg
+                      .brush()
+                      .x(x)
+                      .on("brush", brushFunctionArray[i]);
+    
+        //Initialize the brush 
+        brush.extent([min_x_extent, max_x_extent]);
+    
+        // add brush to brush array
+        brushArray.push(brush);
+    
+        //append the svg 
+        var svg = d3.select(namesOfDivIds[i])
+                    .append("svg")
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                    .attr("id","histSVG"+i)
+                    .append("g")
+                    .attr("id","svgTransformGroup")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    
+        //histogram title
+        d3.select(namesOfDivIds[i] + " svg")
+            .append("text").text(namesOfIndices[i])
+            .attr("id", "title")
+            .attr("x", margin.left).attr("y", margin.top / 2)
+            .attr("stroke", colorOrder[i])
+            .attr("stroke-width", "0.5px")
+            .attr("font-size", "13px")
+            .attr("text-decoration","underline")
+            .attr("font-family", "Helvetica");
+    
+        //create groups to hold the bars
+        /*
+        var bar = svg.selectAll(".bar")
+                     .data(data)
+                     .enter()
+                     .append("g")
+                     .attr("class", ".bar")
+                     .attr("transform", function(d) {
+                         return "translate(" + x(d.x) + "," + y(d.y) + ")";
+                     })
+                     .call(brush);
+        */
+          var bar = svg.selectAll(".bar")
+                    .data(data)
+                    .enter()
+                    .append("rect")
+                      .attr("x", function(d) { return x(d.x)}) 
+                      .attr("y", function(d) { return y(d.y)}) 
+                      .attr("width", x(data[0].x + data[0].dx)  - x(data[0].x)-1)
+                      .attr("height", function(d) { return height - y(d.y); })
+                      .attr("class", "histrect" )  
+                      .attr("fill", "#ccc") 
+
+        //for each bar, append a rectangle
+        /*
+        bar.append("rect")
+           .attr("x", 0)
+           .attr("width", x(data[0].x + data[0].dx) - x(data[0].x) - 1)
+           .attr("id", "histrect") //added this for the brushing (blue/grey)
+           .attr("fill", "#ccc")
+           .attr("height", function(d) {
+               return height - y(d.y);
+           });
+      */
+        svg.select(".brush")
+           .call(brush);
+    
+        //context for the brush
+        var context = svg.append("g").attr("id","contextGroup");
+    
+        //append the group with brush
+        context.append("g")
+               .attr("class", "x brush")
+               .call(brush)
+               .selectAll("rect")
+               .attr("height", height);
+    
+        //for the brush handle bars
+        context.selectAll("rect")
+               .attr("height", height);
+
+        context.selectAll(".resize")
+               .append("path")
+               .attr("d", resize_path);
+    
+        //append x-axis 
+        svg.append("g")
+           .attr("class", "x axis xAxis")
+           .attr("transform", "translate(0," + height + ")")
+           .call(xAxis);
+    
+        //append the y-axis 
+        svg.append("g")
+           .attr("class", "y axis yAxis")
+           .style("font-size", 10)
+           .style("font-family", "Helvetica")
+           .call(yAxis);
+
+        brushmove(i);
+    }
+     
 }
 
 function updateHeatData(){
