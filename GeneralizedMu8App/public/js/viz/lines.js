@@ -1,9 +1,11 @@
+var vtxCylBuffer, normalsCylBuffer, colCylBuffer, triCylBuffer;
 var linesVertexPositionBuffer;
 var linesVertexColorBuffer;
 var quadPosBuffer;
 function initBuffers() {
     linesVertexPositionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, linesVertexPositionBuffer);
+   
 var vertices = [
 101.018997, 39.717999, 68.419998, 100.307999, 38.458000, 68.230003,
 101.018997, 39.717999, 68.419998, 101.958000, 39.970001, 67.277000,
@@ -4082,11 +4084,13 @@ var vertices = [
 44.294998, 34.596001, 40.556999, 43.589001, 33.840000, 41.205002,
 43.411999, 32.580002, 40.938000, 43.589001, 33.840000, 41.205002,
 0];
+
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 	linesVertexPositionBuffer.numItems = 8152 ;
     linesVertexPositionBuffer.itemSize = 3;
 linesVertexColorBuffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, linesVertexColorBuffer);
+
 var colors = [
 0.470588, 0.866667, 0.533333, 2.000000, 0.470588, 0.866667, 0.533333, 2.000000, 
 0.470588, 0.866667, 0.533333, 2.000000, 0.470588, 0.866667, 0.533333, 2.000000, 
@@ -8165,13 +8169,16 @@ var colors = [
 0.337255, 0.733333, 0.200000, 248.000000, 0.337255, 0.733333, 0.200000, 248.000000, 
 0.337255, 0.733333, 0.200000, 248.000000, 0.337255, 0.733333, 0.200000, 248.000000, 
 0];
+
 gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
 linesVertexColorBuffer.itemSize = 4;
 linesVertexColorBuffer.numItems = 8152;
 
 
-	linesTangentBuffer = gl.createBuffer();
+linesTangentBuffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, linesTangentBuffer);
+
+ 
 var tangents = new Array();
 for (i=0; i<linesVertexColorBuffer.numItems; i++) {
  for (j=0; j<6; j++) {
@@ -8179,14 +8186,18 @@ for (i=0; i<linesVertexColorBuffer.numItems; i++) {
   }
   var n1 = Math.sqrt(tangents[i*6+0]*tangents[i*6+0]+tangents[i*6+1]*tangents[i*6+1]+tangents[i*6+2]*tangents[i*6+2]);
   var n2 = Math.sqrt(tangents[i*6+3]*tangents[i*6+3]+tangents[i*6+4]*tangents[i*6+4]+tangents[i*6+5]*tangents[i*6+5]);
+  if(n1 == null || n1==NaN) n1=0.0001
+  if(n2 == null || n2==NaN) n2=0.0001
   tangents[i*6+0]/=n1; tangents[i*6+1]/=n1; tangents[i*6+2]/=n1;
   tangents[i*6+3]/=n2; tangents[i*6+4]/=n2; tangents[i*6+5]/=n2;
 }
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(tangents), gl.STATIC_DRAW);
-	linesTangentBuffer.numItems = 8152 ;
-    linesTangentBuffer.itemSize = 3;
 
-	
+ 
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(tangents), gl.STATIC_DRAW);
+linesTangentBuffer.numItems = 8152 ;
+linesTangentBuffer.itemSize = 3;
+
+
 // generate cylinders instead of lines
 
 var Ncyl = 6;
@@ -8242,27 +8253,6 @@ for (i=0; i<4076; i++) {
    trianglesCyl[i*Ncyl*6+j*6+5] = i*Ncyl*2+(j+1)%Ncyl+Ncyl;   
  }
 }
-
-// try to fill the gaps between cylinders ; not great.
-/*for (i=0; i<8152*Ncyl-64*Ncyl; i++) {
-  nearestDist = 1E9;
-  nearestID = -1;
-  for (j=Ncyl; j<64*Ncyl; j+=2*Ncyl) {
-    d = (vtxCyl[i*3]-vtxCyl[(i+j)*3])*(vtxCyl[i*3]-vtxCyl[(i+j)*3]) + (vtxCyl[i*3+1]-vtxCyl[(i+j)*3+1])*(vtxCyl[i*3+1]-vtxCyl[(i+j)*3+1]) + (vtxCyl[i*3+2]-vtxCyl[(i+j)*3+2])*(vtxCyl[i*3+2]-vtxCyl[(i+j)*3+2]);
-   if (d<nearestDist) {
-     nearestDist = d;
-     nearestID = i+j;
-   }   
-  }
-  if (nearestDist<0.5*0.5) {
-   vtxCyl[i*3] = (vtxCyl[i*3]+vtxCyl[nearestID*3])*0.5;
-   vtxCyl[i*3+1] = (vtxCyl[i*3+1]+vtxCyl[nearestID*3+1])*0.5;
-   vtxCyl[i*3+2] = (vtxCyl[i*3+2]+vtxCyl[nearestID*3+2])*0.5;
-   vtxCyl[nearestID*3] = vtxCyl[i*3];
-   vtxCyl[nearestID*3+1] = vtxCyl[i*3+1];
-   vtxCyl[nearestID*3+2] = vtxCyl[i*3+2];
-  }
-}*/
 
 	vtxCylBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vtxCylBuffer);

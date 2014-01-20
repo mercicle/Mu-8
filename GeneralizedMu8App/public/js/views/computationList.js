@@ -46,10 +46,18 @@ window.ComputationListItemView = Backbone.View.extend({
     },
     
     events: {
-        "click .delete"     : "deleteComputation",
-         // "click .visualize"     : "visualize",
+        "click .delete"        : "deleteComputation",
+        "click .visualize"     : "visualizeComputation",
     },
     
+    visualizeComputation: function () {
+
+        $('#spinningWheel').modal('show');
+        var thisID = this.model.get("_id");
+        
+        app.navigate("visualize/"+thisID, true);
+    },
+
     deleteComputation: function(event){
         event.preventDefault();
         

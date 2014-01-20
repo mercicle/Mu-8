@@ -1,4 +1,5 @@
-
+var computationId;
+var vtxCylBuffer, normalsCylBuffer, colCylBuffer, triCylBuffer;
 var defaultIndexData = [];
 var newIndexData = [];
 var accessionOfNewIndex = null;

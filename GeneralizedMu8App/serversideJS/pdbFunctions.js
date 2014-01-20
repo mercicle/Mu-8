@@ -83,7 +83,7 @@ function generateLinesFile(nicolasPDBFile){
 		miny = Math.min(miny, parseFloat(atom.y));
 		minz = Math.min(minz, parseFloat(atom.z));
 	} 
-	
+	linesJS += "var vtxCylBuffer, normalsCylBuffer, colCylBuffer, triCylBuffer;\n"; 
 	linesJS += "var linesVertexPositionBuffer;\n";
 	linesJS += "var linesVertexColorBuffer;\n";
 	linesJS += "var quadPosBuffer;\n";

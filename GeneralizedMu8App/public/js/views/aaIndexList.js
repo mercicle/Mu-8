@@ -72,7 +72,17 @@ window.AAIndexListItemView = Backbone.View.extend({
         console.log("exchanging " + accessionOfNewIndex);
 
         var thisRoute = Backbone.history.fragment;
+
+
         var computationId = thisRoute.split("/")[1];
+
+        //for the demo
+    
+        //52daf69ec251aaba06000001 if local
+        //52d74a3a81dfb1a819000001 if server
+        if(typeof computationId == 'undefined'){
+            computationId = '52daf69ec251aaba06000001'
+        }
 
         console.log('computationId'+computationId);
 

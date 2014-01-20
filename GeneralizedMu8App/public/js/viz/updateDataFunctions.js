@@ -478,6 +478,8 @@ function updateHistogramViz(){
 
         brushmove(i);
     }
+
+    setupDoubleClick();
      
 }
 

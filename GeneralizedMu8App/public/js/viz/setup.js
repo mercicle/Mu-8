@@ -165,6 +165,14 @@ function prepareData(){
 	    return d.dist;
 	});
 
+//defaultIndexData[2][0] is used for dist hist and chords
+//refSeq
+//rawHistValues
+//globalIsBrushedArray
+//posNegIndices
+//allIndexData
+//allStdDeviations
+//allIndices
 }
 
 function setupVisualization(){
@@ -949,6 +957,8 @@ function setupVisualization(){
     // Start the tour
     tour.start();
     */
-     tl.pg.init();
+
+    tl.pg.init();
+
 
 }

@@ -15,6 +15,7 @@ function finalComputationToFile(finalResultsToSendBack){
 	var finalResultsJS = "var defaultIndexData = ";
 
 	finalResultsJS += JSON.stringify(finalResultsToSendBack);
+  finalResultsJS += ";";
 	console.log("====================finalComputationToFile=====================");
 	//console.log(finalResultsJS);
 	console.log("==================== END finalComputationToFile=====================");
@@ -40,7 +41,7 @@ function makeFilesForComputationID(computationId){
           collection.find({}).toArray(function(err, sequences){
 
               var referenceSequence  = sequences[0].sequence.split("");
-
+              console.log(referenceSequence);
               var residueScoresToSendBack = [];
               var stdDevToSendBack = [];
               for (var aai = 0; aai < aaindices.length; aai++){
@@ -85,7 +86,11 @@ function makeFilesForComputationID(computationId){
               var pdbCollection = db.collection('PDB_ForID_' + computationId);
               pdbCollection.find({}).toArray(function(err, positions){
                     var pdbDistancesToSendback = helpers.computeDistances(positions);
-                    finalResultsToSendBack.push(residueScoresToSendBack,stdDevToSendBack,pdbDistancesToSendback);
+
+
+                    finalResultsToSendBack.push(residueScoresToSendBack,
+                                                stdDevToSendBack,
+                                                pdbDistancesToSendback);
                     
                     	//this is the file for the final results needed
                     	var finalResultFile  = finalComputationToFile(finalResultsToSendBack)

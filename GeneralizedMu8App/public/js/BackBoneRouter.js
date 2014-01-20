@@ -73,7 +73,10 @@ var AppRouter = Backbone.Router.extend({
 
     demo: function(){
 
-            var computationId = '52d704db032dc50000000001';
+            //52daf69ec251aaba06000001 if local
+            //52d74a3a81dfb1a819000001 if server
+            //MSA_ForID_52daf69ec251aaba06000001
+            computationId = '52d74a3a81dfb1a819000001'; 
             if (!this.visualizeView) {
                 this.visualizeView = new VisualizeView();
             }
@@ -81,53 +84,35 @@ var AppRouter = Backbone.Router.extend({
             //inject the SVG template with the svgView wrapper
             $('#content').html(this.visualizeView.el);
  
-            $("#spinningWheelTitle").html("Loading the awesome :)");
+            $("#spinningWheelTitle").html("Loading Mu-8 Demo (Approx. 2-3 min)");
             $('#spinningWheel').modal('show');
-            
+
             $.get( '/staticvisualdata/' + computationId, function( data, textStatus, jqxhr ) {
             
                 console.log( 'processedPDBFiles/lines_' + computationId + '.js' );
 
                 $( "#lines" ).text( data );
 
-                $.get( '/staticvisualdataAll/' + computationId, function( data, textStatus, jqxhr ) {
+            }).done(function() {
 
-                        $( "#allData" ).text( data );
+                //setTimeout( function(){
 
+                            $.get( '/staticvisualdataAll/' + computationId, function( data, textStatus, jqxhr ) {
 
-                        seqLength = allFinalResultsJS[0][0].length;
-                        prepareData();
-                        setupVisualization();
-                        webGLStart();
-                         $('#spinningWheel').modal('hide');
+                                    $( "#allData" ).text( data );
 
-                });//$.getScript
+                            }).done(function() {
+                                                    seqLength = defaultIndexData[0][0].length;
+                                                    prepareData();
+                                                    setupVisualization();
+                                                    webGLStart();
+                                                    $('#spinningWheel').modal('hide');
+                                    
+                            });
 
-                /*
-                $.getJSON("/visualdata/" + computationId,
-                
-                    function(data){
+                //},0);
 
-                        $.each( data , function( i , item ) { 
-                           defaultIndexData.push(data[i]);
-                        }); 
-
-                        seqLength = defaultIndexData[0][0].length;
-                        prepareData();
-                        setupVisualization();
-                        webGLStart();
-
-                    }
-
-                ).done(function(){  
-
-                                    $('#spinningWheel').modal('hide');
-
-                                 });
-                */
-
-
-            });//$.getScript
+            });
  
     },
  
@@ -145,8 +130,8 @@ var AppRouter = Backbone.Router.extend({
             //inject the SVG template with the svgView wrapper
             $('#content').html(this.visualizeView.el);
  
-            $("#spinningWheelTitle").html("Loading Mu-8 (Approx. 2-5 min)");
-            $('#spinningWheel').modal('show');
+            //$("#spinningWheelTitle").html("Loading Mu-8 (Approx. 2-5 min)");
+            //$('#spinningWheel').modal('show');
             
             $.get( '/staticvisualdata/' + computationId, function( data, textStatus, jqxhr ) {
             
@@ -154,45 +139,52 @@ var AppRouter = Backbone.Router.extend({
 
                 $( "#lines" ).text( data );
 
-                $.get( '/staticvisualdataAll/' + computationId, function( data, textStatus, jqxhr ) {
+            }).done(function() {
 
-                        $( "#allData" ).text( data );
+                setTimeout( function(){
+
+                            $.get( '/staticvisualdataAll/' + computationId, function( data, textStatus, jqxhr ) {
+
+                                    $( "#allData" ).text( data );
+
+                            }).done(function() {
+                                                    seqLength = defaultIndexData[0][0].length;
+                                                    prepareData();
+                                                    setupVisualization();
+
+                                                    $('#spinningWheel').modal('hide');
+                                    /*  
+                                     setTimeout( function(){
 
 
-                        seqLength = defaultIndexData[0][0].length;
-                        prepareData();
-                        setupVisualization();
-                        webGLStart();
-                         $('#spinningWheel').modal('hide');
+                                                    //$('#spinningWheel').modal('hide');
+                                                    var intervalID = setInterval( function(){
+                                                        if (typeof initBuffers === 'function') {
+                                                          webGLStart();
+                                                          window.clearInterval(intervalID);
 
-                });//$.getScript
+                                                          $('#spinningWheel').modal('hide');
+                                                        }
+                                                    },1000);
+                                                 }
+                                       ,0);
+                                    */
+                            });
 
-                /*
-                $.getJSON("/visualdata/" + computationId,
-                
-                    function(data){
+                },0);
 
-                        $.each( data , function( i , item ) { 
-                           defaultIndexData.push(data[i]);
-                        }); 
-
-                        seqLength = defaultIndexData[0][0].length;
-                        prepareData();
-                        setupVisualization();
-                        webGLStart();
-
-                    }
-
-                ).done(function(){  
-
-                                    $('#spinningWheel').modal('hide');
-
-                                 });
-                */
-
-            });//$.getScript
-
+            });
         }
+        /*
+        var intervalID = setInterval( function(){
+            if (typeof initBuffers === 'function') {
+              webGLStart();
+              window.clearInterval(intervalID);
+
+              //$('#spinningWheel').modal('hide');
+            }
+        },5000);
+        */
     },
  
     signup: function() {
