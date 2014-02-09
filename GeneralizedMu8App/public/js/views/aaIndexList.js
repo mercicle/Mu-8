@@ -58,7 +58,9 @@ window.AAIndexListItemView = Backbone.View.extend({
 
         var splitDesc = desc.split("(");
 
-        if (splitDesc.length==2){
+        if (splitDesc.length==1){
+            authorYearOfNewIndex = accessionOfNewIndex;
+        }else if (splitDesc.length==2){
             authorYearOfNewIndex = splitDesc[1].replace(')', '');
         }else if (splitDesc.length==3){
             authorYearOfNewIndex = splitDesc[2].replace(')', '');
@@ -68,11 +70,9 @@ window.AAIndexListItemView = Backbone.View.extend({
  
         //authorYearOfNewIndex
 
-
         console.log("exchanging " + accessionOfNewIndex);
 
         var thisRoute = Backbone.history.fragment;
-
 
         var computationId = thisRoute.split("/")[1];
 
@@ -81,7 +81,7 @@ window.AAIndexListItemView = Backbone.View.extend({
         //52daf69ec251aaba06000001 if local
         //52d74a3a81dfb1a819000001 if server
         if(typeof computationId == 'undefined'){
-            computationId = '52daf69ec251aaba06000001'
+            computationId = demoComputationID;// = '52daf69ec251aaba06000001'
         }
 
         console.log('computationId'+computationId);

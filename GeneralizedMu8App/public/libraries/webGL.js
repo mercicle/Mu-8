@@ -351,17 +351,14 @@ function webGLStart() {
 
     var canvas = document.getElementById("canvas3d");
 
-
     initGL(canvas); //ok
 
-    
 	initTextureFramebuffer();//ok
     
     initShaders();//ok
     
-    
     initBuffers(); //not ok
-    /*
+    
     gl.clearColor(1.0, 1.0, 1.0, 1.0);
     gl.enable(gl.DEPTH_TEST);
     //gl.disable(gl.DEPTH_TEST);
@@ -381,5 +378,5 @@ function webGLStart() {
         return false;
     }
     tick();
-    */
+
 }

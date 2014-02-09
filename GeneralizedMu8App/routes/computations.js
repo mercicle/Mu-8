@@ -433,11 +433,21 @@ exports.addComputation = function(req,res){
  
                         var nicolasPDBFile = pdbFunc.pdbToAtomFile(data);
                         var johnPDBFile = pdbFunc.pdbToXYZFile(data);
-                        var linesJS = pdbFunc.generateLinesFile(nicolasPDBFile);
+                        
+                        //var linesJS = pdbFunc.generateLinesFile(nicolasPDBFile);
+
+                        var javascriptFiles = pdbFunc.generateLinesFile(nicolasPDBFile);
+                        var colorsAndVerticesFile = javascriptFiles[0];
+                        var initBuffersFile = javascriptFiles[1];
 
                         //console.log("Done computing nicolasPDBFile - johnPDBFile - linesJS");
                         //save the file lines file after creating it
-                        fileSystem.writeFile('processedPDBFiles/'+'lines_'+computationID+'.js', linesJS, function (err) {
+                        fileSystem.writeFile('processedPDBFiles/'+'colorsAndVerticesFile_'+computationID+'.js', colorsAndVerticesFile, function (err) {
+                          if (err) throw err;
+                          //console.log('processedPDBFiles/'+'lines_'+computationID+'.js');
+                        });
+
+                        fileSystem.writeFile('processedPDBFiles/'+'initBuffersFile_'+computationID+'.js', initBuffersFile, function (err) {
                           if (err) throw err;
                           //console.log('processedPDBFiles/'+'lines_'+computationID+'.js');
                         });

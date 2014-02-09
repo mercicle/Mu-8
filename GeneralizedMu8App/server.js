@@ -62,7 +62,8 @@ app.delete('/computations/:id', computations.deleteComputation);
 app.get('/visualdata/:computationId', visual.getDataForVisualization); 
 app.get('/visualdata/:computationId/:accession', visual.getNewIndexForVisualization); 
 
-app.get('/staticvisualdata/:computationId', visual.getLinesFileForVisualization); 
+app.get('/initBuffersFile/:computationId', visual.getInitBuffersFileForVisualization); 
+app.get('/colorsAndVertices/:computationId', visual.getColorsAndVerticesFileForVisualization); 
 app.get('/staticvisualdataAll/:computationId', visual.getAllResultsFileForVisualization); 
 
 /***************************************************************

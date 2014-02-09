@@ -73,45 +73,59 @@ var AppRouter = Backbone.Router.extend({
 
     demo: function(){
 
-            //52daf69ec251aaba06000001 if local
-            //52d74a3a81dfb1a819000001 if server
-            //MSA_ForID_52daf69ec251aaba06000001
-            computationId = '52d74a3a81dfb1a819000001'; 
-            if (!this.visualizeView) {
-                this.visualizeView = new VisualizeView();
-            }
+            computationId = demoComputationID; 
+
+            if(this.visualizeView) this.visualizeView.remove();
+            this.visualizeView = new VisualizeView();
 
             //inject the SVG template with the svgView wrapper
             $('#content').html(this.visualizeView.el);
  
-            $("#spinningWheelTitle").html("Loading Mu-8 Demo (Approx. 2-3 min)");
+            $("#spinningWheelTitle").html("Loading Mu-8 Demo (Approx. 1-2 min)");
             $('#spinningWheel').modal('show');
 
-            $.get( '/staticvisualdata/' + computationId, function( data, textStatus, jqxhr ) {
-            
-                console.log( 'processedPDBFiles/lines_' + computationId + '.js' );
+            $.when(
+                    $.getScript( "/js/viz/globalVarsForViz.js" ) ,
+                    $.Deferred(function( deferred ){
+                        $( deferred.resolve );
+                    })
+            ).done(function(){
 
-                $( "#lines" ).text( data );
+                     //colorsAndVertices
+                    //initBuffersFile
+                    $.get( '/colorsAndVertices/' + computationId, function( data, textStatus, jqxhr ) {
+                    
+                        console.log( 'processedPDBFiles/colorsAndVertices_' + computationId + '.js' );
 
-            }).done(function() {
+                        $( "#colorsAndVertices" ).text( data );
 
-                //setTimeout( function(){
+                    }).done(function() {
 
-                            $.get( '/staticvisualdataAll/' + computationId, function( data, textStatus, jqxhr ) {
+                                    $.get( '/staticvisualdataAll/' + computationId, function( data, textStatus, jqxhr ) {
 
-                                    $( "#allData" ).text( data );
+                                            $( "#allData" ).text( data );
 
-                            }).done(function() {
-                                                    seqLength = defaultIndexData[0][0].length;
-                                                    prepareData();
-                                                    setupVisualization();
-                                                    webGLStart();
-                                                    $('#spinningWheel').modal('hide');
-                                    
-                            });
+                                    }).done(function() {
 
-                //},0);
+                                                           $.get( '/initBuffersFile/' + computationId, function( data, textStatus, jqxhr ) {
+                                                            
+                                                                console.log( 'processedPDBFiles/initBuffersFile_' + computationId + '.js' );
 
+                                                                $( "#initBuffersFile" ).text( data );
+
+                                                            }).done(function() {
+
+                                                                seqLength = defaultIndexData[0][0].length;
+                                                                prepareData();
+                                                                setupVisualization();
+                                                                webGLStart();
+                                                                $('#spinningWheel').modal('hide');
+
+                                                            });
+
+                                    });
+
+                    });
             });
  
     },
@@ -123,68 +137,62 @@ var AppRouter = Backbone.Router.extend({
         }
         else {
 
-            if (!this.visualizeView) {
-                this.visualizeView = new VisualizeView();
-            }
+            if(this.visualizeView) this.visualizeView.remove();
+            this.visualizeView = new VisualizeView();
 
             //inject the SVG template with the svgView wrapper
             $('#content').html(this.visualizeView.el);
  
-            //$("#spinningWheelTitle").html("Loading Mu-8 (Approx. 2-5 min)");
-            //$('#spinningWheel').modal('show');
-            
-            $.get( '/staticvisualdata/' + computationId, function( data, textStatus, jqxhr ) {
-            
-                console.log( 'processedPDBFiles/lines_' + computationId + '.js' );
+            $("#spinningWheelTitle").html("Loading Mu-8 (Approx. 1-2 min)");
+            $('#spinningWheel').modal('show');
 
-                $( "#lines" ).text( data );
+            //colorsAndVertices
+            //initBuffersFile
 
-            }).done(function() {
+            $.when(
+                    $.getScript( "/js/viz/globalVarsForViz.js" ) ,
+                    $.Deferred(function( deferred ){
+                        $( deferred.resolve );
+                    })
+            ).done(function(){
 
-                setTimeout( function(){
+                $.get( '/colorsAndVertices/' + computationId, function( data, textStatus, jqxhr ) {
+                
+                    console.log( 'processedPDBFiles/colorsAndVertices_' + computationId + '.js' );
 
-                            $.get( '/staticvisualdataAll/' + computationId, function( data, textStatus, jqxhr ) {
+                    $( "#colorsAndVertices" ).text( data );
 
-                                    $( "#allData" ).text( data );
+                }).done(function() {
 
-                            }).done(function() {
-                                                    seqLength = defaultIndexData[0][0].length;
-                                                    prepareData();
-                                                    setupVisualization();
+                                $.get( '/staticvisualdataAll/' + computationId, function( data, textStatus, jqxhr ) {
+                                        $( "#allData" ).empty();
+                                        $( "#allData" ).text( data );
 
-                                                    $('#spinningWheel').modal('hide');
-                                    /*  
-                                     setTimeout( function(){
+                                }).done(function() {
 
+                                                       $.get( '/initBuffersFile/' + computationId, function( data, textStatus, jqxhr ) {
+                                                        
+                                                            console.log( 'processedPDBFiles/initBuffersFile_' + computationId + '.js' );
 
-                                                    //$('#spinningWheel').modal('hide');
-                                                    var intervalID = setInterval( function(){
-                                                        if (typeof initBuffers === 'function') {
-                                                          webGLStart();
-                                                          window.clearInterval(intervalID);
+                                                            $( "#initBuffersFile" ).text( data );
 
-                                                          $('#spinningWheel').modal('hide');
-                                                        }
-                                                    },1000);
-                                                 }
-                                       ,0);
-                                    */
-                            });
+                                                        }).done(function() {
 
-                },0);
+                                                            seqLength = defaultIndexData[0][0].length;
+                                                            prepareData();
+                                                            setupVisualization();
+                                                            webGLStart();
+                                                            $('#spinningWheel').modal('hide');
+
+                                                        });
+
+                                });
+
+                });
 
             });
-        }
-        /*
-        var intervalID = setInterval( function(){
-            if (typeof initBuffers === 'function') {
-              webGLStart();
-              window.clearInterval(intervalID);
 
-              //$('#spinningWheel').modal('hide');
-            }
-        },5000);
-        */
+        }
     },
  
     signup: function() {

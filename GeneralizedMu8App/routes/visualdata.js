@@ -18,11 +18,11 @@ var helpers = require('../serversideJS/helperFunctions.js');
 
 var mime = require('mime');
 
-exports.getLinesFileForVisualization = function(req, res) {
+exports.getColorsAndVerticesFileForVisualization = function(req, res) {
 
     var computationID = req.params.computationId;
 
-    var filePath = 'processedPDBFiles/'+'lines_'+computationID+'.js';
+    var filePath = 'processedPDBFiles/'+'colorsAndVerticesFile_'+computationID+'.js';
     //console.log("Returning " + filePath);
 
     fs.readFile(filePath, function(err, data) {
@@ -41,6 +41,28 @@ exports.getLinesFileForVisualization = function(req, res) {
 
 }
 
+exports.getInitBuffersFileForVisualization = function(req, res) {
+
+    var computationID = req.params.computationId;
+
+    var filePath = 'processedPDBFiles/'+'initBuffersFile_'+computationID+'.js';
+    //console.log("Returning " + filePath);
+
+    fs.readFile(filePath, function(err, data) {
+
+      if (err) {
+        res.writeHead(500);
+        res.end("");
+        return;
+      }
+
+      res.contentType = mime.lookup(filePath);
+      res.writeHead(200);
+      res.end(data); 
+
+    });
+
+}
 
 exports.getAllResultsFileForVisualization = function(req, res) {
 

@@ -1,6 +1,9 @@
+//server: 52f6d4b9059240686c000001
+//local: 52daf69ec251aaba06000001
+var demoComputationID = '52f6d4b9059240686c000001';
 var computationId;
 var vtxCylBuffer, normalsCylBuffer, colCylBuffer, triCylBuffer;
-var defaultIndexData = [];
+//var defaultIndexData = [];
 var newIndexData = [];
 var accessionOfNewIndex = null;
 var indexOfNewAccession = null;
